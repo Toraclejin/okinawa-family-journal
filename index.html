@@ -5463,17 +5463,27 @@
     return `slot-${Array.from(document.querySelectorAll('.options')).indexOf(optionsEl)}`;
   }
 
-  function applyChosen(optionsEl, chosenIdx) {
+  // 저장 형식: state.chosen[slotKey] = ['0', '2'] (복수 선택 가능)
+  // 구 포맷(단일 문자열/숫자)도 배열로 자동 변환
+  function getChosenArr(slotKey) {
+    const v = state.chosen && state.chosen[slotKey];
+    if (Array.isArray(v)) return v.map(String);
+    if (v !== undefined && v !== null && v !== '') return [String(v)];
+    return [];
+  }
+
+  function applyChosen(optionsEl, chosenArr) {
+    const hasAny = chosenArr.length > 0;
     optionsEl.querySelectorAll(':scope > .opt').forEach(opt => {
-      const idx = opt.dataset.optIdx;
-      if (chosenIdx === null || chosenIdx === undefined) {
-        opt.classList.remove('chosen', 'not-chosen');
-      } else if (idx === String(chosenIdx)) {
+      const idx = String(opt.dataset.optIdx);
+      if (chosenArr.includes(idx)) {
         opt.classList.add('chosen');
         opt.classList.remove('not-chosen');
-      } else {
+      } else if (hasAny) {
         opt.classList.remove('chosen');
         opt.classList.add('not-chosen');
+      } else {
+        opt.classList.remove('chosen', 'not-chosen');
       }
     });
   }
@@ -5501,12 +5511,10 @@
       }
     });
     // 저장된 선택 복원
-    if (state.chosen && state.chosen[slotKey] !== undefined) {
-      applyChosen(optionsEl, state.chosen[slotKey]);
-    }
+    applyChosen(optionsEl, getChosenArr(slotKey));
   });
 
-  // 선택 버튼 클릭 핸들러
+  // 선택 버튼 클릭 핸들러 (복수 선택 토글)
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.opt-select');
     if (!btn) return;
@@ -5516,16 +5524,14 @@
     const optionsEl = opt.closest('.options');
     if (!opt || !optionsEl) return;
     const slotKey = slotKeyOf(optionsEl);
-    const idx = opt.dataset.optIdx;
-    const wasChosen = opt.classList.contains('chosen');
+    const idx = String(opt.dataset.optIdx);
+    const current = getChosenArr(slotKey);
+    const isChosen = current.includes(idx);
+    const next = isChosen ? current.filter(i => i !== idx) : [...current, idx];
+    applyChosen(optionsEl, next);
     if (!state.chosen) state.chosen = {};
-    if (wasChosen) {
-      applyChosen(optionsEl, null);
-      delete state.chosen[slotKey];
-    } else {
-      applyChosen(optionsEl, idx);
-      state.chosen[slotKey] = idx;
-    }
+    if (next.length === 0) delete state.chosen[slotKey];
+    else state.chosen[slotKey] = next;
     saveState(state);
   });
 
