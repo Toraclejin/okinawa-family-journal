@@ -1024,23 +1024,25 @@
   .fullquote::before {
     content: "";
     position: absolute;
-    top: 15%;
-    right: 8%;
-    width: 200px;
-    height: 200px;
+    top: 8%;
+    right: 6%;
+    width: 160px;
+    height: 160px;
     border-radius: 50%;
-    background: var(--amber);
+    background: var(--frame);
+    opacity: 0.75;
   }
 
   .fullquote::after {
     content: "";
     position: absolute;
-    bottom: 10%;
+    bottom: 8%;
     left: 5%;
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
-    background: var(--coral);
+    background: var(--accent-soft);
+    opacity: 0.6;
   }
 
   .fullquote-inner {
@@ -1577,8 +1579,8 @@
     .fullquote { padding: 80px 28px; }
     .fullquote blockquote { font-size: 32px; }
     /* 모바일에서 amber 원이 .emp(amber 글자)와 겹쳐 글자가 안 보이는 문제 수정 */
-    .fullquote::before { width: 100px; height: 100px; top: 6%; right: 5%; }
-    .fullquote::after { width: 60px; height: 60px; bottom: 6%; left: 5%; }
+    .fullquote::before { width: 90px; height: 90px; top: 5%; right: 5%; }
+    .fullquote::after { width: 50px; height: 50px; bottom: 5%; left: 5%; }
 
     .ed-note { margin: 24px 28px; padding: 20px 22px; }
 
