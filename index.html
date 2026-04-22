@@ -1576,6 +1576,9 @@
 
     .fullquote { padding: 80px 28px; }
     .fullquote blockquote { font-size: 32px; }
+    /* 모바일에서 amber 원이 .emp(amber 글자)와 겹쳐 글자가 안 보이는 문제 수정 */
+    .fullquote::before { width: 100px; height: 100px; top: 6%; right: 5%; }
+    .fullquote::after { width: 60px; height: 60px; bottom: 6%; left: 5%; }
 
     .ed-note { margin: 24px 28px; padding: 20px 22px; }
 
@@ -1880,6 +1883,19 @@
   .mood-card-wrap {
     display: flex;
     flex-direction: column;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mood-card-wrap .mood-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .mood-card-wrap:hover .mood-card,
+  .mood-card-wrap:active .mood-card {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(0, 31, 102, 0.18);
+  }
+  .mood-card-wrap:hover .mood-card-caption {
+    color: var(--blue);
   }
 
   @media (max-width: 1100px) {
@@ -4658,17 +4674,32 @@
       .trim();
   }
 
-  document.addEventListener('click', (e) => {
-    const place = e.target.closest('.opt-place');
-    if (!place) return;
-    if (place.closest('.opt-write')) return;
-    e.preventDefault();
-    const rawText = place.textContent.trim();
+  function openMapModal(rawText) {
     const cleaned = cleanMapQuery(rawText);
-    const needsOkinawa = !/okinawa|오키나와|chatan|motobu|naha|mihama|urasoe|kitanakagusuku/i.test(cleaned);
+    const needsOkinawa = !/okinawa|오키나와|chatan|차탄|motobu|모토부|naha|나하|mihama|미하마|urasoe|우라소에|kitanakagusuku/i.test(cleaned);
     currentMapQuery = needsOkinawa ? `${cleaned} Okinawa` : cleaned;
     mapModalPlaceEl.textContent = rawText;
     mapModal.classList.add('open');
+  }
+
+  document.addEventListener('click', (e) => {
+    // 1) .opt-place 클릭
+    const place = e.target.closest('.opt-place');
+    if (place && !place.closest('.opt-write')) {
+      e.preventDefault();
+      openMapModal(place.textContent.trim());
+      return;
+    }
+    // 2) .mood-card-wrap 클릭 (SUNSET/POOL/ICE CREAM 같은 카드)
+    const mood = e.target.closest('.mood-card-wrap');
+    if (mood) {
+      const caption = mood.querySelector('.mood-card-caption');
+      if (caption) {
+        e.preventDefault();
+        openMapModal(caption.textContent.trim());
+      }
+      return;
+    }
   });
 
   mapModalConfirm.addEventListener('click', () => {
