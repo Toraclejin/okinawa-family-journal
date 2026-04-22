@@ -759,6 +759,12 @@
     margin-bottom: 20px;
     padding-bottom: 16px;
     border-bottom: 1px dashed rgba(0, 71, 255, 0.25);
+    cursor: pointer;
+    transition: opacity 0.15s, color 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .opt-body {
@@ -927,6 +933,69 @@
   .opt.highlight .opt-title { color: var(--white); }
   .opt.highlight .opt-title em { color: var(--amber); }
   .opt.highlight .opt-place { color: rgba(255,255,255,0.6); border-bottom-color: rgba(255,255,255,0.2); }
+
+  /* opt-place 맵 핀 아이콘 (클릭 힌트) */
+  .opt-place::before {
+    content: "";
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+    background-color: currentColor;
+    -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M20 10c0 6-8 13-8 13s-8-7-8-13a8 8 0 0 1 16 0z'/><circle cx='12' cy='10' r='3'/></svg>");
+    mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M20 10c0 6-8 13-8 13s-8-7-8-13a8 8 0 0 1 16 0z'/><circle cx='12' cy='10' r='3'/></svg>");
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+  .opt-place:hover, .opt-place:active {
+    opacity: 1;
+    color: var(--blue);
+  }
+  .opt.highlight .opt-place:hover,
+  .opt.highlight .opt-place:active {
+    color: var(--amber);
+  }
+
+  /* 맵 확인 모달 액션 버튼 */
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+  .modal-actions button {
+    flex: 1;
+    min-width: 120px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 2px solid var(--blue);
+  }
+  .modal-actions .btn-primary {
+    background: var(--blue);
+    color: var(--white);
+  }
+  .modal-actions .btn-primary:hover { background: var(--blue-deep); border-color: var(--blue-deep); }
+  .modal-actions .btn-secondary {
+    background: transparent;
+    color: var(--blue);
+  }
+  .modal-actions .btn-secondary:hover { background: var(--page-tint); }
+  .map-modal .place-name {
+    display: block;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: var(--blue);
+    margin: 12px 0 4px;
+  }
   .opt.highlight .opt-body { color: rgba(255,255,255,0.9); }
   .opt.highlight .opt-features li { color: rgba(255,255,255,0.9); }
   .opt.highlight .opt-features li strong { color: var(--amber); }
@@ -2594,6 +2663,20 @@
 </div>
 
 <input type="file" id="import-input" accept=".json,application/json" class="hidden-input" />
+
+<!-- 구글맵 확인 모달 -->
+<div class="modal-bg" id="modal-map">
+  <div class="modal map-modal">
+    <button type="button" class="close" data-close>×</button>
+    <h3>구글맵에서 열기</h3>
+    <p class="lead">이 장소를 구글맵에서 여시겠습니까?</p>
+    <span class="place-name" id="modal-map-place"></span>
+    <div class="modal-actions">
+      <button type="button" class="btn-primary" id="modal-map-confirm">예, 지도 열기</button>
+      <button type="button" class="btn-secondary" data-close>아니오</button>
+    </div>
+  </div>
+</div>
 
 <!-- 사용법 안내 모달 -->
 <div class="modal-bg" id="modal-info">
@@ -4536,6 +4619,57 @@
     state.photos[targetId].forEach(photo => {
       grid.appendChild(makePhotoItem(photo.id, photo.dataUrl, targetId));
     });
+  });
+
+  // ==========================================
+  //  구글맵 연결 (opt-place 클릭 → 확인 모달 → 지도 열기)
+  // ==========================================
+  const mapModal = document.getElementById('modal-map');
+  const mapModalPlaceEl = document.getElementById('modal-map-place');
+  const mapModalConfirm = document.getElementById('modal-map-confirm');
+  let currentMapQuery = '';
+
+  function cleanMapQuery(text) {
+    return text
+      .replace(/·/g, ' ')
+      .replace(/도보\s*\d+분/g, '')
+      .replace(/차로\s*\d+분/g, '')
+      .replace(/\([^)]*\)/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  document.addEventListener('click', (e) => {
+    const place = e.target.closest('.opt-place');
+    if (!place) return;
+    if (place.closest('.opt-write')) return;
+    e.preventDefault();
+    const rawText = place.textContent.trim();
+    const cleaned = cleanMapQuery(rawText);
+    const needsOkinawa = !/okinawa|오키나와|chatan|motobu|naha|mihama|urasoe|kitanakagusuku/i.test(cleaned);
+    currentMapQuery = needsOkinawa ? `${cleaned} Okinawa` : cleaned;
+    mapModalPlaceEl.textContent = rawText;
+    mapModal.classList.add('open');
+  });
+
+  mapModalConfirm.addEventListener('click', () => {
+    if (currentMapQuery) {
+      const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(currentMapQuery)}`;
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+    mapModal.classList.remove('open');
+  });
+
+  mapModal.addEventListener('click', (e) => {
+    if (e.target === mapModal || e.target.hasAttribute('data-close')) {
+      mapModal.classList.remove('open');
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mapModal.classList.contains('open')) {
+      mapModal.classList.remove('open');
+    }
   });
 
   // ==========================================
