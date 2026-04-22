@@ -3,12 +3,20 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
 <title>Okinawa — Summer Issue</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+  html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
   :root {
     /* 바깥 프레임 */
     --frame:      #7ce0d3;   /* 민트 프레임 */
@@ -1617,6 +1625,7 @@
     grid-template-areas:
       "big small1 small2"
       "big small3 small4";
+    max-width: 100%;
   }
 
   .mood-card {
@@ -1624,6 +1633,7 @@
     overflow: hidden;
     border-radius: 18px;
     min-height: 220px;
+    min-width: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1737,13 +1747,15 @@
 
   @media (max-width: 1100px) {
     .mood-grid {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr !important;
+      grid-template-rows: auto auto auto !important;
       grid-template-areas:
         "big big"
         "small1 small2"
-        "small3 small4";
+        "small3 small4" !important;
       gap: 16px;
     }
+    .mood-card.big { min-height: 280px; }
   }
   @media (max-width: 900px) {
     .mood-section { padding: 50px 24px 60px; }
