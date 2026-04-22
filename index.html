@@ -2846,6 +2846,88 @@
     contain-intrinsic-size: auto 1200px;
   }
 
+  /* ========== 옵션 선택 (각 시간대별 one-of-many) ========== */
+  .opt-select {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--blue-100);
+    background: var(--white);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--blue-100);
+    transition: all 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+    z-index: 3;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .opt-select svg { width: 20px; height: 20px; pointer-events: none; }
+  .opt-select:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+    transform: scale(1.08);
+  }
+  .opt.chosen .opt-select {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: var(--white);
+    box-shadow: 0 6px 18px rgba(0, 71, 255, 0.35);
+  }
+  .opt.chosen {
+    box-shadow: 0 14px 40px rgba(0, 71, 255, 0.22) !important;
+    border-color: var(--blue) !important;
+  }
+  .opt.chosen .opt-chosen-mark {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .opt-chosen-mark {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translate(-50%, -6px);
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--blue);
+    color: var(--white);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    box-shadow: 0 6px 14px rgba(0, 71, 255, 0.4);
+    opacity: 0;
+    transition: opacity 0.25s, transform 0.25s;
+    pointer-events: none;
+    z-index: 4;
+    white-space: nowrap;
+  }
+  .options .opt.not-chosen {
+    opacity: 0.5;
+    transition: opacity 0.3s, box-shadow 0.3s;
+  }
+  .options .opt.not-chosen:hover { opacity: 0.85; }
+  /* 선택 상태에서 내부 하이라이트 카드 스타일 유지 */
+  .opt.chosen.highlight .opt-select {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: var(--blue-ink);
+  }
+  .opt.chosen.highlight .opt-chosen-mark {
+    background: var(--amber);
+    color: var(--blue-ink);
+  }
+  @media (max-width: 600px) {
+    .opt-select { width: 36px; height: 36px; top: 14px; right: 14px; }
+    .opt-select svg { width: 18px; height: 18px; }
+    .opt-chosen-mark { font-size: 9px; padding: 5px 12px; }
+  }
+
   /* ========== 클릭 비활성화된 mood-card (지도 매핑 없는 것) ========== */
   .mood-card-wrap.no-map { cursor: default; }
   .mood-card-wrap.no-map:hover .mood-card,
@@ -3083,33 +3165,39 @@
 
     <ol class="contents-list">
       <li><span class="no">I</span>
+        <a href="#prep" class="title-link">
+          <span class="t-main">Packing &amp; Notes<span class="sub">여행 전 · 짐 · 하고 싶은 것</span></span>
+          <span class="pg">p. 00</span>
+        </a>
+      </li>
+      <li><span class="no">II</span>
         <a href="#d1" class="title-link">
           <span class="t-main">Arrival<span class="sub">도착하는 날</span></span>
           <span class="pg">p. 01</span>
         </a>
       </li>
-      <li><span class="no">II</span>
+      <li><span class="no">III</span>
         <a href="#d2" class="title-link">
           <span class="t-main">The Whale Shark<span class="sub">고래상어를 만나는 날</span></span>
           <span class="pg">p. 02</span>
         </a>
       </li>
-      <li><span class="no">III</span>
+      <li><span class="no">IV</span>
         <a href="#d3" class="title-link">
           <span class="t-main">Conveyor Sushi<span class="sub">회전초밥, 그리고 해변 마을</span></span>
           <span class="pg">p. 03</span>
         </a>
       </li>
-      <li><span class="no">IV</span>
+      <li><span class="no">V</span>
         <a href="#d4" class="title-link">
           <span class="t-main">Farewell<span class="sub">돌아가는 날</span></span>
           <span class="pg">p. 04</span>
         </a>
       </li>
-      <li><span class="no">V</span>
-        <a href="#pack" class="title-link">
-          <span class="t-main">Packing &amp; Notes<span class="sub">짐 · 기록 · 빈 페이지</span></span>
-          <span class="pg">Appendix</span>
+      <li><span class="no">VI</span>
+        <a href="#back" class="title-link">
+          <span class="t-main">Enjoy the Sea<span class="sub">마무리 · 여행의 끝</span></span>
+          <span class="pg">Finale</span>
         </a>
       </li>
     </ol>
@@ -3563,9 +3651,9 @@
       </div>
     </div>
   </div>
-  <div class="options pair">
+  <div class="options">
     <div class="opt">
-      <span class="opt-badge"><span class="dot"></span>Option 1</span>
+      <span class="opt-badge"><span class="dot"></span>Option 1 · 내부</span>
       <div class="opt-title">Ocean Blue <em>Cafe</em></div>
       <div class="opt-place">추라우미 1F · Kuroshio Sea 탱크 바로 옆</div>
       <div class="opt-body">
@@ -3586,21 +3674,104 @@
     </div>
 
     <div class="opt">
-      <span class="opt-badge coral"><span class="dot"></span>Option 2</span>
-      <div class="opt-title">근처 <em>소바집</em></div>
-      <div class="opt-place">Motobu Local</div>
+      <span class="opt-badge amber"><span class="dot"></span>Option 2 · 오션뷰 뷔페</span>
+      <div class="opt-title">The <em>Inoh</em></div>
+      <div class="opt-place">추라우미 수족관 4F · 오션 뷔페</div>
       <div class="opt-body">
-        수족관에서 차로 10분. 현지 사람들이 가는 오키나와 소바집. 국수를 좋아하면 훨씬 맛있는 선택.
+        수족관 **4층 뷔페 레스토랑**. 동중국해·이에섬 파노라마 뷰. **수족관 입장권 없이도 직접 접근 가능**. 오키나와 로컬 요리 뷔페 (챔푸루, 오키나와 소바, 아구돼지, 해산물) + 양식. 점심 뷔페 1인 약 2,500엔. 인원 많거나 아이 있으면 여기가 답.
       </div>
       <div class="opt-menu">
-        <span class="pick">Okinawa Soba</span>
+        <span class="pick">Okinawa 뷔페</span>
+        <span class="pick">챔푸루</span>
+        <span>해산물</span>
+        <span>디저트</span>
+      </div>
+      <div class="opt-rating">
+        <span class="r-lbl">How excited?</span>
+        <div class="opt-dots" data-key="d2-inoh">
+          <span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="opt">
+      <span class="opt-badge coral"><span class="dot"></span>Option 3 · 소바 레전드</span>
+      <div class="opt-title">Kishimoto <em>Shokudo</em></div>
+      <div class="opt-place">기시모토 식당 · 본부 이노하 350-1 · 차로 8분</div>
+      <div class="opt-body">
+        **1905년 창업** 오키나와 소바의 전설. 가다랑어 육수에 직접 뽑은 면발, 부드럽게 조린 돼지고기 고명. 메뉴는 **오키나와 소바 (대·소)** 단 하나. 관광객 + 현지인 모두 줄 서는 곳. 본점(Toguchi 항구)은 좁고 야에다케 분점은 주차 넓음. 11시 오픈, 재료 소진 시 조기 마감 (점심 전 도착 필수).
+      </div>
+      <div class="opt-menu">
+        <span class="pick">Okinawa Soba 大</span>
+        <span class="pick">Okinawa Soba 小</span>
+        <span>주부키 젠자이</span>
+      </div>
+      <div class="opt-rating">
+        <span class="r-lbl">How excited?</span>
+        <div class="opt-dots" data-key="d2-kishimoto">
+          <span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="opt">
+      <span class="opt-badge"><span class="dot"></span>Option 4 · 현지 소바</span>
+      <div class="opt-title">Miyazato <em>Soba</em></div>
+      <div class="opt-place">미야자토 소바 · 나고시 · 차로 15분</div>
+      <div class="opt-body">
+        북부 오키나와에서 가장 인기 있는 소바집 중 하나. 레트로 다다미 방 + 테이블석, 단체·가족 모이기 좋음. 삼중 갈비(소키) 올린 **소키 소바**가 간판 메뉴. 육수 진하고 면 두꺼움. 점심시간(12~13시) 웨이팅 있음.
+      </div>
+      <div class="opt-menu">
+        <span class="pick">Soki Soba</span>
+        <span class="pick">Tebichi Soba</span>
         <span>Juicy</span>
-        <span>Tempura</span>
         <span>주먹밥</span>
       </div>
       <div class="opt-rating">
         <span class="r-lbl">How excited?</span>
-        <div class="opt-dots" data-key="d2-lunch2">
+        <div class="opt-dots" data-key="d2-miyazato">
+          <span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="opt">
+      <span class="opt-badge amber"><span class="dot"></span>Option 5 · 비세 오션뷰</span>
+      <div class="opt-title">Cafe Cahaya <em>Bulan</em></div>
+      <div class="opt-place">카페 카하야 불란 · 본부 비세 · 차로 10분</div>
+      <div class="opt-body">
+        **비세(備瀬) 해변가** 숨은 카페. 이에섬과 동중국해가 정면에 펼쳐짐 — 오키나와 북부에서 **일몰 1순위** 카페. 비세 후쿠기 방풍림 가로수 길 따라가야 나옴 (좁은 길). 아시아풍 메뉴(베트남식 아시안 소바, 계절 식재료 활용). 점심·가벼운 디저트 둘 다 OK. 월·화 휴무일 가능성 있음 — 방문 전 확인.
+      </div>
+      <div class="opt-menu">
+        <span class="pick">Asian Soba</span>
+        <span class="pick">계절 커리</span>
+        <span>수제 케이크</span>
+        <span>에스프레소</span>
+      </div>
+      <div class="opt-rating">
+        <span class="r-lbl">How excited?</span>
+        <div class="opt-dots" data-key="d2-cahaya">
+          <span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="opt">
+      <span class="opt-badge coral"><span class="dot"></span>Option 6 · 전통 찻집</span>
+      <div class="opt-title">Yachimun Kissa <em>Shisaen</em></div>
+      <div class="opt-place">야치문 킷사 시사엔 · 본부 이즈미 1439 · 차로 12분</div>
+      <div class="opt-body">
+        오키나와 전통 도자기(**야치문**)로 꾸민 **붉은 기와 찻집**. 할머니 집 같은 따뜻한 분위기, 도자기 장인의 작업실을 개조. 흑당 젠자이, 히라야치(오키나와식 오코노미야키), 친빈(오키나와 크레페) — 현지 간식 메뉴. 영업 11:00~19:00, **월·화 휴무**. 방문 전 꼭 확인.
+      </div>
+      <div class="opt-menu">
+        <span class="pick">흑당 젠자이</span>
+        <span class="pick">히라야치</span>
+        <span>친빈</span>
+        <span>차</span>
+      </div>
+      <div class="opt-rating">
+        <span class="r-lbl">How excited?</span>
+        <div class="opt-dots" data-key="d2-yachimun">
           <span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span>
         </div>
       </div>
@@ -5268,6 +5439,94 @@
     if (e.key === 'Escape' && mapModal.classList.contains('open')) {
       mapModal.classList.remove('open');
     }
+  });
+
+  // ==========================================
+  //  OPT-BODY 마크다운 볼드(**text**) 렌더링
+  // ==========================================
+  document.querySelectorAll('.opt-body').forEach(body => {
+    const html = body.innerHTML;
+    if (html.includes('**')) {
+      body.innerHTML = html.replace(/\*\*([^*]+?)\*\*/g, '<strong>$1</strong>');
+    }
+  });
+
+  // ==========================================
+  //  옵션 선택 (시간대별 one-of-many)
+  // ==========================================
+  const SELECT_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+
+  function slotKeyOf(optionsEl) {
+    const addBtn = optionsEl.querySelector('.opt-add-btn');
+    if (addBtn && addBtn.dataset.block) return addBtn.dataset.block;
+    // fallback: generate from DOM position
+    return `slot-${Array.from(document.querySelectorAll('.options')).indexOf(optionsEl)}`;
+  }
+
+  function applyChosen(optionsEl, chosenIdx) {
+    optionsEl.querySelectorAll(':scope > .opt').forEach(opt => {
+      const idx = opt.dataset.optIdx;
+      if (chosenIdx === null || chosenIdx === undefined) {
+        opt.classList.remove('chosen', 'not-chosen');
+      } else if (idx === String(chosenIdx)) {
+        opt.classList.add('chosen');
+        opt.classList.remove('not-chosen');
+      } else {
+        opt.classList.remove('chosen');
+        opt.classList.add('not-chosen');
+      }
+    });
+  }
+
+  document.querySelectorAll('.options').forEach(optionsEl => {
+    const slotKey = slotKeyOf(optionsEl);
+    const opts = optionsEl.querySelectorAll(':scope > .opt');
+    opts.forEach((opt, idx) => {
+      opt.dataset.optIdx = idx;
+      // 선택 버튼
+      if (!opt.querySelector('.opt-select')) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'opt-select';
+        btn.setAttribute('aria-label', '이 옵션 선택');
+        btn.innerHTML = SELECT_ICON;
+        opt.appendChild(btn);
+      }
+      // 선택됨 배지
+      if (!opt.querySelector('.opt-chosen-mark')) {
+        const mark = document.createElement('div');
+        mark.className = 'opt-chosen-mark';
+        mark.textContent = '✓ 이걸로';
+        opt.appendChild(mark);
+      }
+    });
+    // 저장된 선택 복원
+    if (state.chosen && state.chosen[slotKey] !== undefined) {
+      applyChosen(optionsEl, state.chosen[slotKey]);
+    }
+  });
+
+  // 선택 버튼 클릭 핸들러
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.opt-select');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const opt = btn.closest('.opt');
+    const optionsEl = opt.closest('.options');
+    if (!opt || !optionsEl) return;
+    const slotKey = slotKeyOf(optionsEl);
+    const idx = opt.dataset.optIdx;
+    const wasChosen = opt.classList.contains('chosen');
+    if (!state.chosen) state.chosen = {};
+    if (wasChosen) {
+      applyChosen(optionsEl, null);
+      delete state.chosen[slotKey];
+    } else {
+      applyChosen(optionsEl, idx);
+      state.chosen[slotKey] = idx;
+    }
+    saveState(state);
   });
 
   // ==========================================
