@@ -2833,12 +2833,41 @@
     .page-pagination .pg-title { font-size: 16px; }
   }
 
+  /* PDF 인쇄: 가로 A4, 각 매거진 페이지 = PDF 페이지 1장 지향 */
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+
   @media print {
     .page { display: block !important; }
     .page-nav, .page-arrow, .page-pagination { display: none !important; }
     body { padding-top: 0 !important; }
-    /* 각 페이지는 새 PDF 페이지에서 시작 */
-    .page + .page { page-break-before: always; }
+
+    /* 각 매거진 페이지 = 새 PDF 페이지 시작 */
+    main.sheet > .page {
+      page-break-before: always;
+      break-before: page;
+      page-break-after: auto;
+      padding: 0 !important;
+    }
+    main.sheet > .page:first-of-type {
+      page-break-before: auto;
+    }
+
+    /* 빈 페이지 유발하는 avoid 해제 */
+    .day, .mood-section, .pack-spread, .blank-spread, .back, .contents, .cover,
+    .day-opener, .fullquote {
+      page-break-inside: auto !important;
+      page-break-after: auto !important;
+      break-inside: auto !important;
+    }
+    /* 작은 블록만 중간에 끊기지 않게 */
+    .opt, .mood-card-wrap, .pack-col, .reader-note, .contents-list li, .time-slot {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
     /* content-visibility 가 PDF 에서 빈 영역 만드는 문제 해제 */
     .day, .mood-section, .pack-spread, .blank-spread {
       content-visibility: visible !important;
@@ -2850,6 +2879,7 @@
       opacity: 1 !important;
       transform: none !important;
     }
+
     /* 배경 이미지를 <img> 로 변환한 요소 표시 */
     .print-bg-img {
       display: block !important;
@@ -2860,17 +2890,119 @@
       object-fit: cover;
       z-index: 0;
     }
-    /* 이미지 위 텍스트·장식이 가려지지 않게 */
     .cover-hero-image > *:not(.print-bg-img),
     .mood-card > *:not(.print-bg-img),
     .mood-card.big > *:not(.print-bg-img) {
       position: relative;
       z-index: 1;
     }
-    /* 배경 이미지 컨테이너 relative 보장 */
     .cover-hero-image, .mood-card[class*="img-"] {
       position: relative !important;
     }
+
+    /* 인쇄용 타이포·패딩 축소 (가로 A4 에 매거진 페이지 1장 담기) */
+    body { font-size: 11px !important; }
+    .sheet { box-shadow: none !important; border-radius: 0 !important; max-width: 100% !important; }
+    .runner { display: none !important; }
+    .floaty, .frame-deco { display: none !important; }
+
+    .cover { padding: 16px 28px !important; overflow: visible !important; }
+    .cover-top { margin-bottom: 12px !important; }
+    .cover-main { margin-bottom: 16px !important; }
+    .cover-kicker { font-size: 9px !important; padding: 6px 12px !important; margin-bottom: 8px !important; }
+    .cover h1 { font-size: 72px !important; line-height: 0.9 !important; margin-bottom: 8px !important; white-space: normal !important; }
+    .cover h1 .subline { font-size: 22px !important; }
+    .cover-dek { font-size: 12px !important; line-height: 1.3 !important; }
+    .cover-hero-image { height: 140px !important; margin: 12px 0 !important; border-radius: 10px !important; }
+    .cover-hero-image .caption { font-size: 11px !important; bottom: 10px !important; left: 12px !important; right: 12px !important; }
+    .cover-foot { padding: 10px !important; gap: 8px !important; }
+    .cover-foot .cell-label { font-size: 7px !important; }
+    .cover-foot .cell-val { font-size: 11px !important; }
+
+    .contents { padding: 20px 28px !important; }
+    .contents-inner { gap: 20px !important; }
+    .contents-label .big { font-size: 44px !important; }
+    .contents-label p { font-size: 11px !important; }
+    .contents-list li { padding: 8px 0 !important; grid-template-columns: 36px 1fr !important; gap: 12px !important; }
+    .contents-list .no { font-size: 22px !important; }
+    .contents-list .t-main { font-size: 14px !important; }
+    .contents-list .t-main .sub { font-size: 10px !important; }
+    .contents-list .pg { font-size: 9px !important; }
+
+    .day-opener { padding: 20px 30px !important; gap: 20px !important; grid-template-columns: 1fr 1.4fr !important; }
+    .day-opener .day-no { font-size: 84px !important; line-height: 0.85 !important; }
+    .day-opener .day-no .num { font-size: 0.72em !important; }
+    .day-opener .day-lbl { font-size: 10px !important; }
+    .day-opener-right h2 { font-size: 32px !important; margin-bottom: 10px !important; }
+    .day-opener-right .dek { font-size: 11px !important; padding: 10px 0 !important; }
+    .day-opener .summary { gap: 2px 0 !important; }
+    .day-opener .s-lbl { font-size: 8px !important; }
+    .day-opener .s-val { font-size: 12px !important; }
+
+    .mood-section { padding: 16px 28px !important; }
+    .mood-section-head { margin-bottom: 14px !important; padding-bottom: 10px !important; gap: 14px !important; }
+    .mood-section-head h3 { font-size: 28px !important; }
+    .mood-section-head .sub { font-size: 10px !important; }
+    .mood-grid { gap: 8px !important; }
+    .mood-card { min-height: 90px !important; padding: 10px 8px !important; border-radius: 10px !important; }
+    .mood-card.big { min-height: 140px !important; }
+    .mood-card .word { font-size: 20px !important; line-height: 1 !important; }
+    .mood-card.big .word { font-size: 36px !important; }
+    .mood-card-caption { font-size: 8px !important; margin-top: 5px !important; }
+
+    .time-slot { padding: 10px 28px 4px !important; }
+    .time-slot-head { gap: 14px !important; padding-bottom: 10px !important; }
+    .time-slot-head .time-tag { font-size: 22px !important; }
+    .time-slot-head .time-lbl { font-size: 9px !important; }
+    .time-slot-head .time-name { font-size: 18px !important; }
+
+    .options { padding: 0 28px 12px !important; gap: 8px !important; grid-template-columns: 1fr 1fr !important; }
+    .options.single { grid-template-columns: 1fr !important; }
+    .opt { padding: 10px 12px !important; padding-top: 18px !important; border-radius: 10px !important; }
+    .opt-badge { font-size: 8px !important; padding: 3px 8px !important; top: -8px !important; left: 12px !important; }
+    .opt-title { font-size: 14px !important; margin-bottom: 4px !important; }
+    .opt-place { font-size: 8px !important; margin-bottom: 8px !important; padding-bottom: 6px !important; }
+    .opt-body { font-size: 10px !important; line-height: 1.4 !important; margin-bottom: 6px !important; }
+    .opt-features li, .opt-menu span { font-size: 9px !important; padding: 3px 8px !important; }
+    .opt-rating { padding-top: 6px !important; margin-top: 6px !important; }
+    .opt-rating .r-lbl { font-size: 8px !important; }
+    .opt-dots .d { width: 10px !important; height: 10px !important; }
+
+    .fullquote { padding: 24px 30px !important; }
+    .fullquote blockquote { font-size: 22px !important; }
+    .fullquote .q-label { font-size: 9px !important; margin-bottom: 12px !important; }
+    .fullquote .attrib { font-size: 9px !important; margin-top: 16px !important; }
+    .fullquote::before, .fullquote::after { display: none !important; }
+
+    .ed-note { margin: 10px 28px !important; padding: 10px 14px !important; }
+    .ed-note p { font-size: 11px !important; }
+    .reader-note { margin: 12px 28px 16px !important; padding: 14px 16px !important; }
+    .reader-note .title { font-size: 20px !important; }
+    .reader-note textarea { min-height: 80px !important; font-size: 11px !important; }
+
+    .pack-spread { padding: 16px 28px !important; }
+    .pack-head { grid-template-columns: 1fr 1.4fr !important; gap: 20px !important; margin-bottom: 16px !important; }
+    .pack-head h2 { font-size: 44px !important; }
+    .pack-head .pack-dek { font-size: 11px !important; }
+    .pack-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 10px !important; }
+    .pack-col { padding: 10px 12px !important; border-radius: 8px !important; }
+    .pack-col h4 { font-size: 14px !important; }
+    .pack-list li { font-size: 10px !important; }
+
+    .blank-spread { padding: 20px 30px !important; gap: 24px !important; }
+    .blank-left h2 { font-size: 44px !important; }
+    .blank-left p { font-size: 11px !important; }
+    .blank-right textarea { min-height: 200px !important; font-size: 11px !important; }
+
+    .back { padding: 30px 30px !important; gap: 20px !important; }
+    .back-main h2 { font-size: 60px !important; white-space: normal !important; }
+    .back-main p { font-size: 12px !important; }
+    .back-mark, .back-sig { font-size: 9px !important; }
+    .back::before, .back::after { display: none !important; }
+
+    /* 인쇄 시 선택/미선택 투명도 해제 (둘 다 또렷이) */
+    .opt.not-chosen { opacity: 1 !important; }
+    .opt-select, .opt-chosen-mark { display: none !important; }
   }
   /* 스크린에서는 print-bg-img 숨김 */
   .print-bg-img { display: none; }
@@ -5160,18 +5292,128 @@
     }
   });
 
+  // Import 시 JSON 구조 엄격 검증 — 변조된 파일로 XSS/프로토타입 오염 방지
+  const SAFE_KEY = /^[a-zA-Z0-9_-]{1,128}$/;
+  const SAFE_ID  = /^[a-z0-9]{1,64}$/;
+  const DATA_IMG = /^data:image\/(jpeg|jpg|png|webp|gif);base64,[A-Za-z0-9+/=]+$/;
+
+  function isPlainObject(v) {
+    return v !== null && typeof v === 'object' && !Array.isArray(v);
+  }
+  function safeKey(k) {
+    return typeof k === 'string' && SAFE_KEY.test(k) && k !== '__proto__' && k !== 'constructor' && k !== 'prototype';
+  }
+
+  function sanitizeImportedState(raw) {
+    if (!isPlainObject(raw)) return null;
+    const clean = Object.create(null);
+
+    // ratings: { key: number 0..5 }
+    if (isPlainObject(raw.ratings)) {
+      clean.ratings = Object.create(null);
+      for (const k of Object.keys(raw.ratings)) {
+        if (!safeKey(k)) continue;
+        const v = raw.ratings[k];
+        if (typeof v === 'number' && v >= 0 && v <= 5 && Number.isFinite(v)) clean.ratings[k] = v;
+      }
+    }
+
+    // texts: { key: string (≤2000자) }
+    if (isPlainObject(raw.texts)) {
+      clean.texts = Object.create(null);
+      for (const k of Object.keys(raw.texts)) {
+        if (!safeKey(k)) continue;
+        const v = raw.texts[k];
+        if (typeof v === 'string' && v.length <= 2000) clean.texts[k] = v;
+      }
+    }
+
+    // packing: { key: boolean }
+    if (isPlainObject(raw.packing)) {
+      clean.packing = Object.create(null);
+      for (const k of Object.keys(raw.packing)) {
+        if (!safeKey(k)) continue;
+        if (typeof raw.packing[k] === 'boolean') clean.packing[k] = raw.packing[k];
+      }
+    }
+
+    // photos: { targetId: [{id, dataUrl}] } — dataUrl은 data:image/* 만 허용
+    if (isPlainObject(raw.photos)) {
+      clean.photos = Object.create(null);
+      for (const k of Object.keys(raw.photos)) {
+        if (!safeKey(k)) continue;
+        const arr = raw.photos[k];
+        if (!Array.isArray(arr)) continue;
+        const safeArr = [];
+        for (const p of arr) {
+          if (!isPlainObject(p)) continue;
+          if (typeof p.id !== 'string' || !SAFE_ID.test(p.id)) continue;
+          if (typeof p.dataUrl !== 'string' || !DATA_IMG.test(p.dataUrl)) continue;
+          if (p.dataUrl.length > 5_000_000) continue; // 5MB 상한
+          safeArr.push({ id: p.id, dataUrl: p.dataUrl });
+        }
+        clean.photos[k] = safeArr;
+      }
+    }
+
+    // chosen: { slotKey: [idxString] }
+    if (isPlainObject(raw.chosen)) {
+      clean.chosen = Object.create(null);
+      for (const k of Object.keys(raw.chosen)) {
+        if (!safeKey(k)) continue;
+        const arr = raw.chosen[k];
+        if (!Array.isArray(arr)) continue;
+        clean.chosen[k] = arr.filter(v => typeof v === 'string' && v.length <= 16);
+      }
+    }
+
+    // extras: { blockId: [extraId] } — 영숫자만
+    if (isPlainObject(raw.extras)) {
+      clean.extras = Object.create(null);
+      for (const k of Object.keys(raw.extras)) {
+        if (!safeKey(k)) continue;
+        const arr = raw.extras[k];
+        if (!Array.isArray(arr)) continue;
+        clean.extras[k] = arr.filter(v => typeof v === 'string' && SAFE_ID.test(v));
+      }
+    }
+
+    // extraOptions: 레거시 필드 — 문자열/불리언만 얕게 통과
+    if (isPlainObject(raw.extraOptions)) {
+      clean.extraOptions = Object.create(null);
+      for (const k of Object.keys(raw.extraOptions)) {
+        if (!safeKey(k)) continue;
+        const v = raw.extraOptions[k];
+        if (typeof v === 'string' && v.length <= 2000) clean.extraOptions[k] = v;
+        else if (typeof v === 'boolean' || (typeof v === 'number' && Number.isFinite(v))) clean.extraOptions[k] = v;
+      }
+    }
+
+    return clean;
+  }
+
   importInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    if (file.size > 20 * 1024 * 1024) {
+      alert('파일이 너무 큽니다 (20MB 초과).');
+      importInput.value = '';
+      return;
+    }
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
         const data = JSON.parse(ev.target.result);
-        if (data.version !== 'okinawa-journal-v1' || !data.state) {
+        if (!isPlainObject(data) || data.version !== 'okinawa-journal-v1' || !isPlainObject(data.state)) {
           alert('올바르지 않은 파일입니다. Okinawa Journal에서 내보낸 JSON 파일만 가능합니다.');
           return;
         }
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data.state));
+        const clean = sanitizeImportedState(data.state);
+        if (!clean) {
+          alert('파일 내용에 문제가 있어 불러올 수 없습니다.');
+          return;
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(clean));
         alert('복원 완료! 페이지를 새로 고침합니다.');
         location.reload();
       } catch(err) {
@@ -5379,6 +5621,9 @@
   }
 
   function createExtraCard(blockId, extraId, addBtn) {
+    // extraId / blockId 가 변조되어 innerHTML 속성을 탈출하는 것 차단
+    if (!/^[a-z0-9]{1,64}$/i.test(extraId)) return;
+    if (!/^[a-zA-Z0-9_-]{1,64}$/.test(blockId)) return;
     const card = document.createElement('div');
     card.className = 'opt-write extra';
     card.dataset.block = blockId;
@@ -5453,24 +5698,32 @@
     });
   }
 
-  // 사진 아이템 DOM 생성
+  // 사진 아이템 DOM 생성 — innerHTML 대신 createElement 로 속성 주입 차단
   function makePhotoItem(photoId, dataUrl, targetId) {
     const item = document.createElement('div');
     item.className = 'photo-item';
     item.dataset.photoId = photoId;
-    item.innerHTML = `
-      <img src="${dataUrl}" alt="photo" />
-      <button type="button" class="photo-remove" aria-label="삭제">×</button>
-    `;
+
+    const img = document.createElement('img');
+    img.src = dataUrl;          // 속성 세터는 자동 이스케이프
+    img.alt = 'photo';
+    item.appendChild(img);
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'photo-remove';
+    removeBtn.setAttribute('aria-label', '삭제');
+    removeBtn.textContent = '×';
+    item.appendChild(removeBtn);
 
     // 클릭하면 확대 뷰어
-    item.querySelector('img').addEventListener('click', () => {
+    img.addEventListener('click', () => {
       photoViewerImg.src = dataUrl;
       photoViewer.classList.add('open');
     });
 
     // 삭제 버튼
-    item.querySelector('.photo-remove').addEventListener('click', (e) => {
+    removeBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (!confirm('이 사진을 삭제할까요?')) return;
       if (state.photos[targetId]) {
@@ -5485,6 +5738,11 @@
 
   // 특정 타겟에 사진 추가 (실제 저장 + DOM)
   async function addPhotoToTarget(targetId, file) {
+    // 이미지가 아니면 거부 (text/html 등 우회 차단)
+    if (!file || !file.type || !file.type.startsWith('image/')) {
+      alert('이미지 파일만 추가할 수 있습니다.');
+      return;
+    }
     photoUploading.classList.add('show');
     try {
       const dataUrl = await resizeImage(file);

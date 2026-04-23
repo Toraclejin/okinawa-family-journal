@@ -112,6 +112,32 @@ JS 안 `PLACE_QUERIES` 배열. `[['키 substring', 'Google Maps 정확한 검색
 3. `PLACE_QUERIES` 지역에 맞게 재작성
 4. GitHub Pages 배포
 
+## 보안 (Import 검증)
+
+localStorage 기반 정적 HTML의 유일한 실질 공격 경로는 **악성 JSON을 Import 버튼으로 가져오게 하는 것**. 다음 4가지 방어선이 index.html에 들어있음 — **신규 버전 복제 시 반드시 그대로 옮길 것**.
+
+1. **`sanitizeImportedState()`** (L~5295) — import된 JSON을 화이트리스트 방식으로 재구성:
+   - 허용된 최상위 키(`ratings`, `texts`, `packing`, `photos`, `chosen`, `extras`, `extraOptions`)만 통과
+   - `__proto__` / `constructor` / `prototype` 키 차단 (프로토타입 오염 방지)
+   - 각 값의 타입·길이·포맷 검증
+   - 결과는 `Object.create(null)` 기반
+
+2. **`DATA_IMG` 정규식** — 사진 dataUrl은 `^data:image/(jpeg|jpg|png|webp|gif);base64,...$` 만 허용, 5MB 상한.
+
+3. **사진 DOM은 createElement** (`makePhotoItem` L~5589) — `innerHTML` 대신 `img.src = dataUrl` 로 속성 세터 사용. 속성 탈출 원천 차단.
+
+4. **extraId 가드** (`createExtraCard` L~5518) — 영숫자 외 문자열 거부. localStorage 직접 변조 대비 심층 방어.
+
+**새 state 필드 추가 시 규칙**
+- sanitizer에 **대응 블록 추가 필수** (누락되면 해당 필드가 import 경로에서 통째로 사라짐)
+- DOM 주입 시 `innerHTML` 템플릿 안에 `${변수}` 보간은 **정적 값만**. 사용자·저장소 유래 값은 `createElement + .textContent / .setAttribute / .src=` 로 써야 함
+- 이미지 업로드 추가 시 `file.type.startsWith('image/')` 가드 유지
+
+**의도적으로 생략한 것** (새 버전에서도 굳이 추가 안 해도 됨)
+- CSP `<meta>` — Google Fonts·jsDelivr와 충돌 위험, 실제 취약점 없음
+- CDN SRI 해시 — Google Fonts URL이 브라우저별 동적이라 적용 난이도 ↑
+- `.opt-body` / `makeExtraCardHTML` / `nav.innerHTML` — 저자 하드코딩 템플릿, 현재 안전
+
 ## 로컬 프리뷰
 
 `.claude/launch.json` 이 `npx serve -l 8765 .` 실행. Claude Preview 도구에서 `preview_start` → `okinawa-journal`.
