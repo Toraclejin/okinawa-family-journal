@@ -2,6 +2,16 @@
 
 가족 공유용 여행 매거진 (오키나와 3박 4일). 단일 정적 HTML, 가족들이 여행 전/중/후 읽고 기록하는 용도.
 
+## 여행 개요
+
+- **일정**: 2026-05-10 ~ 05-13 (3박 4일)
+- **항공**: 도착 2026-05-10 11:05 / 귀국 2026-05-13 오전, 공항 도착 08:30 목표
+- **숙소 이동 있음** — 북부 2박 → 차탄 1박:
+  - D1 (5/10) ~ D2 (5/11): Hotel Orion Motobu Resort & Spa (북부 비세)
+  - D3 (5/12): Vessel Hotel Campana Okinawa (차탄 아메리칸 빌리지)
+- **렌터카 필수** — 북부는 대중교통 거의 불가
+- **매거진 확정 전제** — 출발 후 콘텐츠 수정 불가. 모든 장소·시간·링크는 출발 전 이중 검증.
+
 ## 스택
 
 - 순수 vanilla HTML + CSS + JavaScript (프레임워크·빌드 도구 **없음**)
@@ -61,6 +71,43 @@ JS 안 `PLACE_QUERIES` 배열. `[['키 substring', 'Google Maps 정확한 검색
 3. `opt-title`이 브랜드명을 포함하면 자동 매칭됨 (텍스트 앞쪽 위치 기준)
 
 **매칭 규칙**: 텍스트 내 등장 위치가 빠른 키 우선, 동점이면 긴 키 우선. `SKIP_MAP_PATTERNS`에 매칭되면 모달 자체를 안 염 (예: "돌아오는 비행기", "창가 자리").
+
+**다국어 키 전략** — 매칭은 lowercase 대소문자 무관이지만 한국어/일본어/영어는 별개 문자열이므로, opt-place 텍스트에 나올 수 있는 **모든 표기**를 키로 등록해야 함:
+- 공식 일본어 표기: 예 `'備瀬のフクギ並木'`, `'万座毛'`, `'今帰仁城跡'`
+- 한국어 음차: 예 `'비세 후쿠기'`, `'만자모'`, `'나키진'`
+- 영어 표기: 예 `'fukugi'`, `'manzamo'`, `'nakijin'`
+
+옵션 중 하나라도 빠지면 해당 표기로 쓴 opt-place에서 맵 모달이 안 열림. 신규 장소 추가 후 반드시 각 표기로 매칭 테스트.
+
+## 장소 팩트 검증 프로세스 (필수)
+
+"현지 수정 불가" 전제 때문에 신규 장소 도입·기존 장소 수정 시 **무조건 공식 출처 재확인**. 팩트가 틀리면 가족이 엉뚱한 곳으로 가거나 문 닫힌 식당 앞에서 당황함.
+
+**검증 항목 (각각 공식 URL 확인)**
+1. 정식 명칭 (한/일/영 세 버전)
+2. 주소 (번지까지)
+3. 영업시간 — 여행 날짜 요일 기준 (예: 수요일 휴무 가게를 수요일에 가라고 쓰지 말 것)
+4. 계절 운영 (수영 시즌, 풀 시즌, 꽃 시기)
+5. 요금 — 최신 연도 기준
+6. 호텔 기준 거리 (도보/차로 몇 분) — Google Maps 경로로 직접 측정
+7. Google Maps 검색 쿼리 — 실제로 Google Maps에서 쳐서 정확한 핀이 나오는지 확인
+
+**출처 강도 순**
+- 🟢 공식 홈페이지 (hotel, restaurant, park 공식) — 우선
+- 🟡 Tabelog, Tripadvisor (복수 교차 확인 시)
+- 🔴 개인 블로그 — 보조만, 단독 근거 ❌
+
+**불확실 시 표기 규칙**
+- 공식 사이트가 다운돼서 못 본 항목 → opt-body에 `⚠️ 공식 사이트 재확인 권장` 명시
+- 요금이 복수 출처에서 다르면 보수적(비싼 쪽)으로 쓰고 "변동 가능" 멘트
+- 절대 "보수적으로 추정"하지 말 것 — 모르면 옵션에서 빼기
+
+**대표 검증 실패 사례 (2026-04)**
+- Blue Seal Ice Park: 2024년 폐업됐는데 코드에 "공장 견학" 멘트 남아있음 → 제거
+- Blue Seal 영업시간: 실제 10:00~22:00인데 09:00~24:00으로 잘못 표기 → 수정
+- "Orion Beer Bar"라는 venue: 공식 사이트에 없음 → 제거
+- 물소수레: 토/일만 운영인데 평일 옵션으로 들어감 → 요일 확인 후 반영
+- 추라우미 "After 4pm 할인": 2023년 3월 종료됐는데 코드에 잔존 → 제거
 
 ## state 구조 (localStorage)
 
@@ -133,10 +180,16 @@ localStorage 기반 정적 HTML의 유일한 실질 공격 경로는 **악성 JS
 - DOM 주입 시 `innerHTML` 템플릿 안에 `${변수}` 보간은 **정적 값만**. 사용자·저장소 유래 값은 `createElement + .textContent / .setAttribute / .src=` 로 써야 함
 - 이미지 업로드 추가 시 `file.type.startsWith('image/')` 가드 유지
 
+**5. CSP meta 태그 (추가 완료)** — `<head>`에 `Content-Security-Policy` + `X-Content-Type-Options: nosniff` + `Referrer-Policy: strict-origin-when-cross-origin` 추가. default-src self, script/style self + Google Fonts·jsDelivr 허용, img self + data: + unsplash, frame/object 금지. Google Fonts·Pretendard CDN 모두 정상 동작 확인.
+
 **의도적으로 생략한 것** (새 버전에서도 굳이 추가 안 해도 됨)
-- CSP `<meta>` — Google Fonts·jsDelivr와 충돌 위험, 실제 취약점 없음
 - CDN SRI 해시 — Google Fonts URL이 브라우저별 동적이라 적용 난이도 ↑
 - `.opt-body` / `makeExtraCardHTML` / `nav.innerHTML` — 저자 하드코딩 템플릿, 현재 안전
+
+**CSP가 허용한 것**
+- `style-src 'unsafe-inline'` — 페이지 내 `<style>` 덩어리가 있어서 필수
+- `script-src 'unsafe-inline'` — 페이지 내 `<script>` 덩어리가 있어서 필수. nonce/hash 적용은 빌드 툴이 없어 현실성 낮음
+- `img-src data: blob:` — 사진 업로드가 dataURL로 저장되므로 필수
 
 ## 로컬 프리뷰
 
