@@ -800,6 +800,94 @@
   @media print {
     .day-map { display: none !important; }
   }
+  /* 평점 섹션 (chip + 지도 다음, actions 위) */
+  .day-ratings {
+    margin: 14px 0;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    border: 1px dashed rgba(0, 71, 255, 0.25);
+  }
+  .day-ratings-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 10px;
+  }
+  .day-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .day-rating-row:hover { background: rgba(0, 71, 255, 0.05); }
+  .day-rating-row + .day-rating-row { border-top: 1px solid rgba(0, 71, 255, 0.08); }
+  .day-rating-row.extra .dr-num {
+    background: transparent;
+    color: var(--blue);
+    border: 1.5px dashed var(--blue);
+  }
+  .day-ratings-subtitle {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blue);
+    opacity: 0.7;
+    margin: 14px 0 6px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(0, 71, 255, 0.2);
+  }
+  .dr-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: var(--blue);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dr-name {
+    flex: 1;
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 13px;
+    color: var(--blue-deep);
+    word-break: keep-all;
+    line-height: 1.4;
+  }
+  .dr-stars {
+    display: inline-flex;
+    gap: 3px;
+    flex-shrink: 0;
+  }
+  .dr-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: rgba(0, 71, 255, 0.18);
+  }
+  .dr-dot.on { background: var(--amber); }
+  .dr-empty {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 11.5px;
+    color: var(--blue-deep);
+    opacity: 0.55;
+    font-style: italic;
+    flex-shrink: 0;
+  }
+
   .day-route-actions { display: flex; flex-wrap: wrap; gap: 10px; }
   .day-route-btn {
     display: inline-flex;
@@ -7241,12 +7329,12 @@
   //  Day Route — 선택한 옵션 동선 시각화 + 구글맵 multi-stop
   // ==========================================
   const DAY_HOTEL = {
-    // D1: 공항 도착 → 모토부 호텔 (편도, 공항 출발)
-    d1: { start: '那覇空港', end: 'ホテル オリオンモトブリゾート&スパ', startLabel: '나하 공항', endLabel: '북부 호텔' },
-    // D2: 모토부 호텔 풀데이 (왕복)
-    d2: { start: 'ホテル オリオンモトブリゾート&スパ', end: 'ホテル オリオンモトブリゾート&スパ', startLabel: '북부 호텔', endLabel: '북부 호텔' },
-    // D3: 모토부 호텔 → 차탄 호텔 (이동일, 편도)
-    d3: { start: 'ホテル オリオンモトブリゾート&スパ', end: 'ベッセルホテル カンパーナ沖縄', startLabel: '북부 호텔', endLabel: '차탄 호텔' },
+    // D1: 공항 도착 → Orion 호텔 (편도)
+    d1: { start: '那覇空港', end: 'ホテル オリオンモトブリゾート&スパ', startLabel: '나하 공항', endLabel: 'Orion 호텔' },
+    // D2: Orion 호텔 풀데이 (왕복)
+    d2: { start: 'ホテル オリオンモトブリゾート&スパ', end: 'ホテル オリオンモトブリゾート&スパ', startLabel: 'Orion 호텔', endLabel: 'Orion 호텔' },
+    // D3: Orion 호텔 → Vessel 호텔 (이동일, 편도)
+    d3: { start: 'ホテル オリオンモトブリゾート&スパ', end: 'ベッセルホテル カンパーナ沖縄', startLabel: 'Orion 호텔', endLabel: 'Vessel 호텔' },
   };
 
   // 옵션 카드 우상단 번호 배지 — 지도 마커 1,2,3...과 매칭
@@ -7275,6 +7363,85 @@
         n += 1;
         opt.dataset.pickNum = String(n);
       });
+    });
+  }
+
+  // 사용자가 + My Option으로 추가한 옵션 (이름 입력된 것만)
+  // — 좌표 없어서 동선·지도엔 안 들어가지만 평점 모음엔 반영
+  function getDayExtras(dayId) {
+    const page = document.querySelector(`.page[data-page="${dayId}"]`);
+    if (!page) return [];
+    const extras = [];
+    page.querySelectorAll('.opt-write.extra').forEach(card => {
+      const titleInput = card.querySelector('input[type="text"]');
+      const title = titleInput?.value?.trim();
+      if (!title) return; // 빈 추가 옵션 제외
+      const ratingKey = card.querySelector('.opt-dots')?.dataset.key || null;
+      extras.push({ title, ratingKey, element: card });
+    });
+    return extras;
+  }
+
+  // 평점 한 줄 (번호 또는 + 마커, 이름, 별점, 클릭 → 옵션 카드 점프)
+  function buildRatingRow(num, title, ratingKey, isExtra, targetEl) {
+    const row = document.createElement('div');
+    row.className = 'day-rating-row' + (isExtra ? ' extra' : '');
+    const numEl = document.createElement('span');
+    numEl.className = 'dr-num';
+    numEl.textContent = isExtra ? '+' : String(num);
+    const nameEl = document.createElement('span');
+    nameEl.className = 'dr-name';
+    nameEl.textContent = title;
+    const starsEl = document.createElement('span');
+    starsEl.className = 'dr-stars';
+    const score = (ratingKey && state.ratings && Number.isFinite(state.ratings[ratingKey]))
+      ? state.ratings[ratingKey] : 0;
+    if (score > 0) {
+      for (let s = 1; s <= 5; s++) {
+        const dot = document.createElement('span');
+        dot.className = 'dr-dot' + (s <= score ? ' on' : '');
+        starsEl.appendChild(dot);
+      }
+    } else {
+      const empty = document.createElement('span');
+      empty.className = 'dr-empty';
+      empty.textContent = '평점 없음';
+      starsEl.appendChild(empty);
+    }
+    row.appendChild(numEl);
+    row.appendChild(nameEl);
+    row.appendChild(starsEl);
+    if (targetEl) {
+      row.addEventListener('click', () => {
+        targetEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      });
+    }
+    if (ratingKey) row.dataset.ratingKey = ratingKey;
+    return row;
+  }
+
+  // 별점 변경 시 평점 섹션만 가볍게 갱신 (지도·chip 안 건드림)
+  function refreshDayRatings(dayId) {
+    const rb = document.querySelector(`[data-day-route="${dayId}"] .day-ratings`);
+    if (!rb) return;
+    rb.querySelectorAll('.day-rating-row').forEach(row => {
+      const key = row.dataset.ratingKey;
+      const starsEl = row.querySelector('.dr-stars');
+      if (!starsEl) return;
+      while (starsEl.firstChild) starsEl.removeChild(starsEl.firstChild);
+      const score = (key && state.ratings && Number.isFinite(state.ratings[key])) ? state.ratings[key] : 0;
+      if (score > 0) {
+        for (let s = 1; s <= 5; s++) {
+          const dot = document.createElement('span');
+          dot.className = 'dr-dot' + (s <= score ? ' on' : '');
+          starsEl.appendChild(dot);
+        }
+      } else {
+        const empty = document.createElement('span');
+        empty.className = 'dr-empty';
+        empty.textContent = '평점 없음';
+        starsEl.appendChild(empty);
+      }
     });
   }
 
@@ -7307,11 +7474,14 @@
         const mapQuery = placeText ? resolveMapQuery(placeText) : null;
         // DIR sentinel은 동선 waypoint로 부적합 (장소가 아니라 경로)
         const isDir = typeof mapQuery === 'string' && mapQuery.startsWith('DIR:');
+        // 별점 key — opt-dots data-key (예: 'd1-icecream'), state.ratings 조회용
+        const ratingKey = opt.querySelector('.opt-dots')?.dataset.key || null;
         picks.push({
           time: timeLabel,
           title,
           place: placeText,
-          mapQuery: (mapQuery && !isDir) ? mapQuery : (placeText || title)
+          mapQuery: (mapQuery && !isDir) ? mapQuery : (placeText || title),
+          ratingKey,
         });
       });
     });
@@ -7326,6 +7496,7 @@
     // 호텔 좌표 — chip 클릭 시 지도 flyTo 용 (DAY_HOTEL_COORDS는 후방 정의되지만 호이스팅된 const는 TDZ 우려 X — 호출 시점엔 이미 정의됨)
     const hotelCoords = (typeof DAY_HOTEL_COORDS !== 'undefined' && DAY_HOTEL_COORDS[dayId]) || { start: [26.6917, 127.8788], end: [26.6917, 127.8788] };
     const picks = getDayPicks(dayId);
+    const extras = getDayExtras(dayId);
 
     // 안전 재구성: textContent / createElement 만 사용 (innerHTML 안 씀)
     while (container.firstChild) container.removeChild(container.firstChild);
@@ -7347,7 +7518,8 @@
     // 옵션 카드에 선택 순서 번호 부여 (지도 마커 1,2,3...과 매칭)
     assignPickNumbers(dayId);
 
-    if (!picks.length) {
+    // picks 0 + extras 0 = 빈 안내만 (둘 다 없을 때)
+    if (!picks.length && !extras.length) {
       const empty = document.createElement('div');
       empty.className = 'day-route-empty';
       empty.textContent = '아직 선택한 옵션이 없어요. 옵션 카드 우상단 ✓ 버튼으로 선택하면 오늘의 동선이 자동으로 만들어집니다.';
@@ -7425,11 +7597,44 @@
     container.appendChild(mapDiv);
     setTimeout(() => renderDayMap(dayId), 30);
 
-    // summary
-    const summary = document.createElement('div');
-    summary.className = 'day-route-summary';
-    summary.textContent = `${picks.length}곳 정거장 · ${hotel.startLabel} → ${hotel.endLabel} · 시간/거리는 구글맵에서 직접 확인`;
-    container.appendChild(summary);
+    // summary (picks 있을 때만)
+    if (picks.length) {
+      const summary = document.createElement('div');
+      summary.className = 'day-route-summary';
+      summary.textContent = `${picks.length}곳 정거장 · ${hotel.startLabel} → ${hotel.endLabel} · 시간/거리는 구글맵에서 직접 확인`;
+      container.appendChild(summary);
+    }
+
+    // 평점 섹션 (동선 픽 + 추가 옵션)
+    if (picks.length || extras.length) {
+      const rb = document.createElement('div');
+      rb.className = 'day-ratings';
+      const rt = document.createElement('div');
+      rt.className = 'day-ratings-title';
+      rt.textContent = "Today's Picks · 평점";
+      rb.appendChild(rt);
+
+      // 동선 픽 평점 (Start=1, 픽=2..N-1)
+      const page = document.querySelector(`.page[data-page="${dayId}"]`);
+      picks.forEach((p, i) => {
+        const num = i + 2; // Start가 1을 차지
+        const targetEl = (p.ratingKey && page) ? page.querySelector(`.opt-dots[data-key="${p.ratingKey}"]`)?.closest('.opt') : null;
+        rb.appendChild(buildRatingRow(num, p.title, p.ratingKey, false, targetEl));
+      });
+
+      // 추가 옵션 평점 (별도 sub-title 후)
+      if (extras.length) {
+        const sub = document.createElement('div');
+        sub.className = 'day-ratings-subtitle';
+        sub.textContent = '+ 내가 추가한 옵션';
+        rb.appendChild(sub);
+        extras.forEach(e => {
+          rb.appendChild(buildRatingRow(null, e.title, e.ratingKey, true, e.element));
+        });
+      }
+
+      container.appendChild(rb);
+    }
 
     // actions
     const actions = document.createElement('div');
