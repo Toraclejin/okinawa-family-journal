@@ -665,7 +665,14 @@
     background: var(--page);
     border: 1.5px solid var(--blue);
     min-width: 0;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
+  .day-route-stops .route-stop:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 71, 255, 0.18);
+  }
+  .day-route-stops .route-stop:active { transform: translateY(0); }
   .day-route-stops .route-stop.hotel {
     background: var(--blue);
     color: var(--page);
@@ -673,6 +680,27 @@
   }
   .day-route-stops .route-stop.hotel .rs-tag { color: var(--accent-soft); }
   .day-route-stops .route-stop.hotel .rs-name { color: var(--page); }
+  .rs-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    margin-bottom: 5px;
+    background: var(--blue);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 5px rgba(0, 71, 255, 0.3);
+  }
+  .day-route-stops .route-stop.hotel .rs-num {
+    background: var(--blue-ink);
+    color: var(--amber);
+  }
   .rs-tag {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 9px;
@@ -7227,8 +7255,9 @@
     if (!page) return;
     // 기존 번호 모두 제거
     page.querySelectorAll('.opt[data-pick-num]').forEach(el => delete el.dataset.pickNum);
-    // pick 순서대로 번호 부여 (DIR sentinel은 지도 waypoint에 안 들어가므로 번호도 X)
-    let n = 0;
+    // pick 번호 부여 — chip Start(1)·End(N) 포함이므로 픽은 2부터 시작
+    // (DIR sentinel은 지도 waypoint에 안 들어가므로 번호도 X)
+    let n = 1; // Start = 1 차지, 픽은 2부터
     page.querySelectorAll('.options').forEach(optsEl => {
       const slotKey = slotKeyOf(optsEl);
       const chosen = state.chosen && state.chosen[slotKey];
@@ -7294,6 +7323,8 @@
     if (!container) return;
     const hotel = DAY_HOTEL[dayId];
     if (!hotel) return;
+    // 호텔 좌표 — chip 클릭 시 지도 flyTo 용 (DAY_HOTEL_COORDS는 후방 정의되지만 호이스팅된 const는 TDZ 우려 X — 호출 시점엔 이미 정의됨)
+    const hotelCoords = (typeof DAY_HOTEL_COORDS !== 'undefined' && DAY_HOTEL_COORDS[dayId]) || { start: [26.6917, 127.8788], end: [26.6917, 127.8788] };
     const picks = getDayPicks(dayId);
 
     // 안전 재구성: textContent / createElement 만 사용 (innerHTML 안 씀)
@@ -7328,9 +7359,17 @@
     const stops = document.createElement('div');
     stops.className = 'day-route-stops';
 
-    const makeStop = (tagText, nameText, isHotel) => {
+    const makeStop = (num, tagText, nameText, isHotel, coord) => {
       const stop = document.createElement('div');
       stop.className = 'route-stop' + (isHotel ? ' hotel' : '');
+      if (coord && Number.isFinite(coord[0]) && Number.isFinite(coord[1])) {
+        stop.dataset.coordLat = String(coord[0]);
+        stop.dataset.coordLng = String(coord[1]);
+      }
+      const numEl = document.createElement('span');
+      numEl.className = 'rs-num';
+      numEl.textContent = String(num);
+      stop.appendChild(numEl);
       const tag = document.createElement('span');
       tag.className = 'rs-tag';
       tag.textContent = tagText;
@@ -7348,14 +7387,32 @@
       return a;
     };
 
-    stops.appendChild(makeStop('Start', hotel.startLabel, true));
+    let stopNum = 0;
+    stops.appendChild(makeStop(++stopNum, 'Start', hotel.startLabel, true, hotelCoords.start));
     picks.forEach(p => {
       stops.appendChild(makeArrow());
-      stops.appendChild(makeStop(p.time || '·', p.title, false));
+      const c = getCoords(p.place, hotelCoords.start);
+      stops.appendChild(makeStop(++stopNum, p.time || '·', p.title, false, c));
     });
     stops.appendChild(makeArrow());
-    stops.appendChild(makeStop('End', hotel.endLabel, true));
+    stops.appendChild(makeStop(++stopNum, 'End', hotel.endLabel, true, hotelCoords.end));
     container.appendChild(stops);
+
+    // chip 클릭 → 지도가 해당 좌표로 flyTo + 지도 영역으로 부드럽게 스크롤
+    stops.addEventListener('click', (e) => {
+      const stop = e.target.closest('.route-stop');
+      if (!stop || !stop.dataset.coordLat || !stop.dataset.coordLng) return;
+      const map = leafletMaps[dayId];
+      if (!map) return;
+      const lat = parseFloat(stop.dataset.coordLat);
+      const lng = parseFloat(stop.dataset.coordLng);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+      const mapDiv = container.querySelector('.day-map');
+      if (mapDiv) mapDiv.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      // 지도가 보이는 상태에서 flyTo (스크롤 + flyTo 동시)
+      try { map.invalidateSize(); } catch(_) {}
+      map.flyTo([lat, lng], 14, { duration: 0.7 });
+    });
 
     // 미니 지도 (Leaflet)
     const mapDiv = document.createElement('div');
@@ -7565,8 +7622,8 @@
       attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // 마커 — 시작·픽들·끝
-    const markerLabels = ['Start', ...picks.map((_, i) => String(i + 1)), 'End'];
+    // 마커 — 시작·픽들·끝, 모두 숫자로 번호 매김 (chip의 stop num과 일치)
+    const markerLabels = route.map((_, i) => String(i + 1));
     const isHotelMarker = (i) => i === 0 || i === route.length - 1;
     route.forEach((coord, i) => {
       const lbl = markerLabels[i];
