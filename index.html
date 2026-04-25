@@ -816,7 +816,29 @@
     text-transform: uppercase;
     color: var(--blue);
     margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
   }
+  .day-ratings-toggle {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    background: transparent;
+    border: 1.2px solid var(--blue);
+    border-radius: 999px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--blue);
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .day-ratings-toggle:hover { background: rgba(0, 71, 255, 0.08); }
+  .day-ratings-body { display: block; }
+  .day-ratings.collapsed .day-ratings-body { display: none; }
   .day-rating-row {
     display: flex;
     align-items: center;
@@ -7524,6 +7546,36 @@
       empty.className = 'day-route-empty';
       empty.textContent = '아직 선택한 옵션이 없어요. 옵션 카드 우상단 ✓ 버튼으로 선택하면 오늘의 동선이 자동으로 만들어집니다.';
       container.appendChild(empty);
+
+      // 최근 초기화 backup 있으면 되돌리기 버튼 표시 (60초 이내)
+      const recent = lastClearedBackups[dayId];
+      if (recent && (Date.now() - recent.timestamp) < 60000) {
+        const undoWrap = document.createElement('div');
+        undoWrap.className = 'day-route-actions';
+        undoWrap.style.marginTop = '14px';
+        const undoBtn = document.createElement('button');
+        undoBtn.type = 'button';
+        undoBtn.className = 'day-route-btn secondary';
+        undoBtn.textContent = `↶ 방금 해제한 ${recent.count}개 선택 되돌리기`;
+        undoBtn.addEventListener('click', () => {
+          state.chosen = state.chosen || {};
+          Object.keys(recent.backup).forEach(k => { state.chosen[k] = recent.backup[k]; });
+          saveState(state);
+          delete lastClearedBackups[dayId];
+          // 옵션 카드 시각도 복원
+          const page = document.querySelector(`.page[data-page="${dayId}"]`);
+          if (page) {
+            page.querySelectorAll('.options').forEach(optsEl => {
+              const slotKey = slotKeyOf(optsEl);
+              const arr = (state.chosen && state.chosen[slotKey]) ? state.chosen[slotKey] : [];
+              applyChosen(optsEl, arr);
+            });
+          }
+          renderDayRoute(dayId);
+        });
+        undoWrap.appendChild(undoBtn);
+        container.appendChild(undoWrap);
+      }
       return;
     }
 
@@ -7605,21 +7657,37 @@
       container.appendChild(summary);
     }
 
-    // 평점 섹션 (동선 픽 + 추가 옵션)
+    // 평점 섹션 (동선 픽 + 추가 옵션) — 더보기/접기 토글
     if (picks.length || extras.length) {
       const rb = document.createElement('div');
-      rb.className = 'day-ratings';
+      rb.className = 'day-ratings collapsed'; // 기본 접힘
+
       const rt = document.createElement('div');
       rt.className = 'day-ratings-title';
-      rt.textContent = "Today's Picks · 평점";
+      const rtLabel = document.createElement('span');
+      rtLabel.textContent = `Today's Picks · 평점 (${picks.length + extras.length})`;
+      rt.appendChild(rtLabel);
+
+      const toggleBtn = document.createElement('button');
+      toggleBtn.type = 'button';
+      toggleBtn.className = 'day-ratings-toggle';
+      toggleBtn.textContent = '+ 보기';
+      toggleBtn.addEventListener('click', () => {
+        const collapsed = rb.classList.toggle('collapsed');
+        toggleBtn.textContent = collapsed ? '+ 보기' : '− 접기';
+      });
+      rt.appendChild(toggleBtn);
       rb.appendChild(rt);
+
+      const body = document.createElement('div');
+      body.className = 'day-ratings-body';
 
       // 동선 픽 평점 (Start=1, 픽=2..N-1)
       const page = document.querySelector(`.page[data-page="${dayId}"]`);
       picks.forEach((p, i) => {
         const num = i + 2; // Start가 1을 차지
         const targetEl = (p.ratingKey && page) ? page.querySelector(`.opt-dots[data-key="${p.ratingKey}"]`)?.closest('.opt') : null;
-        rb.appendChild(buildRatingRow(num, p.title, p.ratingKey, false, targetEl));
+        body.appendChild(buildRatingRow(num, p.title, p.ratingKey, false, targetEl));
       });
 
       // 추가 옵션 평점 (별도 sub-title 후)
@@ -7627,12 +7695,13 @@
         const sub = document.createElement('div');
         sub.className = 'day-ratings-subtitle';
         sub.textContent = '+ 내가 추가한 옵션';
-        rb.appendChild(sub);
+        body.appendChild(sub);
         extras.forEach(e => {
-          rb.appendChild(buildRatingRow(null, e.title, e.ratingKey, true, e.element));
+          body.appendChild(buildRatingRow(null, e.title, e.ratingKey, true, e.element));
         });
       }
 
+      rb.appendChild(body);
       container.appendChild(rb);
     }
 
@@ -7663,11 +7732,19 @@
       if (!confirm(`${dayId.toUpperCase()} 선택 ${picks.length}개를 모두 해제할까요?`)) return;
       const page = document.querySelector(`.page[data-page="${dayId}"]`);
       if (!page) return;
+      // backup — 되돌리기용 (해당 Day의 chosen 슬롯들)
+      const backup = {};
+      let count = 0;
       page.querySelectorAll('.options').forEach(optsEl => {
         const slotKey = slotKeyOf(optsEl);
-        if (slotKey && state.chosen && state.chosen[slotKey]) delete state.chosen[slotKey];
+        if (slotKey && state.chosen && state.chosen[slotKey]) {
+          backup[slotKey] = [...state.chosen[slotKey]]; // shallow copy
+          count += state.chosen[slotKey].length;
+          delete state.chosen[slotKey];
+        }
         optsEl.querySelectorAll(':scope > .opt').forEach(opt => opt.classList.remove('chosen', 'not-chosen'));
       });
+      lastClearedBackups[dayId] = { backup, count, timestamp: Date.now() };
       saveState(state);
       // 지도 인스턴스 정리
       if (leafletMaps[dayId]) {
@@ -7744,6 +7821,8 @@
 
   // Leaflet 인스턴스 캐시 (Day별 — 페이지 활성화 후 lazy init)
   const leafletMaps = {};
+  // "오늘 선택 초기화" 직전 backup — 되돌리기용 (메모리만, 새로고침 시 사라짐)
+  const lastClearedBackups = {};
   // OSRM 라우팅 결과 캐시 — 같은 좌표 시퀀스면 재요청 X
   const ROUTE_CACHE = {};
 
