@@ -624,14 +624,23 @@
     border-radius: 14px;
     background: var(--page-tint);
   }
-  .day-route-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+  .day-route-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+  .day-route-day {
+    font-family: 'Archivo Black', 'Pretendard Variable', sans-serif;
+    font-size: 28px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--blue);
+    text-transform: uppercase;
+  }
   .day-route-title {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--blue);
+    color: var(--blue-deep);
+    opacity: 0.7;
   }
   .day-route-empty {
     padding: 14px 0;
@@ -710,6 +719,30 @@
     font-size: 9px !important;
     background: rgba(255,255,255,0.8) !important;
   }
+  /* 옵션 카드 — 선택 순서 번호 배지 (지도 마커 번호와 매칭) */
+  .opt[data-pick-num] { position: relative; }
+  .opt[data-pick-num]::before {
+    content: attr(data-pick-num);
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--blue);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 3px 10px rgba(0, 71, 255, 0.35);
+    z-index: 5;
+    pointer-events: none;
+  }
+
   /* Leaflet 마커 라벨 — divIcon 기본 스타일 무력화 후 우리 디자인 적용 */
   .leaflet-div-icon.map-marker-wrapper {
     background: transparent;
@@ -3453,6 +3486,10 @@
 
 <!-- 툴바 -->
 <div class="toolbar" id="toolbar">
+  <button type="button" id="btn-map" title="오늘의 동선 지도로">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+    <span class="tip">오늘 동선</span>
+  </button>
   <button type="button" id="btn-scroll-top" title="맨 위로">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 11 12 6 7 11"></polyline><polyline points="17 18 12 13 7 18"></polyline></svg>
     <span class="tip">맨 위로</span>
@@ -6241,6 +6278,26 @@
   // ==========================================
   //  SCROLL - 맨 위 / 맨 아래로
   // ==========================================
+  // MAP 버튼 — 현재 active Day 의 동선 카드(지도 포함)로 즉시 스크롤
+  document.getElementById('btn-map').addEventListener('click', () => {
+    const active = document.querySelector('.page.active');
+    const dayId = active?.dataset.page;
+    let target = active?.querySelector('.day-route');
+    // d1·d2·d3가 아닌 페이지(cover/prep/d4/back)에서 누르면 D1으로 점프 후 스크롤
+    if (!target) {
+      const fallbackDay = ['d1', 'd2', 'd3'].includes(dayId) ? dayId : 'd1';
+      const navBtn = document.querySelector(`.page-nav-btn[data-nav="${fallbackDay}"]`);
+      if (navBtn) navBtn.click();
+      // 페이지 전환 애니메이션 끝난 뒤 스크롤
+      setTimeout(() => {
+        const route = document.querySelector(`.page[data-page="${fallbackDay}"] .day-route`);
+        if (route) route.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      }, 450);
+      return;
+    }
+    target.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  });
+
   document.getElementById('btn-scroll-top').addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
@@ -7161,6 +7218,34 @@
     d3: { start: 'ホテル オリオンモトブリゾート&スパ', end: 'ベッセルホテル カンパーナ沖縄', startLabel: 'Orion', endLabel: 'Vessel' },
   };
 
+  // 옵션 카드 우상단 번호 배지 — 지도 마커 1,2,3...과 매칭
+  function assignPickNumbers(dayId) {
+    const page = document.querySelector(`.page[data-page="${dayId}"]`);
+    if (!page) return;
+    // 기존 번호 모두 제거
+    page.querySelectorAll('.opt[data-pick-num]').forEach(el => delete el.dataset.pickNum);
+    // pick 순서대로 번호 부여 (DIR sentinel은 지도 waypoint에 안 들어가므로 번호도 X)
+    let n = 0;
+    page.querySelectorAll('.options').forEach(optsEl => {
+      const slotKey = slotKeyOf(optsEl);
+      const chosen = state.chosen && state.chosen[slotKey];
+      if (!Array.isArray(chosen) || !chosen.length) return;
+      const opts = optsEl.querySelectorAll(':scope > .opt');
+      chosen.forEach(idxStr => {
+        const i = parseInt(idxStr, 10);
+        if (!Number.isFinite(i)) return;
+        const opt = opts[i];
+        if (!opt) return;
+        const placeText = opt.querySelector('.opt-place')?.textContent?.trim() || '';
+        const mq = placeText ? resolveMapQuery(placeText) : null;
+        const isDir = typeof mq === 'string' && mq.startsWith('DIR:');
+        if (isDir) return;
+        n += 1;
+        opt.dataset.pickNum = String(n);
+      });
+    });
+  }
+
   function getDayPicks(dayId) {
     const page = document.querySelector(`.page[data-page="${dayId}"]`);
     if (!page) return [];
@@ -7213,11 +7298,20 @@
 
     const head = document.createElement('div');
     head.className = 'day-route-head';
+    const dayEl = document.createElement('div');
+    dayEl.className = 'day-route-day';
+    // d1 → DAY 1
+    const dayNum = dayId.replace(/^d/i, '');
+    dayEl.textContent = `DAY ${dayNum}`;
+    head.appendChild(dayEl);
     const titleEl = document.createElement('div');
     titleEl.className = 'day-route-title';
-    titleEl.textContent = `Today's Route — ${dayId.toUpperCase()}`;
+    titleEl.textContent = "Today's Route";
     head.appendChild(titleEl);
     container.appendChild(head);
+
+    // 옵션 카드에 선택 순서 번호 부여 (지도 마커 1,2,3...과 매칭)
+    assignPickNumbers(dayId);
 
     if (!picks.length) {
       const empty = document.createElement('div');
