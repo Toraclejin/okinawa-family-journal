@@ -2137,6 +2137,12 @@
   .opt-write textarea::placeholder {
     color: rgba(0, 31, 102, 0.4);
   }
+  /* 추가 옵션이 작성되지 않으면 ✓ 선택 UI 자체를 숨김 */
+  .opt-write.extra.extra-empty .opt-select,
+  .opt-write.extra.extra-empty .opt-chosen-mark {
+    display: none !important;
+  }
+
   /* 저장 상태 표시 */
   .save-indicator {
     position: fixed;
@@ -6281,6 +6287,15 @@
       }
     }
 
+    // chosenExtras: { extraId: true } — extraId는 SAFE_ID, 값은 true만
+    if (isPlainObject(raw.chosenExtras)) {
+      clean.chosenExtras = Object.create(null);
+      for (const k of Object.keys(raw.chosenExtras)) {
+        if (!SAFE_ID.test(k)) continue;
+        if (raw.chosenExtras[k] === true) clean.chosenExtras[k] = true;
+      }
+    }
+
     // extraOptions: 레거시 필드 — 문자열/불리언만 얕게 통과
     if (isPlainObject(raw.extraOptions)) {
       clean.extraOptions = Object.create(null);
@@ -6556,8 +6571,15 @@
         if (blockId && extraId && state.extras && state.extras[blockId]) {
           state.extras[blockId] = state.extras[blockId].filter(id => id !== extraId);
         }
+        // chosenExtras에서도 제거 (메모리 누수 방지)
+        if (extraId && state.chosenExtras && state.chosenExtras[extraId]) {
+          delete state.chosenExtras[extraId];
+        }
         saveState(state);
         card.remove();
+        // Day Route 갱신 (해당 extra가 선택돼있었다면 평점 섹션 갱신 필요)
+        const dayPage = card.closest('.page')?.dataset.page;
+        if (dayPage) renderDayRoute(dayPage);
       });
     }
   }
@@ -6573,6 +6595,42 @@
     card.innerHTML = makeExtraCardHTML(blockId, extraId);
     addBtn.parentNode.insertBefore(card, addBtn);
     wireCard(card);
+    // ✓ 선택 버튼 + 선택됨 배지 — SELECT_ICON 상수가 아직 TDZ에 있을 수 있어
+    // SVG 문자열 인라인 (옵션 시스템과 동일 마크업)
+    if (!card.querySelector('.opt-select')) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'opt-select';
+      btn.setAttribute('aria-label', '이 옵션 선택');
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+      card.appendChild(btn);
+    }
+    if (!card.querySelector('.opt-chosen-mark')) {
+      const mark = document.createElement('div');
+      mark.className = 'opt-chosen-mark';
+      mark.textContent = '✓ 이걸로';
+      card.appendChild(mark);
+    }
+    // input 비어있으면 ✓ 숨김 (extra-empty 클래스)
+    const input = card.querySelector('input[type="text"]');
+    const updateExtraEmpty = () => {
+      const filled = !!(input && input.value && input.value.trim());
+      card.classList.toggle('extra-empty', !filled);
+      // 비워졌는데 chosen 상태면 자동 해제
+      if (!filled && state.chosenExtras && state.chosenExtras[extraId]) {
+        delete state.chosenExtras[extraId];
+        card.classList.remove('chosen');
+        saveState(state);
+        const dayPage = card.closest('.page')?.dataset.page;
+        if (dayPage) renderDayRoute(dayPage);
+      }
+    };
+    input?.addEventListener('input', updateExtraEmpty);
+    updateExtraEmpty();
+    // 저장된 chosen 복원
+    if (state.chosenExtras && state.chosenExtras[extraId]) {
+      card.classList.add('chosen');
+    }
   }
 
   document.querySelectorAll('.opt-add-btn').forEach(btn => {
@@ -7323,14 +7381,37 @@
     applyChosen(optionsEl, getChosenArr(slotKey));
   });
 
-  // 선택 버튼 클릭 핸들러 (복수 선택 토글)
+  // 선택 버튼 클릭 핸들러 (복수 선택 토글) — .opt 와 .opt-write.extra 둘 다 처리
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.opt-select');
     if (!btn) return;
     e.preventDefault();
     e.stopPropagation();
+    const dayPage = btn.closest('.page')?.dataset.page;
+
+    // [A] .opt-write.extra — 추가 옵션 (단순 boolean toggle, slot idx 시스템 X)
+    const extraCard = btn.closest('.opt-write.extra');
+    if (extraCard) {
+      // 빈 input이면 무시 (extra-empty 클래스인데 클릭됐을 때 안전망)
+      if (extraCard.classList.contains('extra-empty')) return;
+      const extraId = extraCard.dataset.extra;
+      if (!extraId || !/^[a-z0-9]{1,64}$/i.test(extraId)) return;
+      if (!state.chosenExtras) state.chosenExtras = {};
+      if (state.chosenExtras[extraId]) {
+        delete state.chosenExtras[extraId];
+        extraCard.classList.remove('chosen');
+      } else {
+        state.chosenExtras[extraId] = true;
+        extraCard.classList.add('chosen');
+      }
+      saveState(state);
+      if (dayPage) renderDayRoute(dayPage);
+      return;
+    }
+
+    // [B] .opt — 사전 옵션 (기존 slot idx 시스템)
     const opt = btn.closest('.opt');
-    const optionsEl = opt.closest('.options');
+    const optionsEl = opt && opt.closest('.options');
     if (!opt || !optionsEl) return;
     const slotKey = slotKeyOf(optionsEl);
     const idx = String(opt.dataset.optIdx);
@@ -7342,8 +7423,6 @@
     if (next.length === 0) delete state.chosen[slotKey];
     else state.chosen[slotKey] = next;
     saveState(state);
-    // Day Route 카드 자동 갱신
-    const dayPage = btn.closest('.page')?.dataset.page;
     if (dayPage) renderDayRoute(dayPage);
   });
 
@@ -7398,8 +7477,8 @@
     });
   }
 
-  // 사용자가 + My Option으로 추가한 옵션 (이름 입력된 것만)
-  // — 좌표 없어서 동선·지도엔 안 들어가지만 평점 모음엔 반영
+  // 사용자가 + My Option으로 추가한 옵션 — ✓ 선택된 것만 평점 모음에 반영
+  // (작성·선택 둘 다 만족해야 표시. 작성만 하고 ✓ 안 누른 건 제외)
   function getDayExtras(dayId) {
     const page = document.querySelector(`.page[data-page="${dayId}"]`);
     if (!page) return [];
@@ -7408,6 +7487,9 @@
       const titleInput = card.querySelector('input[type="text"]');
       const title = titleInput?.value?.trim();
       if (!title) return; // 빈 추가 옵션 제외
+      const extraId = card.dataset.extra;
+      // ✓ 선택된 것만
+      if (!extraId || !state.chosenExtras || !state.chosenExtras[extraId]) return;
       const ratingKey = card.querySelector('.opt-dots')?.dataset.key || null;
       extras.push({ title, ratingKey, element: card });
     });
