@@ -2997,10 +2997,21 @@
       break-inside: auto !important;
     }
     /* 작은 블록만 중간에 끊기지 않게 */
-    .opt, .mood-card-wrap, .pack-col, .reader-note, .contents-list li, .time-slot {
+    .opt, .mood-card-wrap, .pack-col, .reader-note, .contents-list li, .time-slot,
+    .hotel-card, .hotel-card.dual .hc-block, .ed-note, .fullquote, .opt-write,
+    .blank-left, .blank-right, .cover-foot, .pack-head, .summary .item,
+    .opt-features li, .opt-menu, .flourish {
       page-break-inside: avoid;
       break-inside: avoid;
     }
+    /* 헤딩·시간 라벨이 다음 컨텐츠와 분리돼서 페이지 끝에 외롭게 남지 않게 */
+    h2, h3, h4, .time-slot, .mood-section-head, .day-opener,
+    .pack-head, .cover-kicker, .day-opener-right h2 {
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+    /* 페이지 시작 직후 첫 컨텐츠와 헤더 사이에 빈줄 안 생기게 */
+    .day-opener { margin-top: 0 !important; }
 
     /* content-visibility 가 PDF 에서 빈 영역 만드는 문제 해제 */
     .day, .mood-section, .pack-spread, .blank-spread {
@@ -6007,16 +6018,35 @@
     });
   }
 
-  // 인쇄 전 준비: 모든 페이지 활성화 + 이미지 주입
+  // 인쇄 전 준비: 모든 페이지 활성화 + 이미지 주입 + PDF 순서 재배치
+  // PDF 출력 순서: cover → prep → d1 → d2 → d3 → d4 → back
+  // (DOM 순서는 cover→d1→d2→d3→d4→prep→back이라 print 직전에 재배치)
+  const PDF_ORDER = ['cover', 'prep', 'd1', 'd2', 'd3', 'd4', 'back'];
   let prePrintSnapshot = null;
   function preparePrint() {
     injectPrintImages();
     const activePage = currentPageId();
-    prePrintSnapshot = { activePage };
+    const sheet = document.querySelector('main.sheet');
+    const originalPages = sheet ? Array.from(sheet.querySelectorAll(':scope > .page')) : [];
+    prePrintSnapshot = { activePage, originalPages };
+    // 모든 페이지 활성화 (인쇄용)
     document.querySelectorAll('.page').forEach(p => p.classList.add('active'));
+    // PDF 순서대로 DOM 재배치 (appendChild가 기존 위치에서 옮김)
+    if (sheet) {
+      PDF_ORDER.forEach(id => {
+        const page = sheet.querySelector(`:scope > .page[data-page="${id}"]`);
+        if (page) sheet.appendChild(page);
+      });
+    }
   }
   function restorePrint() {
     if (prePrintSnapshot) {
+      // 원래 DOM 순서 복원
+      const sheet = document.querySelector('main.sheet');
+      if (sheet && prePrintSnapshot.originalPages) {
+        prePrintSnapshot.originalPages.forEach(p => sheet.appendChild(p));
+      }
+      // 활성 페이지 복원
       document.querySelectorAll('.page').forEach(p => {
         p.classList.toggle('active', p.dataset.page === prePrintSnapshot.activePage);
       });
