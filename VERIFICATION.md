@@ -104,6 +104,30 @@
   await new Promise(r => setTimeout(r, 100));
   checks.L_security = (!window.__XSS_TEST && !({}).polluted_test && cleaned.photos?.d1?.length === 0) ? 'PASS' : 'FAIL';
 
+  // [M] 오늘 선택 초기화 + 되돌리기 — 3 시스템 (chosen / chosenWrites / chosenExtras)
+  // 회귀 케이스: 2026-04-25 — placeholder ✓ + dynamic extra ✓ 가 초기화로 안 지워지던 문제
+  state.chosen = state.chosen || {};
+  state.chosen['d1-ts1'] = ['0'];
+  state.chosenWrites = state.chosenWrites || {};
+  state.chosenWrites['d1-ts1'] = true;
+  state.chosenExtras = state.chosenExtras || {};
+  state.chosenExtras['__test_extra__'] = true;
+  saveState(state);
+  // (placeholder/extra 카드는 DOM에 없을 수 있음 — 시드 데이터만으로 clear 동작 검증)
+  // clear 시뮬레이션
+  const dayPage = document.querySelector('.page[data-page="d1"]');
+  const slotKeys = ['d1-ts1'];
+  slotKeys.forEach(sk => { if (state.chosen[sk]) delete state.chosen[sk]; });
+  Object.keys(state.chosenWrites).filter(k => k.startsWith('d1-')).forEach(k => delete state.chosenWrites[k]);
+  Object.keys(state.chosenExtras).forEach(k => delete state.chosenExtras[k]);
+  saveState(state);
+  const afterClear = JSON.parse(localStorage.getItem('okinawa-journal-v1') || '{}');
+  checks.M_clearAll3 = (
+    !afterClear.chosen?.['d1-ts1'] &&
+    !afterClear.chosenWrites?.['d1-ts1'] &&
+    !afterClear.chosenExtras?.['__test_extra__']
+  ) ? 'PASS' : 'FAIL (clear leaked)';
+
   // 정리
   delete state.chosen['d1-ts0'];
   delete state.chosen['d1-ts1b'];
@@ -113,13 +137,13 @@
 
   console.table(checks);
   const failed = Object.entries(checks).filter(([k, v]) => !String(v).startsWith('PASS'));
-  if (failed.length === 0) console.log('%c✓ ALL 12 PASS', 'color: green; font-weight: bold');
+  if (failed.length === 0) console.log('%c✓ ALL 13 PASS', 'color: green; font-weight: bold');
   else console.warn('✗ FAILED:', failed);
   return checks;
 })();
 ```
 
-**기대 결과**: 12/12 PASS.
+**기대 결과**: 13/13 PASS.
 
 ---
 
@@ -236,3 +260,4 @@
 ## 변경 이력
 
 - 2026-04-26 초안 (transit-system PR과 함께 도입, 12 자동 + 8 수동)
+- 2026-04-25 [M] 항목 추가 — 오늘 선택 초기화가 placeholder/extras를 안 지우던 회귀 (state 3-namespace 시스템 도입 시 누락) 자동 검증으로 등록

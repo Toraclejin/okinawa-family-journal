@@ -7903,17 +7903,44 @@
         undoBtn.className = 'day-route-btn secondary';
         undoBtn.textContent = `↶ 방금 해제한 ${recent.count}개 선택 되돌리기`;
         undoBtn.addEventListener('click', () => {
+          // backup 구조: { chosen: {slotKey: [...]}, chosenWrites: {slotKey: true}, chosenExtras: {extraId: true} }
+          const b = recent.backup || {};
+          // [1] 사전 옵션 chosen 복원
           state.chosen = state.chosen || {};
-          Object.keys(recent.backup).forEach(k => { state.chosen[k] = recent.backup[k]; });
+          const bChosen = b.chosen || {};
+          Object.keys(bChosen).forEach(k => { state.chosen[k] = bChosen[k]; });
+          // [2] placeholder chosenWrites 복원
+          state.chosenWrites = state.chosenWrites || {};
+          const bWrites = b.chosenWrites || {};
+          Object.keys(bWrites).forEach(k => { state.chosenWrites[k] = true; });
+          // [3] dynamic extras chosenExtras 복원
+          state.chosenExtras = state.chosenExtras || {};
+          const bExtras = b.chosenExtras || {};
+          Object.keys(bExtras).forEach(k => { state.chosenExtras[k] = true; });
           saveState(state);
           delete lastClearedBackups[dayId];
           // 옵션 카드 시각도 복원
           const page = document.querySelector(`.page[data-page="${dayId}"]`);
           if (page) {
+            // 사전 옵션 (.opt) 시각 복원
             page.querySelectorAll('.options').forEach(optsEl => {
               const slotKey = slotKeyOf(optsEl);
               const arr = (state.chosen && state.chosen[slotKey]) ? state.chosen[slotKey] : [];
               applyChosen(optsEl, arr);
+            });
+            // placeholder (.opt-write:not(.extra)) 시각 복원
+            page.querySelectorAll('.options > .opt-write:not(.extra)').forEach(card => {
+              const sk = card.dataset.writeKey;
+              if (sk && state.chosenWrites && state.chosenWrites[sk]) {
+                card.classList.add('chosen');
+              }
+            });
+            // extras (.opt-write.extra) 시각 복원
+            page.querySelectorAll('.opt-write.extra').forEach(card => {
+              const eid = card.dataset.extra;
+              if (eid && state.chosenExtras && state.chosenExtras[eid]) {
+                card.classList.add('chosen');
+              }
             });
           }
           renderDayRoute(dayId);
@@ -8083,20 +8110,42 @@
     clearBtn.className = 'day-route-btn secondary';
     clearBtn.textContent = '오늘 선택 초기화';
     clearBtn.addEventListener('click', () => {
-      if (!confirm(`${dayId.toUpperCase()} 선택 ${picks.length}개를 모두 해제할까요?`)) return;
+      const totalChosen = picks.length + extras.length;
+      if (!confirm(`${dayId.toUpperCase()} 선택 ${totalChosen}개를 모두 해제할까요?`)) return;
       const page = document.querySelector(`.page[data-page="${dayId}"]`);
       if (!page) return;
-      // backup — 되돌리기용 (해당 Day의 chosen 슬롯들)
-      const backup = {};
+      // backup — 되돌리기용 (해당 Day의 chosen 모든 시스템)
+      const backup = { chosen: {}, chosenWrites: {}, chosenExtras: {} };
       let count = 0;
+      // [1] 사전 옵션 (.opt) chosen 슬롯 정리
       page.querySelectorAll('.options').forEach(optsEl => {
         const slotKey = slotKeyOf(optsEl);
         if (slotKey && state.chosen && state.chosen[slotKey]) {
-          backup[slotKey] = [...state.chosen[slotKey]]; // shallow copy
+          backup.chosen[slotKey] = [...state.chosen[slotKey]];
           count += state.chosen[slotKey].length;
           delete state.chosen[slotKey];
         }
         optsEl.querySelectorAll(':scope > .opt').forEach(opt => opt.classList.remove('chosen', 'not-chosen'));
+      });
+      // [2] placeholder (.opt-write — extra 아님) chosenWrites 정리
+      page.querySelectorAll('.options > .opt-write:not(.extra)').forEach(card => {
+        const sk = card.dataset.writeKey;
+        if (sk && state.chosenWrites && state.chosenWrites[sk]) {
+          backup.chosenWrites[sk] = true;
+          count += 1;
+          delete state.chosenWrites[sk];
+        }
+        card.classList.remove('chosen');
+      });
+      // [3] dynamic extras (.opt-write.extra) chosenExtras 정리
+      page.querySelectorAll('.opt-write.extra').forEach(card => {
+        const eid = card.dataset.extra;
+        if (eid && state.chosenExtras && state.chosenExtras[eid]) {
+          backup.chosenExtras[eid] = true;
+          count += 1;
+          delete state.chosenExtras[eid];
+        }
+        card.classList.remove('chosen');
       });
       lastClearedBackups[dayId] = { backup, count, timestamp: Date.now() };
       saveState(state);
