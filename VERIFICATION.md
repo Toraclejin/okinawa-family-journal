@@ -298,6 +298,28 @@
 - 2026-04-27 [N] [O] 항목 추가
   - [N] 별 클릭 시 Today's Picks 즉시 갱신 — `refreshDayRatings` 호출 누락 회귀
   - [O] 지도 chip 번호 vs 추가옵션 + prefix 네임스페이스 분리 — 충돌 방지
+- 2026-04-28 [P] 항목 추가 — **Canvas ↔ UI Parity 검증** (수동 시각 비교)
+  - 회귀 사례: 화면 UI 에 오키나와 줌 SVG 추가했는데 `downloadConquerImage()` 미갱신 → 다운로드 이미지에서 오키나와 부분 누락
+  - 룰: trip-conquer-card 시각 변경 시 화면 + canvas 모두 동일 commit 에 갱신 (DESIGN.md § Dual-render Components 참조)
+
+## 수동 검증 [P] — Canvas ↔ UI Parity (시각 비교)
+
+### [P] trip-conquer-card 다운로드 PNG 가 화면과 동일
+
+1. 마무리 페이지로 이동, 9개 미션 모두 done 상태 만들기
+2. trip-conquer-card 화면 캡처 (스크린샷)
+3. `이미지 다운로드` 버튼 클릭 → PNG 저장
+4. 두 이미지 좌우 비교, 다음 요소 모두 1:1 매칭 확인:
+   - 일본 지도 (4섬 모양)
+   - 오키나와 ★ pulse (위치 일치)
+   - 줌인 화살표 (점선 amber, 위치)
+   - 오키나와 본도 줌 박스 (cream 색, 점선 amber border)
+   - "OKINAWA · 본도" 라벨 (amber)
+   - "TRIP CONQUERED" tag
+   - "오키나와 정복!" 타이틀
+   - 5.10 — 5.13 · 2026 날짜
+   - stat 4칸: 9/9 COMPLETE / 평균 만족도 / 사진 / 방문한 곳 (모두 amber 톤)
+5. 차이가 있으면 `MISSIONS.md § UI↔Canvas Parity Rule` 위반 — 둘 중 하나가 stale
 
 ## 참조
 

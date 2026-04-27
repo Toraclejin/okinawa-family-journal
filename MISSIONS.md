@@ -113,6 +113,34 @@ else fireMissionComplete()
 
 마무리 페이지 통계 카드. `updateTripStats()` 이 채움:
 
+### ⚠️ UI ↔ Canvas Parity Rule (필수)
+
+`trip-conquer-card` 의 화면 UI 와 canvas 다운로드 이미지는 **반드시 시각적으로 일치**해야 함.
+가족 단톡 공유본 (canvas PNG) 이 화면과 다르면 → "내가 본 거랑 다른데?" 혼란.
+
+**변경 시 동시 갱신 필수**:
+- 화면 SVG 변경 (`.td-japan-map`, `.td-okinawa-zoom`, `.td-stats`, `.td-conquer-*`) → `downloadConquerImage()` 도 동기 변경
+- 새 요소 추가 (예: 줌 SVG, 화살표, 라벨) → canvas 에도 같은 요소 그려야 함
+- 색상·폰트·여백 변경 → canvas drawing 의 `fillStyle`, `font`, position 도 갱신
+- 박스 사이즈·레이아웃 변경 → canvas Y 좌표 + `H` (canvas 높이) 도 갱신
+
+**parity 위반 사례 (2026-04-28)**:
+- 화면에 오키나와 줌 SVG 추가했는데 `downloadConquerImage()` 안 고침 → 다운로드 이미지에 오키나와 부분 누락
+- 학습: 시각 컴포넌트 추가는 **양쪽 동시 작업** = 한 commit 안에 둘 다 수정
+
+**`downloadConquerImage()` 위치** (검색 키워드):
+- 함수: `async function downloadConquerImage()`
+- 헬퍼: `drawJapanMapFromSvg`, `drawOkinawaZoomToCanvas`
+- 캔버스 크기: `const W = 1080, H = 1560`
+- 변경 시 VERIFICATION.md 자동 검증 [P] (canvas parity 항목) 도 갱신
+
+**검증 절차**:
+1. 화면에서 trip-conquer-card 캡처
+2. 다운로드 버튼으로 PNG 저장
+3. 두 이미지 좌우 비교 — 요소·위치·색상·폰트 모두 일치하는지
+
+
+
 | stat key | 계산 |
 |---|---|
 | `missions-frac` | `${done}/${total}` 형식 |

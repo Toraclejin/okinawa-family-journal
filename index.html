@@ -2702,7 +2702,8 @@
     border-radius: 16px;
     background: linear-gradient(135deg, #fffaeb 0%, #ffe680 50%, #fffaeb 100%);
     background-size: 200% 200%;
-    overflow: hidden;
+    /* overflow: visible — chip 번호 배지(좌상단)·골드 도장(우상단)이 카드 밖으로 자연스럽게 삐져나가도록 */
+    overflow: visible;
     transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease, background 0.4s ease;
     animation:
       mission-card-shimmer 5s ease-in-out infinite,
@@ -3719,14 +3720,14 @@
   .td-zoom-arrow .arr-head {
     fill: var(--amber);
   }
-  /* 오키나와 줌 박스 — 임펙트: pulse border + 골드 spotlight glow */
+  /* 오키나와 줌 박스 — 임펙트: pulse border + 골드 spotlight glow + 여유로운 padding */
   .td-okinawa-zoom {
     width: 100%;
     height: auto;
     display: block;
     border: 1.5px dashed var(--amber);
     border-radius: 12px;
-    padding: 10px 8px 6px;
+    padding: 24px 28px 22px;
     box-sizing: border-box;
     background:
       radial-gradient(ellipse at center, rgba(255, 196, 0, 0.18) 0%, rgba(255, 196, 0, 0.04) 50%, transparent 80%),
@@ -11403,12 +11404,66 @@
     } catch(_) {}
   }
 
-  // 인증 카드 이미지 다운로드 — 1080×1240 Canvas 직접 그리기 (라이브러리 X)
-  // 화면 인증 카드 레이아웃 유지: 지도 + 정복 텍스트 + 통계 4칸. 액션 버튼/스크린샷 안내 X.
-  // 일본 지도는 실제 japan-map.svg 를 비동기 로드 (실패 시 단순화 도형 fallback)
+  // 오키나와 본도 줌 SVG 로드 + 화살표 → canvas 에 그리기 (화면 UI parity)
+  // — 화면의 .td-okinawa-zoom 박스와 동일 스타일: dashed amber border, 골드 spotlight, cream(#FEFEE9)
+  function drawOkinawaZoomToCanvas(ctx, cx, topY, boxW, boxH) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const x = cx - boxW / 2;
+          const y = topY;
+          // 박스 spotlight glow background (radial gradient)
+          const grad = ctx.createRadialGradient(cx, y + boxH/2, 0, cx, y + boxH/2, boxW * 0.6);
+          grad.addColorStop(0, 'rgba(255,196,0,0.18)');
+          grad.addColorStop(0.5, 'rgba(255,196,0,0.04)');
+          grad.addColorStop(1, 'rgba(0,31,102,0.35)');
+          ctx.fillStyle = grad;
+          roundRect(ctx, x, y, boxW, boxH, 18);
+          ctx.fill();
+          // dashed amber border
+          ctx.save();
+          ctx.setLineDash([8, 6]);
+          ctx.strokeStyle = '#ffc400';
+          ctx.lineWidth = 2.5;
+          roundRect(ctx, x, y, boxW, boxH, 18);
+          ctx.stroke();
+          ctx.restore();
+          // SVG 그리기 — 박스 안 padding 55px (오키나와 모양에 여유롭게 감싸이도록)
+          const pad = 55;
+          const drawW = boxW - pad * 2;
+          const aspect = 3000 / 3035; // okinawa-mainland.svg viewBox
+          const drawH = drawW / aspect;
+          const drawX = x + pad;
+          const drawY = y + (boxH - drawH) / 2;
+          const off = document.createElement('canvas');
+          off.width = Math.ceil(drawW);
+          off.height = Math.ceil(drawH);
+          const offCtx = off.getContext('2d');
+          offCtx.drawImage(img, 0, 0, drawW, drawH);
+          offCtx.globalCompositeOperation = 'source-atop';
+          offCtx.fillStyle = 'rgba(254, 254, 233, 0.92)'; // cream tone
+          offCtx.fillRect(0, 0, drawW, drawH);
+          ctx.drawImage(off, drawX, drawY);
+          resolve();
+        } catch(e) { resolve(); }
+      };
+      img.onerror = () => resolve(); // 실패해도 그냥 계속 진행 (일본 지도 만으로도 의미 있음)
+      img.src = 'okinawa-mainland.svg';
+    });
+  }
+
+  // 인증 카드 이미지 다운로드 — 1080×1560 Canvas 직접 그리기 (라이브러리 X)
+  // 화면 인증 카드 레이아웃 1:1 매핑: 일본 지도 → 화살표 → 오키나와 줌 → 정복 텍스트 → 통계 4칸
+  // ★ UI ↔ Canvas parity 룰: trip-conquer-card 화면 변경 시 이 함수도 함께 갱신 (DESIGN.md 참조)
+  // ★ 통계 freshness: stat DOM 은 allDone 시점에만 updateTripStats 로 갱신되므로,
+  //   다운로드 직전에 강제 한 번 더 호출 — "0/0, —, 0, 0" stale 표시 방지 (2026-04-28 회귀)
   async function downloadConquerImage() {
     try {
-      const W = 1080, H = 1240;  // 1080 → 1240 (footer 가 stats grid 와 겹치지 않게 여유)
+      // [필수] 통계 fresh 보장 — DOM 의 [data-stat] 값들 강제 갱신
+      if (typeof updateTripStats === 'function') updateTripStats();
+
+      const W = 1080, H = 1560;  // 일본 지도 + 오키나와 줌 + 통계 4칸 + 푸터 모두 수용
       const canvas = document.createElement('canvas');
       canvas.width = W;
       canvas.height = H;
@@ -11426,29 +11481,59 @@
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, W, 700);
 
-      // 일본 지도 — 실제 SVG 를 비동기 로드해서 그리기 (실패 시 단순화 도형 fallback)
-      await drawJapanMapFromSvg(ctx, W, 280, 360).catch(() => {
-        // SVG 로드 실패 fallback — 단순화 도형
-        drawJapanMap(ctx, W/2, 280, 1.5);
+      // [1] 일본 지도 — 실제 SVG 를 비동기 로드해서 그리기 (실패 시 단순화 도형 fallback)
+      await drawJapanMapFromSvg(ctx, W, 240, 320).catch(() => {
+        drawJapanMap(ctx, W/2, 240, 1.4);
       });
 
-      // TRIP CONQUERED tag
+      // [2] 줌인 화살표 — 일본 지도 ★ 위치 → 오키나와 줌 박스
+      ctx.save();
+      ctx.strokeStyle = '#ffc400';
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.setLineDash([8, 6]);
+      ctx.beginPath();
+      ctx.moveTo(W/2, 420);
+      ctx.lineTo(W/2, 460);
+      ctx.stroke();
+      ctx.restore();
+      // 화살표 머리
+      ctx.fillStyle = '#ffc400';
+      ctx.beginPath();
+      ctx.moveTo(W/2 - 10, 460);
+      ctx.lineTo(W/2 + 10, 460);
+      ctx.lineTo(W/2, 478);
+      ctx.closePath();
+      ctx.fill();
+
+      // [3] 오키나와 본도 줌 박스 — 비동기 SVG 로드
+      await drawOkinawaZoomToCanvas(ctx, W/2, 490, 360, 280);
+
+      // [4] OKINAWA · 본도 라벨
+      ctx.fillStyle = '#ffc400';
+      ctx.font = '800 18px "Space Grotesk", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.letterSpacing = '0.32em';
+      ctx.fillText('OKINAWA · 본도', W/2, 800);
+
+      // [5] TRIP CONQUERED tag
       ctx.fillStyle = '#ffc400';
       ctx.font = '800 32px "Space Grotesk", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('TRIP CONQUERED', W/2, 530);
+      ctx.fillText('TRIP CONQUERED', W/2, 870);
 
-      // 오키나와 정복!
+      // [6] 오키나와 정복!
       ctx.fillStyle = '#ffffff';
       ctx.font = '900 90px "Pretendard Variable", Pretendard, sans-serif';
-      ctx.fillText('오키나와 정복!', W/2, 630);
+      ctx.fillText('오키나와 정복!', W/2, 970);
 
-      // 날짜
+      // [7] 날짜
       ctx.fillStyle = 'rgba(255,255,255,0.78)';
       ctx.font = '600 28px "Space Grotesk", sans-serif';
-      ctx.fillText('5.10 — 5.13 · 2026', W/2, 685);
+      ctx.fillText('5.10 — 5.13 · 2026', W/2, 1025);
 
-      // 통계 grid 4칸
+      // [8] 통계 grid 4칸
       const card = document.querySelector('.trip-conquer-card');
       const get = key => card?.querySelector(`[data-stat="${key}"]`)?.textContent || '—';
       const stats = [
@@ -11457,7 +11542,7 @@
         { num: get('photos'), lbl: '사진', hero: false },
         { num: get('visited'), lbl: '방문한 곳', hero: false },
       ];
-      const gridX = 110, gridY = 760, cellW = 420, cellH = 130, gap = 20;
+      const gridX = 110, gridY = 1100, cellW = 420, cellH = 130, gap = 20;
       stats.forEach((s, i) => {
         const col = i % 2, row = Math.floor(i / 2);
         const x = gridX + col * (cellW + gap);
@@ -11481,12 +11566,12 @@
         ctx.fillText(s.lbl, x + cellW/2, y + 100);
       });
 
-      // Footer — stats grid (gridY=760, 2 rows of 130 + gap 20 = ends at y=1040) 보다 충분히 아래
+      // Footer — stats grid (gridY=1100, 2 rows of 130 + gap 20 = ends at y=1380) 보다 충분히 아래
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
       ctx.font = '500 22px "Pretendard Variable", Pretendard, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'alphabetic';
-      ctx.fillText('Family Journal · Vol. I · Okinawa', W/2, 1180);
+      ctx.fillText('Family Journal · Vol. I · Okinawa', W/2, 1500);
 
       // Download
       canvas.toBlob((blob) => {

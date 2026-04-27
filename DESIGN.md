@@ -137,6 +137,22 @@ type State = {
 | 동선 변경 | `DAY_HOTEL`, `DAY_HOTEL_COORDS` | ROUTE.md |
 | state 새 필드 | `sanitizeImportedState` + 3-namespace 점검 | DESIGN.md (이 문서) |
 | 페이지 추가 | `<div class="page">` + `PAGES` 배열 + 네비 | DESIGN.md § Page Structure |
+| **trip-conquer-card 시각 변경** | 화면 SVG + `downloadConquerImage()` canvas 둘 다 | **MISSIONS.md § UI↔Canvas Parity Rule** |
+
+## ⚠️ Dual-render Components (화면 UI ↔ Canvas 양쪽 그려지는 컴포넌트)
+
+매거진에서 화면 UI 와 canvas PNG 양쪽을 별도로 그리는 컴포넌트들. 한 곳만 고치면 silent regression.
+
+| 컴포넌트 | 화면 (HTML/SVG) | Canvas (downloadXxx) | 동기 룰 |
+|---|---|---|---|
+| 인증 카드 | `.trip-conquer-card` (DOM + japan-map.svg + okinawa-mainland.svg) | `downloadConquerImage()` + `drawJapanMapFromSvg()` + `drawOkinawaZoomToCanvas()` | MISSIONS.md § Parity Rule |
+| 방문한 곳 리스트 | `<details class="visited-list">` (DOM 동적 생성) | `downloadVisitedListImage()` (Canvas Day 별 그룹) | DESIGN.md (이 섹션) |
+
+**룰**:
+1. 화면 시각 요소 추가/변경 → canvas drawing 에도 동시 적용
+2. 두 코드 위치를 같은 commit 에 묶어 PR (분리 commit 금지)
+3. 검증: 화면 캡처 ↔ 다운로드 PNG 좌우 비교 (VERIFICATION.md [P] 항목)
+4. 새 dual-render 컴포넌트 추가 시 → 이 표 갱신
 
 ## 참조
 
