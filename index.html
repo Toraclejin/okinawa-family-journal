@@ -10096,7 +10096,8 @@
             }
             // 풀스크린 연출 — 마지막 미션이면 fireTripComplete + auto nav, 아니면 fireMissionComplete
             const title = photoMissionCard.querySelector('.mission-title')?.textContent?.trim() || '';
-            if (typeof celebrateMission === 'function') celebrateMission(title);
+            const photoMissionId = photoMissionCard.dataset.mission;
+            if (typeof celebrateMission === 'function') celebrateMission(title, photoMissionId);
             else if (typeof fireMissionComplete === 'function') fireMissionComplete(title);
             // 카운터 + 도장 그리드 갱신
             if (typeof updateMissionCounter === 'function') updateMissionCounter();
@@ -11878,7 +11879,7 @@
 
         // 미션 제목 추출 (textContent — XSS 차단)
         const title = card.querySelector('.mission-title')?.textContent?.trim() || '';
-        celebrateMission(title);  // 마지막 미션이면 fireTripComplete + auto nav, 아니면 fireMissionComplete
+        celebrateMission(title, missionId);  // 메인/히든 분기 — missionId 로 카드 종류 판별
 
         // d1-hotel 첫 done 시 — 히든 미션 해금 cinematic + 모달 (11살 도파민 흐름)
         // ⚠️ 변수명 주의: 이 wireMissionCards 안에서는 'missionId' 사용 (이전에 'id' 라 써서 항상 false 였던 회귀 fix)
@@ -12081,7 +12082,7 @@
       const label = opt.dataset.missionLabel
         || opt.querySelector('.opt-title')?.textContent?.trim()
         || '';
-      celebrateMission(label);  // 마지막이면 fireTripComplete + auto nav
+      celebrateMission(label, missionId);  // 메인/히든 분기 — missionId 로 카드 종류 판별
       // 카운터 + 그리드 갱신
       updateMissionCounter();
       refreshStampGrid();
@@ -12463,27 +12464,43 @@
 
   // 미션 축하 — 일반 미션은 fireMissionComplete, 마지막 미션은 fireTripComplete (★★★ + 컨페티 30개)
   // 모든 미션 완료 시 자동으로 마무리 페이지 nav + trip-done-msg 화려한 등장 트리거
-  function celebrateMission(title) {
+  // 미션 완료 축하 디스패처
+  // ★ 룰: 방금 클릭한 미션의 종류(main vs hidden)에 따라 독립적으로 판단
+  //   - main 미션 클릭 → 메인 9개 모두 done 인지만 검사 → fireTripComplete (한 번)
+  //   - hidden 미션 클릭 → 히든 6개 모두 done 인지만 검사 → fireFamilyMaster
+  //   - 두 시스템은 완전히 독립 — main 9 다 done 상태에서 hidden 클릭해도 TRIP COMPLETE 재발화 X
+  // missionId 인자: 방금 클릭한 미션의 ID (없으면 보수적으로 일반 mission complete)
+  function celebrateMission(title, missionId) {
     try {
-      // 메인 미션 / 히든 미션 분기
-      const allMain = (typeof getMainMissions === 'function') ? getMainMissions() : [];
-      const allHidden = (typeof getHiddenMissions === 'function') ? getHiddenMissions() : [];
-      const mainDone = allMain.length > 0 && allMain.every(m =>
-        state.missions && state.missions[m.id] && state.missions[m.id].done
-      );
-      const hiddenDone = allHidden.length > 0 && allHidden.every(m =>
-        state.missions && state.missions[m.id] && state.missions[m.id].done
-      );
-      if (mainDone) {
-        // 메인 9개 다 모았을 때 — TRIP COMPLETE
-        if (typeof fireTripComplete === 'function') fireTripComplete();
-        setTimeout(navToBackAndReveal, 3700);
-      } else if (hiddenDone) {
-        // 히든 6개 다 모았을 때 — FAMILY MASTER (TRIP COMPLETE 와 다른 톤)
-        if (typeof fireFamilyMaster === 'function') fireFamilyMaster();
+      // 방금 클릭한 미션이 hidden 인지 main 인지 판별
+      let isHiddenMission = false;
+      if (missionId) {
+        const el = document.querySelector(`.mission-card[data-mission="${missionId}"], .opt[data-mission="${missionId}"]`);
+        isHiddenMission = !!(el && el.dataset.missionType === 'bonus');
+      }
+      if (isHiddenMission) {
+        // 히든 미션 클릭 — 히든 6/6 만 검사
+        const allHidden = (typeof getHiddenMissions === 'function') ? getHiddenMissions() : [];
+        const hiddenDone = allHidden.length > 0 && allHidden.every(m =>
+          state.missions && state.missions[m.id] && state.missions[m.id].done
+        );
+        if (hiddenDone) {
+          if (typeof fireFamilyMaster === 'function') fireFamilyMaster();
+        } else {
+          if (typeof fireMissionComplete === 'function') fireMissionComplete(title);
+        }
       } else {
-        // 일반 미션
-        if (typeof fireMissionComplete === 'function') fireMissionComplete(title);
+        // 메인 미션 클릭 — 메인 9/9 만 검사
+        const allMain = (typeof getMainMissions === 'function') ? getMainMissions() : [];
+        const mainDone = allMain.length > 0 && allMain.every(m =>
+          state.missions && state.missions[m.id] && state.missions[m.id].done
+        );
+        if (mainDone) {
+          if (typeof fireTripComplete === 'function') fireTripComplete();
+          setTimeout(navToBackAndReveal, 3700);
+        } else {
+          if (typeof fireMissionComplete === 'function') fireMissionComplete(title);
+        }
       }
     } catch(_) {
       if (typeof fireMissionComplete === 'function') fireMissionComplete(title);
