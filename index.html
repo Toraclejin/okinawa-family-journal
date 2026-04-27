@@ -2478,11 +2478,14 @@
     position: relative;
   }
 
-  .toolbar button:hover {
-    background: var(--blue);
-    color: var(--white);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 71, 255, 0.25);
+  /* :hover 는 마우스 디바이스에만 적용 — 터치 디바이스에서 tap 후 hover 고착되는 회귀 방지 */
+  @media (hover: hover) {
+    .toolbar button:hover {
+      background: var(--blue);
+      color: var(--white);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 71, 255, 0.25);
+    }
   }
 
   .toolbar button .tip {
@@ -2511,7 +2514,8 @@
   @media (max-width: 900px) {
     .toolbar {
       top: auto;
-      bottom: 80px;
+      /* 화면 최하단에 정렬 — iOS safe-area 고려해서 14px 이상 자동 보정 */
+      bottom: max(14px, env(safe-area-inset-bottom));
       right: 20px;
       flex-direction: row;
       gap: 6px;
@@ -6505,11 +6509,14 @@
     target.scrollIntoView({ block: 'start', behavior: 'smooth' });
   });
 
-  document.getElementById('btn-scroll-top').addEventListener('click', () => {
+  document.getElementById('btn-scroll-top').addEventListener('click', (e) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    // 터치 후 :focus 잔류로 파란 하이라이트 고착되는 회귀 방지
+    if (e.currentTarget && e.currentTarget.blur) e.currentTarget.blur();
   });
-  document.getElementById('btn-scroll-bottom').addEventListener('click', () => {
+  document.getElementById('btn-scroll-bottom').addEventListener('click', (e) => {
     window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+    if (e.currentTarget && e.currentTarget.blur) e.currentTarget.blur();
   });
 
   // 모바일 스크롤 중 툴바 자동 숨김 (400ms 멈추면 다시 나타남)
