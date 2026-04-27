@@ -12096,54 +12096,29 @@
   // ==========================================
   //  HIDDEN MISSION 시스템 — d1-hotel 클리어 시 unlock + 화려한 티켓 발급
   // ==========================================
-  // "화아아악!" 사운드 — ascending sweep + chime (도파민 폭발용)
+  // "띠링~" 부드러운 chime — 깜짝 놀라지 않는 톤 (sweep + boom 제거, sine 만)
+  // 도(C5) - 미(E5) - 솔(G5) 부드러운 상승 화음 (0.3s 짧고 산뜻)
   function playHiddenUnlockSound() {
     try {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return;
       const ctx = new AC();
       const now = ctx.currentTime;
-      // [1] 화아아악 sweep — 200Hz → 1200Hz 빠르게 올라감 (0.4s)
-      const sweep = ctx.createOscillator();
-      const sweepGain = ctx.createGain();
-      sweep.type = 'sawtooth';
-      sweep.frequency.setValueAtTime(200, now);
-      sweep.frequency.exponentialRampToValueAtTime(1200, now + 0.35);
-      sweepGain.gain.setValueAtTime(0, now);
-      sweepGain.gain.linearRampToValueAtTime(0.12, now + 0.05);
-      sweepGain.gain.linearRampToValueAtTime(0.16, now + 0.3);
-      sweepGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
-      sweep.connect(sweepGain).connect(ctx.destination);
-      sweep.start(now);
-      sweep.stop(now + 0.5);
-      // [2] 띠리링 chime — sweep 끝나고 0.05초 후 시작 (도-솔-도 3음)
-      const notes = [523.25, 783.99, 1046.5];
+      const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
       notes.forEach((freq, i) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        osc.type = 'sine';
+        osc.type = 'sine'; // sawtooth(거친) X, sine(부드러운) O
         osc.frequency.value = freq;
-        const start = now + 0.4 + i * 0.08;
+        const start = now + i * 0.08;
         gain.gain.setValueAtTime(0, start);
-        gain.gain.linearRampToValueAtTime(0.22, start + 0.02);
-        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.5);
+        gain.gain.linearRampToValueAtTime(0.14, start + 0.02); // 볼륨 ↓ (놀람 방지)
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.4);
         osc.connect(gain).connect(ctx.destination);
         osc.start(start);
-        osc.stop(start + 0.55);
+        osc.stop(start + 0.45);
       });
-      // [3] 깊은 boom (저음 임팩트) — sweep 시작과 동시에
-      const boom = ctx.createOscillator();
-      const boomGain = ctx.createGain();
-      boom.type = 'sine';
-      boom.frequency.setValueAtTime(60, now);
-      boom.frequency.exponentialRampToValueAtTime(40, now + 0.3);
-      boomGain.gain.setValueAtTime(0, now);
-      boomGain.gain.linearRampToValueAtTime(0.4, now + 0.02);
-      boomGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
-      boom.connect(boomGain).connect(ctx.destination);
-      boom.start(now);
-      boom.stop(now + 0.55);
-      setTimeout(() => { try { ctx.close(); } catch(_) {} }, 1500);
+      setTimeout(() => { try { ctx.close(); } catch(_) {} }, 1200);
     } catch(_) {}
   }
 
