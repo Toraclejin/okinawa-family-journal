@@ -7257,8 +7257,17 @@
       } catch { return false; }
     }
 
+    // 옛 localStorage 페이지 기억 키 청소 (더 이상 사용 안 함 — 항상 표지부터)
+    try { localStorage.removeItem('okinawa-journal-page'); } catch(_) {}
+
     if (isAuthorized()) {
       document.body.classList.add('unlocked');
+      // 이미 인증된 사용자 — Day 페이지 deep link (#d1-#d4) 만 존중, 그 외는 강제 cover
+      // (가족이 매거진 닫을 때 #prep 같은 hash 잔존 → 다음 진입 시 prep로 가는 회귀 방지)
+      const h = location.hash.slice(1);
+      if (!/^d[1-4]$/.test(h)) {
+        try { history.replaceState(null, '', location.pathname + '#cover'); } catch (_) {}
+      }
       return;
     }
 
@@ -7290,10 +7299,18 @@
           try {
             localStorage.setItem(AUTH_KEY, JSON.stringify({ h, at: Date.now() }));
           } catch (_) {}
+          // 인증 통과 → URL 해시 강제 #cover (옛 #prep 등 잔존 hash 청소 + 표지부터 시작)
+          try {
+            history.replaceState(null, '', location.pathname + '#cover');
+          } catch (_) {}
           gate.classList.add('fade');
           setTimeout(() => {
             gate.hidden = true;
             document.body.classList.add('unlocked');
+            // showPage 가 hashchange 안 듣고 있으면 직접 호출 (init 이미 끝나서 cover로 다시 가야)
+            try {
+              if (typeof showPage === 'function') showPage('cover', { skipScroll: true });
+            } catch (_) {}
           }, 400);
         } else {
           // 실패
