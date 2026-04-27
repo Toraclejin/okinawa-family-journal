@@ -3522,52 +3522,143 @@
     .stamp-name { font-size: 11px; }
   }
 
-  /* ========== 트립 완료 메시지 (도장 다 모으면 등장 — 여행 회상 톤) ========== */
+  /* ========== 트립 완료 회고 메시지 (도장 다 모으면 등장 — 여행 핵심 클라이맥스) ==========
+     도장 그리드와 reader-note 사이에 위치. 화려한 골드 그라디언트 + sparkle. */
   .trip-done-msg {
-    margin-top: 18px;
-    padding: 22px 22px 20px;
-    border: 2px solid var(--amber);
-    border-radius: 14px;
-    background: linear-gradient(135deg, #fffaeb 0%, #fff 100%);
-    box-shadow: 0 8px 24px rgba(255, 196, 0, 0.18);
-    animation: trip-done-fadein 0.7s ease;
+    position: relative;
+    margin: 36px 16px 28px;
+    padding: 38px 28px 30px;
+    border: 2.5px solid var(--amber);
+    border-radius: 22px;
+    background:
+      radial-gradient(ellipse at top, rgba(255, 196, 0, 0.18) 0%, transparent 60%),
+      linear-gradient(135deg, #fffaeb 0%, #fff8d8 50%, #fffaeb 100%);
+    box-shadow:
+      0 16px 48px rgba(255, 196, 0, 0.4),
+      0 0 0 1px rgba(255, 196, 0, 0.3) inset;
+    overflow: hidden;
+    animation:
+      trip-done-fadein 0.9s cubic-bezier(0.34, 1.56, 0.64, 1),
+      trip-done-glow 4s ease-in-out infinite 1s;
   }
   @keyframes trip-done-fadein {
-    0% { opacity: 0; transform: translateY(10px); }
-    100% { opacity: 1; transform: translateY(0); }
+    0% { opacity: 0; transform: translateY(20px) scale(0.96); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
   }
+  @keyframes trip-done-glow {
+    0%, 100% { box-shadow: 0 16px 48px rgba(255, 196, 0, 0.4), 0 0 0 1px rgba(255, 196, 0, 0.3) inset; }
+    50% { box-shadow: 0 20px 60px rgba(255, 196, 0, 0.55), 0 0 0 1px rgba(255, 196, 0, 0.5) inset; }
+  }
+  .trip-done-msg .td-glow-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(255, 196, 0, 0.25) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .trip-done-msg > * { position: relative; z-index: 1; }
+
+  /* 떠다니는 sparkle 6개 — 위치 + 딜레이 다양화 */
+  .trip-done-msg .td-sparkles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .trip-done-msg .td-sparkles .sp {
+    position: absolute;
+    color: var(--amber);
+    font-size: 16px;
+    opacity: 0;
+    animation: td-sparkle-float 4s ease-in-out infinite;
+  }
+  .td-sparkles .sp.s1 { top: 12%;  left: 8%;  animation-delay: 0s;   font-size: 14px; }
+  .td-sparkles .sp.s2 { top: 20%;  right: 12%; animation-delay: 0.6s; font-size: 18px; }
+  .td-sparkles .sp.s3 { top: 50%;  left: 5%;  animation-delay: 1.2s; font-size: 12px; }
+  .td-sparkles .sp.s4 { bottom: 30%; right: 8%; animation-delay: 1.8s; font-size: 16px; }
+  .td-sparkles .sp.s5 { bottom: 12%; left: 14%; animation-delay: 2.4s; font-size: 20px; color: #ffd84d; }
+  .td-sparkles .sp.s6 { top: 35%;  right: 22%; animation-delay: 3.0s; font-size: 13px; }
+  @keyframes td-sparkle-float {
+    0%, 100% { opacity: 0; transform: translateY(0) scale(0.8); }
+    20% { opacity: 1; transform: translateY(-4px) scale(1.1); }
+    40% { opacity: 1; transform: translateY(-8px) scale(1); }
+    60% { opacity: 0.6; transform: translateY(-12px) scale(0.95); }
+    80% { opacity: 0; transform: translateY(-16px) scale(0.8); }
+  }
+
   .trip-done-msg .td-ribbon {
     display: inline-block;
-    margin-bottom: 10px;
-    padding: 4px 14px;
+    margin-bottom: 18px;
+    padding: 7px 18px;
     border-radius: 999px;
-    background: var(--amber);
+    background: linear-gradient(135deg, var(--amber) 0%, #ffd84d 100%);
     color: var(--blue-ink);
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 11px;
+    font-size: 11.5px;
     font-weight: 800;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
+    box-shadow: 0 6px 16px rgba(255, 196, 0, 0.5);
   }
   .trip-done-msg .td-line {
     font-family: 'Pretendard Variable', Pretendard, sans-serif;
-    font-size: 15px;
-    line-height: 1.7;
+    font-size: 15.5px;
+    line-height: 1.75;
     color: var(--blue-ink);
-    margin: 0 0 12px;
+    margin: 0 0 14px;
+  }
+  .trip-done-msg .td-line.emphasis {
+    margin: 18px 0;
+    padding: 16px 18px;
+    background: rgba(255, 196, 0, 0.12);
+    border-left: 3px solid var(--amber);
+    border-radius: 8px;
   }
   .trip-done-msg .td-line strong {
     color: var(--blue);
-    font-weight: 700;
+    font-weight: 800;
+  }
+  .trip-done-msg .td-cta {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--blue-deep);
+    margin: 18px 0 6px;
+    line-height: 1.55;
+  }
+  .trip-done-msg .td-cta em {
+    font-weight: 600;
+    color: var(--blue);
+    font-style: italic;
+  }
+  .trip-done-msg .td-cta-go {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 14px;
+    color: var(--blue);
+    margin: 6px 0 14px;
+    letter-spacing: 0.04em;
+    animation: td-cta-bounce 1.4s ease-in-out infinite;
+  }
+  @keyframes td-cta-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(3px); }
   }
   .trip-done-msg .td-sign {
     font-family: 'Fraunces', serif;
     font-style: italic;
-    font-size: 14px;
+    font-size: 13px;
     color: var(--blue-deep);
     margin: 0;
-    opacity: 0.8;
+    opacity: 0.7;
+    text-align: right;
   }
+  @media (max-width: 600px) {
+    .trip-done-msg { margin: 28px 14px 24px; padding: 30px 22px 24px; }
+    .trip-done-msg .td-line { font-size: 14.5px; line-height: 1.7; }
+    .trip-done-msg .td-line.emphasis { padding: 14px 14px; }
+    .trip-done-msg .td-ribbon { font-size: 10.5px; padding: 6px 14px; letter-spacing: 0.16em; }
+  }
+
   /* 토글: data-state 속성으로 control */
   .back-intro[hidden] { display: none !important; }
 
@@ -7194,16 +7285,6 @@
     <p class="back-intro" data-state="default">
       계획은 지도일 뿐. 그날 컨디션에 따라 옵션을 골라도 괜찮음. 재밌게 놀고 돌아와, 빈 자리에 남기고 싶은 것을 채우면 이 여행책이 완성됨.
     </p>
-    <!-- 트립 완료 메시지 (도장 다 모으면 등장) — 여행 회상 톤 -->
-    <div class="back-intro trip-done-msg" data-state="trip-done" hidden>
-      <div class="td-ribbon">★ Trip Complete</div>
-      <p class="td-line">
-        비행기 타고, 호텔 두 곳 들르고, 가족 사진 한 장,<br/>
-        고래상어 만나고, 바다 다리 건너고, 차탄 일몰까지 —<br/>
-        <strong>도장 다 모은 너의 여행, 완벽했어.</strong>
-      </p>
-      <p class="td-sign">또 가자, 오키나와 — Family ✺</p>
-    </div>
   </div>
 
   <!-- ========== 미션 도장 컬렉션 (도장 그리드, JS로 동적 채움) ========== -->
@@ -7214,6 +7295,38 @@
       <div class="stamp-collection-progress" id="stamp-collection-progress">0 / 0</div>
     </div>
     <div class="stamp-grid" id="stamp-grid"></div>
+  </div>
+
+  <!-- ========== 트립 완료 회고 메시지 (모든 미션 완수 시 등장) ==========
+       도장 그리드와 "여행 전체에서 가장 좋았던 것" reader-note 사이.
+       이번 여행의 핵심 한 마디 — 화려하게 시각화 -->
+  <div class="back-intro trip-done-msg" data-state="trip-done" hidden>
+    <div class="td-glow-bg"></div>
+    <div class="td-sparkles">
+      <span class="sp s1">✦</span>
+      <span class="sp s2">✺</span>
+      <span class="sp s3">✦</span>
+      <span class="sp s4">✺</span>
+      <span class="sp s5">★</span>
+      <span class="sp s6">✦</span>
+    </div>
+    <div class="td-ribbon">★ Mission Complete · 마지막 한 마디</div>
+    <p class="td-line">
+      계획은 지도일 뿐.<br/>
+      그날 컨디션에 따라 원하는 선택은 원하는 데로 했잖아?<br/>
+      선택이 마음에 안 들었어도 괜찮아.<br/>
+      그 과정에서 뭔가를 배웠을 테니…
+    </p>
+    <p class="td-line emphasis">
+      <strong>미션도, 선택도, 여행 중 느낀 모든 것도 —<br/>
+      다 추억과 성장의 순간이었어.</strong>
+    </p>
+    <p class="td-cta">
+      아래 빈 칸에 느낀 점을 채우면<br/>
+      <em>이 여행책이 완성되는 거야.</em>
+    </p>
+    <p class="td-cta-go">자, 이제 완성해보자 ↓</p>
+    <p class="td-sign">— Family ✺</p>
   </div>
 
   <!-- ========== 여행 전체 베스트 메모 (D4에서 옮겨옴 — 조카가 끝까지 보게) ========== -->
