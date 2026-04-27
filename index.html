@@ -2717,6 +2717,33 @@
     0%, 100% { transform: translateY(0); box-shadow: 0 8px 22px rgba(255, 196, 0, 0.28); }
     50% { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(255, 196, 0, 0.4); }
   }
+  /* 🎫 어그로 티저 — 미션 클릭 전 호기심 유도 (히든 미션 트리거 암시) */
+  .mission-teaser {
+    margin: 8px 0 14px;
+    padding: 10px 14px;
+    background: linear-gradient(90deg, rgba(22, 160, 133, 0.14) 0%, rgba(22, 160, 133, 0.08) 100%);
+    border-left: 3px solid #16a085;
+    border-radius: 0 8px 8px 0;
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 13.5px;
+    color: #0e6b56;
+    font-weight: 700;
+    line-height: 1.45;
+    animation: mission-teaser-shimmer 2.4s ease-in-out infinite;
+  }
+  .mission-teaser em {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 600;
+    color: #0e6b56;
+  }
+  @keyframes mission-teaser-shimmer {
+    0%, 100% { background-position: 0% 50%; box-shadow: 0 0 0 0 rgba(22, 160, 133, 0); }
+    50% { background-position: 100% 50%; box-shadow: 0 0 0 4px rgba(22, 160, 133, 0.12); }
+  }
+  /* 미션 완료되면 티저 사라짐 — 이미 비밀 풀렸으니 */
+  .mission-card.completed .mission-teaser { display: none; }
+
   /* 도장 버튼 자체에도 살짝 펄스 — 누르고 싶게 */
   .mission-card:not(.completed) .mission-stamp-btn {
     animation: stamp-btn-pulse 1.8s ease-in-out infinite;
@@ -6330,6 +6357,8 @@
     <span class="mission-tag">Mission · Check-in 15:00</span>
     <h3 class="mission-title">Hotel Orion Motobu — 도착!</h3>
     <p class="mission-desc">키 받고 방문 열고 첫 발을 디뎠다면 — 이 여행의 첫 호텔 도장. 비세 후쿠기 길까지 도보 3분.</p>
+    <!-- 🎫 어그로 티저 — completed 전에만 노출 (히든 미션 트리거 암시) -->
+    <p class="mission-teaser">🎫 <em>호텔 도착한 다음 — 예상 못 한 일이 생길지도?!?</em></p>
     <div class="mission-action-row">
       <button type="button" class="mission-stamp-btn" aria-label="미션 인증">
         <span class="ms-icon">✓</span>
