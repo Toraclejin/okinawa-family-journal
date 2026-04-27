@@ -1964,6 +1964,33 @@
     color: var(--blue-deep);
     max-width: 600px;
   }
+  /* 미션 독려 인트로 — 한국어 일관 (Pretendard) + 강조 */
+  .back-main p.back-intro[data-state="default"] {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--blue-ink);
+    max-width: 580px;
+    letter-spacing: -0.005em;
+    margin-top: 14px;
+  }
+  .back-main p.back-intro[data-state="default"] strong {
+    color: var(--blue);
+    font-weight: 800;
+  }
+  .back-main p.back-intro[data-state="default"] em {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    color: var(--blue-deep);
+    background: linear-gradient(180deg, transparent 65%, rgba(255, 196, 0, 0.35) 65%);
+    padding: 0 2px;
+  }
+  @media (max-width: 600px) {
+    .back-main p.back-intro[data-state="default"] { font-size: 14.5px; line-height: 1.7; }
+  }
 
   .back-sig {
     padding-top: 22px;
@@ -7270,9 +7297,11 @@
   <div class="back-mark">End of Issue · Volume I ✺</div>
   <div class="back-main">
     <h2>Enjoy<br/>the <em>sea.</em></h2>
-    <!-- 기본 메시지 (여행 전·중) — 도장 다 모으면 숨겨짐 -->
+    <!-- 기본 메시지 (여행 전·중) — 미션 독려 + 살짝 약 치기 -->
     <p class="back-intro" data-state="default">
-      계획은 지도일 뿐. 그날 컨디션에 따라 옵션을 골라도 괜찮음. 재밌게 놀고 돌아와, 빈 자리에 남기고 싶은 것을 채우면 이 여행책이 완성됨.
+      이 여행책엔 <strong>★ 미션 도장 9개</strong>가 페이지마다 숨어있어. 하나씩 찾아 ✓ 도장 찍어봐.<br/>
+      <em>9개 다 모은 순간 — 너만 볼 수 있는 마지막 한 마디가 펼쳐져.</em><br/>
+      어떤 말일지는… 직접 다 모아서 봐.
     </p>
   </div>
 
