@@ -1906,13 +1906,14 @@
 
   /* ====== BACK COVER ====== */
   .back {
-    padding: 60px 30px 50px;          /* 120px → 60px (위·아래 여백 축소) */
+    padding: 60px 30px 50px;
     background: var(--page);
     border-top: 3px solid var(--blue);
-    display: block;                    /* grid → block (gap 60px 제거) */
+    display: flex;
+    flex-direction: column;
+    gap: 16px;                          /* 박스 간 균일 간격 — hidden 요소는 자동 collapse */
     position: relative;
   }
-  .back > * + * { margin-top: 24px; }  /* 섹션 간 균일한 24px 간격 */
 
   /* 노란/코랄 동그라미 제거 (사용자 요청 — 디자인 정제) */
 
@@ -3582,54 +3583,92 @@
     100% { opacity: 1; transform: translateY(0); }
   }
 
-  /* === 인증 뱃지 (TRIP CONQUERED) === */
-  .trip-done-msg .td-conquer {
-    text-align: center;
-    padding: 22px 18px 24px;
-    margin: 0 0 24px;
+  /* === 트립 정복 인증 카드 (별도, 스크린샷·다운로드 영역) === */
+  .trip-conquer-card {
+    margin: 0;
+    padding: 28px 22px 22px;
     background: linear-gradient(180deg, var(--blue-ink) 0%, var(--blue-deep) 100%);
-    border-radius: 14px;
+    border-radius: 18px;
     color: #fff;
-    position: relative;
+    box-shadow: 0 14px 40px rgba(0, 31, 102, 0.32);
     overflow: hidden;
+    position: relative;
+    animation: trip-done-fadein 0.7s ease-out;
   }
-  .trip-done-msg .td-conquer::before {
+  .trip-conquer-card[hidden] { display: none !important; }
+  .trip-conquer-card::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at top, rgba(255, 196, 0, 0.18) 0%, transparent 65%);
+    background: radial-gradient(ellipse at top, rgba(255, 196, 0, 0.22) 0%, transparent 65%);
     pointer-events: none;
   }
-  .trip-done-msg .td-conquer-mark {
-    font-size: 38px;
-    color: var(--amber);
-    line-height: 1;
-    margin-bottom: 6px;
-    text-shadow: 0 4px 18px rgba(255, 196, 0, 0.55);
-    animation: td-mark-spin 3s ease-in-out infinite;
+  .trip-conquer-card > * { position: relative; z-index: 1; }
+
+  /* === 인증 헤드 === */
+  .td-conquer {
+    text-align: center;
+    margin-bottom: 24px;
   }
-  @keyframes td-mark-spin {
-    0%, 100% { transform: rotate(-8deg) scale(1); }
-    50% { transform: rotate(8deg) scale(1.1); }
+
+  /* === 일본 지도 SVG === */
+  .td-japan-map {
+    width: 220px;
+    max-width: 70%;
+    height: auto;
+    margin: 0 auto 6px;
+    display: block;
+    filter: drop-shadow(0 6px 20px rgba(255, 196, 0, 0.28));
   }
-  .trip-done-msg .td-conquer-tag {
+  .td-japan-map .jp-island {
+    fill: rgba(255, 255, 255, 0.18);
+    stroke: rgba(255, 255, 255, 0.25);
+    stroke-width: 0.6;
+  }
+  .td-japan-map .jp-dotted {
+    stroke: var(--amber);
+    stroke-width: 1.2;
+    stroke-dasharray: 2 3;
+    fill: none;
+  }
+  .td-japan-map .oki-glow {
+    fill: rgba(255, 196, 0, 0.22);
+    animation: oki-pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes oki-pulse {
+    0%, 100% { transform: scale(1); transform-origin: 24px 138px; }
+    50% { transform: scale(1.18); transform-origin: 24px 138px; }
+  }
+  .td-japan-map .oki-island {
+    fill: var(--amber);
+  }
+  .td-japan-map .oki-star {
+    font-size: 18px;
+    font-weight: 900;
+    fill: #fff;
+    text-anchor: middle;
+    font-family: 'Archivo Black', sans-serif;
+  }
+
+  .td-conquer-tag {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 10.5px;
     font-weight: 800;
     letter-spacing: 0.32em;
     text-transform: uppercase;
     color: var(--amber);
-    margin-bottom: 6px;
-  }
-  .trip-done-msg .td-conquer-title {
-    font-family: 'Pretendard Variable', Pretendard, sans-serif;
-    font-weight: 900;
-    font-size: 28px;
-    color: #fff;
-    letter-spacing: -0.02em;
     margin-bottom: 8px;
   }
-  .trip-done-msg .td-conquer-date {
+  .td-conquer-title {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-weight: 900;
+    font-size: 32px;
+    color: #fff;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+    line-height: 1;
+  }
+  .td-conquer-date {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 12px;
     font-weight: 600;
@@ -3637,66 +3676,247 @@
     color: rgba(255, 255, 255, 0.75);
   }
 
-  /* === 통계 grid === */
-  .trip-done-msg .td-stats {
+  /* === 통계 grid (4 칸) === */
+  .trip-conquer-card .td-stats {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    margin: 0 0 26px;
+    margin: 0 0 18px;
   }
-  .trip-done-msg .td-stat {
+  .trip-conquer-card .td-stat {
     text-align: center;
-    padding: 14px 8px 12px;
-    background: #fff;
-    border: 1.5px solid #e9c965;
-    border-radius: 10px;
+    padding: 16px 8px 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1.5px solid rgba(255, 196, 0, 0.45);
+    border-radius: 12px;
+    backdrop-filter: blur(2px);
   }
-  .trip-done-msg .td-stat-num {
+  .trip-conquer-card .td-stat.td-stat-hero {
+    background: rgba(255, 196, 0, 0.18);
+    border-color: var(--amber);
+  }
+  .trip-conquer-card .td-stat-num {
     font-family: 'Archivo Black', sans-serif;
-    font-size: 26px;
+    font-size: 28px;
     line-height: 1;
-    color: var(--blue-ink);
-    margin-bottom: 4px;
+    color: #fff;
+    margin-bottom: 6px;
     letter-spacing: -0.02em;
   }
-  .trip-done-msg .td-stat-lbl {
+  .trip-conquer-card .td-stat-hero .td-stat-num {
+    color: var(--amber);
+    font-size: 30px;
+  }
+  .trip-conquer-card .td-stat-lbl {
     font-family: 'Pretendard Variable', Pretendard, sans-serif;
-    font-size: 11px;
+    font-size: 11.5px;
     font-weight: 600;
-    color: var(--blue-deep);
-    opacity: 0.75;
-  }
-
-  /* === 마지막 한 마디 — 컴팩트하게 통합 === */
-  .trip-done-msg .td-headline-block {
-    padding: 0;
-  }
-
-  /* === 스크린샷 CTA === */
-  .trip-done-msg .td-share {
-    margin-top: 24px;
-    padding: 14px 16px;
-    background: rgba(0, 71, 255, 0.07);
-    border: 1.5px dashed var(--blue);
-    border-radius: 10px;
-    text-align: center;
-    font-family: 'Pretendard Variable', Pretendard, sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--blue);
+    color: rgba(255, 255, 255, 0.78);
     letter-spacing: -0.005em;
   }
-  .trip-done-msg .td-share-icon {
-    margin-right: 6px;
+  .trip-conquer-card .td-stat-hero .td-stat-lbl strong {
+    color: var(--amber);
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* === 다운로드 버튼 + 스크린샷 안내 === */
+  .td-actions {
+    margin-top: 14px;
+    text-align: center;
+  }
+  .td-download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: 999px;
+    border: none;
+    background: var(--amber);
+    color: var(--blue-ink);
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: -0.005em;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(255, 196, 0, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .td-download-btn .td-dl-icon {
     font-size: 16px;
+    font-weight: 900;
+  }
+  @media (hover: hover) {
+    .td-download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(255, 196, 0, 0.55);
+    }
+  }
+  .td-share-hint {
+    margin-top: 10px;
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: -0.005em;
   }
 
   @media (max-width: 600px) {
-    .trip-done-msg .td-conquer-mark { font-size: 32px; }
-    .trip-done-msg .td-conquer-title { font-size: 24px; }
-    .trip-done-msg .td-stats { gap: 8px; grid-template-columns: repeat(2, 1fr); }
-    .trip-done-msg .td-stat-num { font-size: 24px; }
-    .trip-done-msg .td-share { font-size: 13px; padding: 12px 14px; }
+    .trip-conquer-card { padding: 26px 18px 20px; }
+    .td-conquer-title { font-size: 28px; }
+    .td-japan-map { width: 180px; }
+    .trip-conquer-card .td-stat-num { font-size: 24px; }
+    .trip-conquer-card .td-stat-hero .td-stat-num { font-size: 26px; }
+    .td-download-btn { font-size: 13px; padding: 11px 18px; }
+  }
+
+  /* === 방문한 곳 리스트 (collapsible) === */
+  .visited-list {
+    margin: 0;
+    background: #fff;
+    border: 1.5px solid var(--blue);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .visited-list[hidden] { display: none !important; }
+  .visited-list .vl-summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-weight: 700;
+    color: var(--blue-ink);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .visited-list .vl-summary::-webkit-details-marker { display: none; }
+  .visited-list .vl-icon { font-size: 18px; }
+  .visited-list .vl-title { font-size: 15px; flex: 1; }
+  .visited-list .vl-count {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--blue);
+    background: rgba(0, 71, 255, 0.08);
+    padding: 4px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.04em;
+  }
+  .visited-list .vl-arrow {
+    font-size: 14px;
+    color: var(--blue);
+    transition: transform 0.25s ease;
+  }
+  .visited-list[open] .vl-arrow { transform: rotate(180deg); }
+  .visited-list .vl-body {
+    padding: 6px 18px 18px;
+    border-top: 1px solid rgba(0, 71, 255, 0.12);
+  }
+  .visited-list .vl-day-group {
+    margin: 16px 0 0;
+  }
+  .visited-list .vl-day-group:first-child { margin-top: 14px; }
+  .visited-list .vl-day-tag {
+    display: inline-block;
+    margin-bottom: 8px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--blue);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .visited-list .vl-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-left: 2px dashed rgba(0, 71, 255, 0.25);
+    padding-left: 14px;
+  }
+  .visited-list .vl-item {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 7px 0;
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 14px;
+    color: var(--blue-ink);
+    position: relative;
+  }
+  .visited-list .vl-item::before {
+    content: '';
+    position: absolute;
+    left: -19px;
+    top: 14px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--amber);
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px var(--amber);
+  }
+  .visited-list .vl-item.empty::before { background: rgba(0, 71, 255, 0.2); border-color: #fff; box-shadow: none; }
+  .visited-list .vl-item-time {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--blue);
+    min-width: 50px;
+    letter-spacing: -0.01em;
+  }
+  .visited-list .vl-item-title {
+    flex: 1;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .visited-list .vl-empty {
+    padding: 14px 0;
+    text-align: center;
+    color: var(--blue-deep);
+    opacity: 0.5;
+    font-size: 13px;
+  }
+  .visited-list .vl-actions {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px dashed rgba(0, 71, 255, 0.15);
+    text-align: center;
+  }
+  .visited-list .vl-download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1.5px solid var(--blue);
+    background: #fff;
+    color: var(--blue);
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: background 0.2s, color 0.2s;
+  }
+  @media (hover: hover) {
+    .visited-list .vl-download-btn:hover {
+      background: var(--blue);
+      color: #fff;
+    }
+  }
+  @media (max-width: 600px) {
+    .visited-list .vl-summary { padding: 14px 16px; }
+    .visited-list .vl-body { padding: 4px 16px 16px; }
+    .visited-list .vl-item { font-size: 13.5px; }
   }
 
   .trip-done-msg .td-eyebrow {
@@ -3784,17 +4004,7 @@
   /* 토글: data-state 속성으로 control */
   .back-intro[hidden] { display: none !important; }
 
-  /* trip-done-msg 위·아래 박스와의 간격 — 사용자 요청: 40px → 16px (40%) */
-  .back > .stamp-collection + .trip-done-msg {
-    margin-top: 16px;
-  }
-  .back > .trip-done-msg + .reader-note {
-    margin-top: 16px;
-  }
-  /* trip-done-msg 가 숨김 상태 (미션 미완료) — stamp-collection ↔ reader-note 간격 — 28px */
-  .back .stamp-collection + .trip-done-msg[hidden] + .reader-note {
-    margin-top: 28px !important;
-  }
+  /* 박스 간격은 .back 의 flex gap (16px) 이 자동 처리 — hidden 요소는 collapse */
 
   /* 마지막 미션 직후 자동 nav 시 — trip-done-msg 강한 재등장 (just-revealed) */
   .trip-done-msg.just-revealed {
@@ -7454,48 +7664,101 @@
     <div class="stamp-grid" id="stamp-grid"></div>
   </div>
 
-  <!-- ========== 트립 완료 회고 (모든 미션 완수 시 등장) ==========
-       인증 뱃지 + 통계 + 회고 + 스크린샷 CTA — 11살 친화 보상 통합 -->
-  <div class="back-intro trip-done-msg" data-state="trip-done" hidden>
+  <!-- ========== 트립 정복 인증 카드 (스크린샷·다운로드 영역) ========== -->
+  <div class="trip-conquer-card" data-state="trip-done" hidden id="trip-conquer-card">
 
-    <!-- 인증 뱃지 (게임 클리어 화면 톤) -->
+    <!-- 인증 뱃지 (다크 네이비 + 일본 지도 + 오키나와 강조) -->
     <div class="td-conquer">
-      <div class="td-conquer-mark">★</div>
+      <!-- 일본 지도 SVG — 4개 본토 + 오키나와 (골드 강조 별표). 점선 X. -->
+      <svg viewBox="0 0 240 210" class="td-japan-map" aria-hidden="true">
+        <!-- Hokkaido (북해도) — 북동쪽, 다이아 형 -->
+        <path class="jp-island" d="M198,16 Q215,14 222,28 Q226,42 218,52 Q205,58 188,54 Q176,46 175,32 Q180,20 198,16 Z"/>
+        <!-- Honshu (혼슈) — 메인 섬, 긴 바나나 곡선 -->
+        <path class="jp-island" d="M168,62 Q188,72 198,92 Q200,112 184,124 Q160,134 132,134 Q108,128 92,114 Q82,98 88,82 Q102,72 124,68 Q146,64 168,62 Z"/>
+        <!-- Shikoku (시코쿠) — 작은 타원 -->
+        <ellipse class="jp-island" cx="118" cy="148" rx="16" ry="6"/>
+        <!-- Kyushu (큐슈) — 서쪽, 배 모양 -->
+        <path class="jp-island" d="M68,124 Q82,120 92,128 Q98,142 96,158 Q88,170 72,170 Q58,168 54,154 Q54,138 60,130 Z"/>
+        <!-- Okinawa (오키나와) — 남서쪽 멀리, 골드 강조 -->
+        <ellipse class="oki-glow" cx="32" cy="195" rx="22" ry="9"/>
+        <ellipse class="oki-island" cx="32" cy="195" rx="13" ry="4"/>
+        <ellipse class="oki-island" cx="18" cy="190" rx="2.5" ry="1.5"/>
+        <ellipse class="oki-island" cx="46" cy="200" rx="2" ry="1.2"/>
+        <!-- ★ on main Okinawa island -->
+        <text x="32" y="200" class="oki-star">★</text>
+      </svg>
+
       <div class="td-conquer-tag">TRIP CONQUERED</div>
       <div class="td-conquer-title">오키나와 정복!</div>
       <div class="td-conquer-date">5.10 — 5.13 · 2026</div>
     </div>
 
-    <!-- 여행 통계 (state 자동 집계 — JS에서 채움) -->
+    <!-- 여행 성과치 (도파민 터지게) -->
     <div class="td-stats" id="td-stats">
-      <div class="td-stat"><div class="td-stat-num" data-stat="missions">0</div><div class="td-stat-lbl">도장</div></div>
-      <div class="td-stat"><div class="td-stat-num" data-stat="rating">—</div><div class="td-stat-lbl">평균 별점</div></div>
-      <div class="td-stat"><div class="td-stat-num" data-stat="photos">0</div><div class="td-stat-lbl">사진</div></div>
-      <div class="td-stat"><div class="td-stat-num" data-stat="notes">0</div><div class="td-stat-lbl">메모</div></div>
-    </div>
-
-    <!-- 마지막 한 마디 -->
-    <div class="td-headline-block">
-      <div class="td-eyebrow"><span class="td-mark">★</span>Last Words</div>
-      <h3 class="td-headline">마지막 한 마디</h3>
-      <div class="td-rule"></div>
-
-      <p class="td-body">계획은 지도일 뿐.</p>
-      <p class="td-body">그날 컨디션에 따라 원하는 선택은 원하는 데로 했잖아?</p>
-      <p class="td-body">선택이 마음에 안 들었어도 괜찮아. 그 과정에서 뭔가를 배웠을 테니.</p>
-
-      <p class="td-body td-emphasis">미션도, 선택도, 여행 중 느낀 모든 것이 다 추억과 성장의 순간이었어.</p>
-
-      <div class="td-cta">
-        이제 아래 빈 칸에 느낀 점을 채우면 이 여행책이 완성돼.<br/>
-        <span class="td-cta-go">완성해보자 ↓</span>
+      <div class="td-stat td-stat-hero">
+        <div class="td-stat-num" data-stat="missions-frac">0/0</div>
+        <div class="td-stat-lbl"><strong>Complete!</strong></div>
+      </div>
+      <div class="td-stat">
+        <div class="td-stat-num" data-stat="rating">—</div>
+        <div class="td-stat-lbl">평균 만족도</div>
+      </div>
+      <div class="td-stat">
+        <div class="td-stat-num" data-stat="photos">0</div>
+        <div class="td-stat-lbl">사진</div>
+      </div>
+      <div class="td-stat">
+        <div class="td-stat-num" data-stat="visited">0</div>
+        <div class="td-stat-lbl">방문한 곳</div>
       </div>
     </div>
 
-    <!-- 스크린샷 CTA — 자랑용 -->
-    <div class="td-share">
-      <span class="td-share-icon">📷</span>
-      이 화면 스크린샷 찍어 가족 단톡에 자랑해!
+    <!-- 다운로드 + 스크린샷 CTA -->
+    <div class="td-actions">
+      <button type="button" class="td-download-btn" id="td-download-btn">
+        <span class="td-dl-icon">↓</span>
+        이미지 다운로드
+      </button>
+      <div class="td-share-hint">또는 스크린샷 찍어 가족 단톡에 자랑해!</div>
+    </div>
+  </div>
+
+  <!-- ========== 방문한 곳 리스트 (접기·펼치기) — 모든 미션 완료 시 등장 ========== -->
+  <details class="visited-list" id="visited-list" hidden>
+    <summary class="vl-summary">
+      <span class="vl-icon">🗺️</span>
+      <span class="vl-title">방문한 곳</span>
+      <span class="vl-count" data-stat="visited-summary">0곳</span>
+      <span class="vl-arrow">▾</span>
+    </summary>
+    <div class="vl-body">
+      <div class="vl-groups" id="vl-groups">
+        <!-- JS 가 채움 — Day 별 그룹 + 시간순 항목 -->
+      </div>
+      <div class="vl-actions">
+        <button type="button" class="vl-download-btn" id="vl-download-btn">
+          <span class="td-dl-icon">↓</span>
+          이 리스트 이미지 다운로드
+        </button>
+      </div>
+    </div>
+  </details>
+
+  <!-- ========== 마지막 한 마디 (별도 카드, conquer 다음) ========== -->
+  <div class="back-intro trip-done-msg" data-state="trip-done" hidden>
+    <div class="td-eyebrow"><span class="td-mark">★</span>Last Words</div>
+    <h3 class="td-headline">마지막 한 마디</h3>
+    <div class="td-rule"></div>
+
+    <p class="td-body">계획은 지도일 뿐.</p>
+    <p class="td-body">그날 컨디션에 따라 원하는 선택은 원하는 데로 했잖아?</p>
+    <p class="td-body">선택이 마음에 안 들었어도 괜찮아. 그 과정에서 뭔가를 배웠을 테니.</p>
+
+    <p class="td-body td-emphasis">미션도, 선택도, 여행 중 느낀 모든 것이 다 추억과 성장의 순간이었어.</p>
+
+    <div class="td-cta">
+      이제 아래 빈 칸에 느낀 점을 채우면 이 여행책이 완성돼.<br/>
+      <span class="td-cta-go">완성해보자 ↓</span>
     </div>
   </div>
 
@@ -10454,15 +10717,17 @@
     const allDone = (done === total && total > 0);
     counter.classList.toggle('all-done', allDone);
 
-    // back 페이지 인트로 토글 — 도장 다 모았으면 회상 메시지
+    // back 페이지 인트로 + 인증 카드 + 방문 리스트 토글 — 도장 다 모았으면 등장
     const introDefault = document.querySelector('.back-intro[data-state="default"]');
     const introTripDone = document.querySelector('.back-intro[data-state="trip-done"]');
-    if (introDefault && introTripDone) {
-      introDefault.hidden = allDone;
-      introTripDone.hidden = !allDone;
-      // 통계 grid 갱신 (도장·별점·사진·메모)
-      if (allDone && typeof updateTripStats === 'function') updateTripStats();
-    }
+    const conquerCard = document.getElementById('trip-conquer-card');
+    const visitedList = document.getElementById('visited-list');
+    if (introDefault) introDefault.hidden = allDone;
+    if (introTripDone) introTripDone.hidden = !allDone;
+    if (conquerCard) conquerCard.hidden = !allDone;
+    if (visitedList) visitedList.hidden = !allDone;
+    // 통계 grid 갱신 (도장·만족도·사진·방문 곳) + 방문 리스트
+    if (allDone && typeof updateTripStats === 'function') updateTripStats();
   }
   // 카운터 클릭 → 마무리 페이지 도장 그리드로 이동 (단일 동작 — 컬렉션 보기)
   const counterBtn = document.getElementById('mission-counter');
@@ -10722,38 +10987,423 @@
     }
   }
 
-  // 여행 통계 자동 집계 — trip-done-msg 안 td-stats grid 채우기
-  // state.missions, state.ratings, state.photos, state.texts 에서 추출
+  // 방문한 곳 데이터 — DOM 기반, Day 별 시간순으로 정렬
+  // 미션 + chosen 옵션 다 포함. 무오류 보장 (try/catch + 가드).
+  function getVisitedPlaces() {
+    const dayOrder = ['prep', 'd1', 'd2', 'd3', 'd4'];
+    const result = [];
+    try {
+      dayOrder.forEach(dayId => {
+        const page = document.querySelector(`.page[data-page="${dayId}"]`);
+        if (!page) return;
+        const items = [];
+        // DOM 순회 — DOM 순서가 시간 순서
+        const candidates = page.querySelectorAll(
+          '.mission-card[data-mission], .opt[data-mission], .opt'
+        );
+        candidates.forEach(el => {
+          let title = '';
+          let timeLabel = '';
+          let isVisited = false;
+          if (el.classList.contains('mission-card')) {
+            // standalone 미션 (호텔/비행기/사진)
+            const id = el.dataset.mission;
+            if (state.missions && state.missions[id] && state.missions[id].done) {
+              isVisited = true;
+              title = el.querySelector('.mission-title')?.textContent?.trim() || '';
+              const tag = el.querySelector('.mission-tag')?.textContent || '';
+              const tparts = tag.split('·');
+              timeLabel = (tparts[1] || tparts[0] || '').trim();
+            }
+          } else if (el.classList.contains('opt')) {
+            // 사전 옵션 — chosen 됐는지 확인
+            const optionsEl = el.closest('.options');
+            if (!optionsEl) return;
+            const slotKey = (typeof slotKeyOf === 'function') ? slotKeyOf(optionsEl) : null;
+            if (!slotKey) return;
+            const idx = String(el.dataset.optIdx);
+            const chosenArr = state.chosen && state.chosen[slotKey];
+            if (Array.isArray(chosenArr) && chosenArr.includes(idx)) {
+              isVisited = true;
+              title = el.querySelector('.opt-title')?.textContent?.trim() || '';
+              // 시간 라벨 — 위쪽 .time-slot 에서 추출
+              let walker = optionsEl.previousElementSibling;
+              while (walker) {
+                if (walker.classList && walker.classList.contains('time-slot')) {
+                  timeLabel = walker.querySelector('.time-tag')?.textContent?.trim() || '';
+                  break;
+                }
+                walker = walker.previousElementSibling;
+              }
+            }
+          }
+          if (isVisited && title) {
+            // 중복 검사 (.opt[data-mission] 은 chosen + mission 둘 다라 한 번 더 들어올 수 있음)
+            const dupKey = `${dayId}|${title}`;
+            if (!items.some(i => i._key === dupKey)) {
+              items.push({ time: timeLabel, title, _key: dupKey });
+            }
+          }
+        });
+        if (items.length) result.push({ dayId, items });
+      });
+    } catch(_) {}
+    return result;
+  }
+
+  // 여행 통계 자동 집계 — trip-conquer-card 안 td-stats grid 채우기
+  // 무오류 보장: 모든 키 안전 접근, fallback '—' 또는 0
   function updateTripStats() {
     try {
-      const tripDone = document.querySelector('.trip-done-msg');
-      if (!tripDone) return;
-      // 도장 (완료 미션 수)
+      const card = document.querySelector('.trip-conquer-card');
+      if (!card) return;
+      // 도장 (완료/전체 — "9/9" 형식)
       const missions = state.missions || {};
+      const totalMissions = (typeof getAllMissions === 'function') ? getAllMissions().length : 9;
       const missionCount = Object.values(missions).filter(m => m && m.done).length;
-      // 평균 별점 (별점 매긴 항목들의 평균, 0~5)
+      const missionsFrac = `${missionCount}/${totalMissions}`;
+      // 평균 만족도 (별점 평균, 0~5, 1 자리 + ★)
       const ratings = state.ratings || {};
       const ratingValues = Object.values(ratings).filter(v => typeof v === 'number' && v > 0);
       const avgRating = ratingValues.length
-        ? (ratingValues.reduce((a, b) => a + b, 0) / ratingValues.length).toFixed(1)
+        ? (ratingValues.reduce((a, b) => a + b, 0) / ratingValues.length).toFixed(1) + '★'
         : '—';
       // 사진 (모든 target 합산)
       const photos = state.photos || {};
       const photoCount = Object.values(photos).reduce((sum, arr) => sum + (Array.isArray(arr) ? arr.length : 0), 0);
-      // 메모 (작성된 텍스트 입력 수)
-      const texts = state.texts || {};
-      const noteCount = Object.values(texts).filter(v => typeof v === 'string' && v.trim().length > 0).length;
+      // 방문한 곳 — getVisitedPlaces 와 동일 소스 (단일 source of truth)
+      const visited = getVisitedPlaces();
+      const visitedCount = visited.reduce((sum, day) => sum + day.items.length, 0);
+
       // DOM 갱신 (textContent — XSS 안전)
       const setStat = (key, val) => {
-        const el = tripDone.querySelector(`[data-stat="${key}"]`);
+        const el = card.querySelector(`[data-stat="${key}"]`);
         if (el) el.textContent = String(val);
       };
-      setStat('missions', missionCount);
+      setStat('missions-frac', missionsFrac);
       setStat('rating', avgRating);
-      setStat('photos', photoCount);
-      setStat('notes', noteCount);
+      setStat('photos', `${photoCount}장`);
+      setStat('visited', `${visitedCount}곳`);
+
+      // 방문한 곳 리스트 카운트 (summary 옆)
+      const summaryCount = document.querySelector('[data-stat="visited-summary"]');
+      if (summaryCount) summaryCount.textContent = `${visitedCount}곳`;
+
+      // 방문한 곳 리스트 렌더 (DOM 동적 생성)
+      renderVisitedList(visited);
     } catch(_) {}
   }
+
+  // 방문한 곳 리스트 DOM 렌더 — Day 별 그룹 + 시간순
+  function renderVisitedList(visitedData) {
+    try {
+      const container = document.getElementById('vl-groups');
+      if (!container) return;
+      while (container.firstChild) container.removeChild(container.firstChild);
+      if (!visitedData || !visitedData.length) {
+        const empty = document.createElement('div');
+        empty.className = 'vl-empty';
+        empty.textContent = '아직 모은 곳이 없네 — 옵션을 골라 ✓ 도장 찍어봐!';
+        container.appendChild(empty);
+        return;
+      }
+      const dayLabel = (id) => {
+        if (id === 'prep') return 'PRE-TRIP';
+        if (/^d\d$/.test(id)) return 'DAY ' + id.slice(1);
+        return id.toUpperCase();
+      };
+      visitedData.forEach(day => {
+        const group = document.createElement('div');
+        group.className = 'vl-day-group';
+        const tag = document.createElement('div');
+        tag.className = 'vl-day-tag';
+        tag.textContent = dayLabel(day.dayId);
+        group.appendChild(tag);
+        const ul = document.createElement('ul');
+        ul.className = 'vl-items';
+        day.items.forEach(it => {
+          const li = document.createElement('li');
+          li.className = 'vl-item';
+          if (it.time) {
+            const t = document.createElement('span');
+            t.className = 'vl-item-time';
+            t.textContent = it.time;
+            li.appendChild(t);
+          }
+          const title = document.createElement('span');
+          title.className = 'vl-item-title';
+          title.textContent = it.title;
+          li.appendChild(title);
+          ul.appendChild(li);
+        });
+        group.appendChild(ul);
+        container.appendChild(group);
+      });
+    } catch(_) {}
+  }
+
+  // 인증 카드 이미지 다운로드 — 1080×1080 Canvas 직접 그리기 (라이브러리 X)
+  function downloadConquerImage() {
+    try {
+      const W = 1080, H = 1080;
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      // 배경 — 다크 네이비 그라디언트
+      const bg = ctx.createLinearGradient(0, 0, 0, H);
+      bg.addColorStop(0, '#000a33');
+      bg.addColorStop(1, '#001f66');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, W, H);
+      // 위쪽 골드 글로우
+      const glow = ctx.createRadialGradient(W/2, 0, 0, W/2, 0, 700);
+      glow.addColorStop(0, 'rgba(255,196,0,0.25)');
+      glow.addColorStop(1, 'rgba(255,196,0,0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, W, 700);
+
+      // 일본 지도 (확대 그리기)
+      drawJapanMap(ctx, W/2, 200, 4.0);
+
+      // TRIP CONQUERED tag
+      ctx.fillStyle = '#ffc400';
+      ctx.font = '800 32px "Space Grotesk", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('TRIP CONQUERED', W/2, 530);
+
+      // 오키나와 정복!
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 90px "Pretendard Variable", Pretendard, sans-serif';
+      ctx.fillText('오키나와 정복!', W/2, 630);
+
+      // 날짜
+      ctx.fillStyle = 'rgba(255,255,255,0.78)';
+      ctx.font = '600 28px "Space Grotesk", sans-serif';
+      ctx.fillText('5.10 — 5.13 · 2026', W/2, 685);
+
+      // 통계 grid 4칸
+      const card = document.querySelector('.trip-conquer-card');
+      const get = key => card?.querySelector(`[data-stat="${key}"]`)?.textContent || '—';
+      const stats = [
+        { num: get('missions-frac'), lbl: 'COMPLETE!', hero: true },
+        { num: get('rating'), lbl: '평균 만족도', hero: false },
+        { num: get('photos'), lbl: '사진', hero: false },
+        { num: get('visited'), lbl: '방문한 곳', hero: false },
+      ];
+      const gridX = 110, gridY = 760, cellW = 420, cellH = 130, gap = 20;
+      stats.forEach((s, i) => {
+        const col = i % 2, row = Math.floor(i / 2);
+        const x = gridX + col * (cellW + gap);
+        const y = gridY + row * (cellH + gap);
+        // box
+        ctx.fillStyle = s.hero ? 'rgba(255,196,0,0.18)' : 'rgba(255,255,255,0.08)';
+        ctx.strokeStyle = s.hero ? '#ffc400' : 'rgba(255,196,0,0.45)';
+        ctx.lineWidth = 2.5;
+        roundRect(ctx, x, y, cellW, cellH, 18);
+        ctx.fill();
+        ctx.stroke();
+        // num
+        ctx.fillStyle = s.hero ? '#ffc400' : '#ffffff';
+        ctx.font = '900 50px "Archivo Black", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(s.num, x + cellW/2, y + 50);
+        // lbl
+        ctx.fillStyle = s.hero ? '#ffc400' : 'rgba(255,255,255,0.78)';
+        ctx.font = (s.hero ? '800' : '600') + ' 22px "Pretendard Variable", Pretendard, sans-serif';
+        ctx.fillText(s.lbl, x + cellW/2, y + 100);
+      });
+
+      // Footer
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = '500 22px "Pretendard Variable", Pretendard, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillText('Family Journal · Vol. I · Okinawa', W/2, 1030);
+
+      // Download
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'okinawa-conquered.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }, 'image/png', 0.95);
+    } catch (err) {
+      alert('이미지 다운로드 실패. 스크린샷으로 저장해 주세요.');
+    }
+  }
+
+  // 일본 지도 Canvas — 4개 섬 + 오키나와 골드 강조 (점선 X)
+  function drawJapanMap(ctx, cx, cy, scale) {
+    ctx.save();
+    ctx.translate(cx - 120*scale, cy - 105*scale);
+    ctx.scale(scale, scale);
+    ctx.fillStyle = 'rgba(255,255,255,0.18)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.28)';
+    ctx.lineWidth = 0.6 / scale;
+    // Hokkaido — 다이아 형
+    ctx.beginPath();
+    ctx.moveTo(198,16); ctx.quadraticCurveTo(215,14, 222,28);
+    ctx.quadraticCurveTo(226,42, 218,52); ctx.quadraticCurveTo(205,58, 188,54);
+    ctx.quadraticCurveTo(176,46, 175,32); ctx.quadraticCurveTo(180,20, 198,16); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    // Honshu — 곡선 바나나
+    ctx.beginPath();
+    ctx.moveTo(168,62); ctx.quadraticCurveTo(188,72, 198,92);
+    ctx.quadraticCurveTo(200,112, 184,124); ctx.quadraticCurveTo(160,134, 132,134);
+    ctx.quadraticCurveTo(108,128, 92,114); ctx.quadraticCurveTo(82,98, 88,82);
+    ctx.quadraticCurveTo(102,72, 124,68); ctx.quadraticCurveTo(146,64, 168,62); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    // Shikoku
+    ctx.beginPath(); ctx.ellipse(118, 148, 16, 6, 0, 0, 2*Math.PI); ctx.fill(); ctx.stroke();
+    // Kyushu — 배 모양
+    ctx.beginPath();
+    ctx.moveTo(68,124); ctx.quadraticCurveTo(82,120, 92,128);
+    ctx.quadraticCurveTo(98,142, 96,158); ctx.quadraticCurveTo(88,170, 72,170);
+    ctx.quadraticCurveTo(58,168, 54,154); ctx.quadraticCurveTo(54,138, 60,130); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+    // Okinawa glow
+    ctx.fillStyle = 'rgba(255,196,0,0.22)';
+    ctx.beginPath(); ctx.ellipse(32, 195, 22, 9, 0, 0, 2*Math.PI); ctx.fill();
+    // Okinawa main island
+    ctx.fillStyle = '#ffc400';
+    ctx.beginPath(); ctx.ellipse(32, 195, 13, 4, 0, 0, 2*Math.PI); ctx.fill();
+    // Smaller islands
+    ctx.beginPath(); ctx.ellipse(18, 190, 2.5, 1.5, 0, 0, 2*Math.PI); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(46, 200, 2, 1.2, 0, 0, 2*Math.PI); ctx.fill();
+    // ★ on main Okinawa
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 18px "Archivo Black", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('★', 32, 195);
+    ctx.restore();
+  }
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y, x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x, y+h, r);
+    ctx.arcTo(x, y+h, x, y, r);
+    ctx.arcTo(x, y, x+w, y, r);
+    ctx.closePath();
+  }
+
+  // 방문한 곳 리스트 이미지 다운로드 — Day 별 그룹 세로 정렬
+  function downloadVisitedListImage() {
+    try {
+      const visited = getVisitedPlaces();
+      if (!visited.length) {
+        alert('아직 방문한 곳이 없어요!');
+        return;
+      }
+      const W = 1080;
+      // 동적 height 계산: 헤더 240 + 각 day group(태그 60 + items*48) + 끝 padding 60
+      const itemH = 50;
+      const groupH = (g) => 60 + g.items.length * itemH + 24;
+      const totalH = 240 + visited.reduce((s, g) => s + groupH(g), 0) + 80;
+      const H = Math.max(totalH, 1080);
+      const canvas = document.createElement('canvas');
+      canvas.width = W; canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      // 배경 cream
+      ctx.fillStyle = '#fffbed';
+      ctx.fillRect(0, 0, W, H);
+      // Top bar (navy)
+      ctx.fillStyle = '#000a33';
+      ctx.fillRect(0, 0, W, 180);
+      // 골드 글로우
+      const glow = ctx.createRadialGradient(W/2, 0, 0, W/2, 0, 200);
+      glow.addColorStop(0, 'rgba(255,196,0,0.3)');
+      glow.addColorStop(1, 'rgba(255,196,0,0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, W, 200);
+      // 헤더 텍스트
+      ctx.fillStyle = '#ffc400';
+      ctx.font = '800 26px "Space Grotesk", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('VISITED PLACES', W/2, 70);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 64px "Pretendard Variable", Pretendard, sans-serif';
+      ctx.fillText('내가 다녀온 곳', W/2, 130);
+
+      // Day groups
+      let y = 240;
+      visited.forEach(day => {
+        // Day tag
+        const dayLbl = day.dayId === 'prep' ? 'PRE-TRIP' : `DAY ${day.dayId.slice(1)}`;
+        ctx.fillStyle = '#0047ff';
+        roundRect(ctx, 80, y, 180, 38, 19);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '800 18px "Space Grotesk", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(dayLbl, 170, y + 19);
+        y += 52;
+        // Items
+        day.items.forEach(it => {
+          // Bullet
+          ctx.fillStyle = '#ffc400';
+          ctx.beginPath(); ctx.arc(110, y + itemH/2, 8, 0, 2*Math.PI); ctx.fill();
+          // Time
+          if (it.time) {
+            ctx.fillStyle = '#0047ff';
+            ctx.font = '700 18px "Space Grotesk", sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(it.time, 140, y + itemH/2);
+          }
+          // Title
+          ctx.fillStyle = '#000a33';
+          ctx.font = '600 22px "Pretendard Variable", Pretendard, sans-serif';
+          ctx.textAlign = 'left';
+          const titleX = it.time ? 240 : 140;
+          // Truncate long titles
+          let title = it.title;
+          if (title.length > 38) title = title.slice(0, 36) + '…';
+          ctx.fillText(title, titleX, y + itemH/2);
+          y += itemH;
+        });
+        y += 24; // gap between days
+      });
+
+      // Footer
+      ctx.fillStyle = 'rgba(0, 31, 102, 0.5)';
+      ctx.font = '500 18px "Pretendard Variable", Pretendard, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Family Journal · Okinawa · 5.10—5.13, 2026', W/2, H - 40);
+
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'okinawa-visited-places.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }, 'image/png', 0.95);
+    } catch (err) {
+      alert('이미지 저장 실패. 스크린샷으로 저장해 주세요.');
+    }
+  }
+
+  // 다운로드 버튼 wiring (인증 카드 + 방문 리스트)
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#td-download-btn')) {
+      downloadConquerImage();
+    } else if (e.target.closest('#vl-download-btn')) {
+      downloadVisitedListImage();
+    }
+  });
 
   // 마지막 미션 완료 후 — 마무리 페이지 자동 이동 + trip-done-msg 화려한 등장 트리거
   function navToBackAndReveal() {
@@ -10761,15 +11411,15 @@
       const navBack = [...document.querySelectorAll('.page-nav-btn')].find(b => b.dataset.nav === 'back');
       if (navBack) navBack.click();
       else { try { location.hash = '#back'; } catch(_) {} }
-      // 페이지 전환 후 trip-done-msg 로 부드럽게 스크롤 + 화려한 등장 애니메이션 재발화
+      // 페이지 전환 후 인증 카드 + 마지막 한 마디 화려한 등장
       setTimeout(() => {
-        const td = document.querySelector('.trip-done-msg');
-        if (!td || td.hidden) return;
-        td.classList.remove('just-revealed');
-        void td.offsetWidth;
-        td.classList.add('just-revealed');
-        td.scrollIntoView({ block: 'start', behavior: 'smooth' });
-        setTimeout(() => td.classList.remove('just-revealed'), 1800);
+        const target = document.getElementById('trip-conquer-card') || document.querySelector('.trip-done-msg');
+        if (!target || target.hidden) return;
+        target.classList.remove('just-revealed');
+        void target.offsetWidth;
+        target.classList.add('just-revealed');
+        target.scrollIntoView({ block: 'start', behavior: 'smooth' });
+        setTimeout(() => target.classList.remove('just-revealed'), 1800);
       }, 700);
     } catch(_) {}
   }
