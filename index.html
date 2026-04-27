@@ -5489,8 +5489,8 @@
   <!-- ========== 미션 #2 — Orion 호텔 체크인 ========== -->
   <div class="mission-card" data-mission="d1-hotel">
     <span class="mission-tag">Mission · Check-in 15:00</span>
-    <h3 class="mission-title">Hotel Orion Motobu — 도착!</h3>
-    <p class="mission-desc">키 받고 방문 열고 첫 발을 디뎠다면 — 이 여행의 첫 호텔 도장. 비세 후쿠기 길까지 도보 3분.</p>
+    <h3 class="mission-title"><a class="hc-name-link" data-hotel-query="ホテル オリオンモトブリゾート&amp;スパ">Hotel Orion Motobu</a> — 도착!</h3>
+    <p class="mission-desc">키 받고 방문 열고 첫 발을 디뎠다면 — 이 여행의 첫 호텔 도장. 비세 후쿠기 길까지 도보 3분. <strong>호텔 이름을 누르면 구글맵</strong>이 열려.</p>
     <div class="mission-action-row">
       <button type="button" class="mission-stamp-btn" aria-label="미션 인증">
         <span class="ms-icon">✓</span>
@@ -7647,7 +7647,7 @@
     <!-- 기본 메시지 (여행 전·중) — 미션 독려 + 살짝 약 치기 -->
     <p class="back-intro" data-state="default">
       이 여행책엔 <strong>★ 미션 도장 9개</strong>가 페이지마다 숨어있어. 하나씩 찾아 ✓ 도장 찍어봐.<br/>
-      <em>9개 다 모은 순간 — 너만 볼 수 있는 마지막 한 마디가 펼쳐져.</em><br/>
+      <em>9개 다 모은 순간 — 너만 볼 수 있는 히든 엔딩이 펼쳐져.</em><br/>
       어떤 말일지는… 직접 다 모아서 봐.
     </p>
   </div>
@@ -7667,22 +7667,20 @@
 
     <!-- 인증 뱃지 (다크 네이비 + 일본 지도 + 오키나와 강조) -->
     <div class="td-conquer">
-      <!-- 일본 지도 outline — 흰 stroke, 4섬 + 오키나와 골드 ★ -->
-      <svg viewBox="0 0 200 270" class="td-japan-map" aria-hidden="true">
-        <!-- Hokkaido: NE 다이아 형 + Shiretoko 반도 -->
-        <path class="jp-island" d="M125,15 L138,10 L155,12 L168,18 L175,28 L177,40 L172,52 L162,60 L148,62 L132,58 L120,50 L115,38 L118,25 Z"/>
-        <!-- Honshu: 본토, S-shape (Aomori → Tokyo → Osaka → Shimonoseki) -->
-        <path class="jp-island" d="M130,72 L142,75 L150,85 L155,98 L156,112 L152,124 L142,134 L128,142 L112,150 L92,156 L72,160 L52,160 L38,156 L26,148 L18,138 L18,128 L26,124 L40,128 L58,134 L76,138 L92,138 L108,134 L122,126 L132,114 L138,100 L138,86 Z"/>
+      <!-- 일본 열도 — 4섬 outline (실제 형태 단순화: 홋카이도·혼슈·시코쿠·큐슈) + 오키나와 골드 ★ -->
+      <svg viewBox="0 0 220 280" class="td-japan-map" aria-hidden="true">
+        <!-- Hokkaido: 북동 다이아몬드 형태 -->
+        <path class="jp-island" d="M152,28 Q170,22 187,32 Q199,46 196,58 Q186,72 170,73 Q155,72 148,60 Q146,42 152,28 Z"/>
+        <!-- Honshu: 활처럼 휜 긴 본섬 (S자 곡선) -->
+        <path class="jp-island" d="M158,84 Q176,88 176,101 Q170,114 158,115 Q140,117 121,122 Q100,128 80,134 Q62,140 50,142 Q42,141 44,133 Q49,125 60,118 Q78,107 96,97 Q118,87 140,82 Q151,80 158,84 Z"/>
         <!-- Shikoku: 본토 남쪽 작은 섬 -->
-        <path class="jp-island" d="M68,170 L88,170 L100,176 L100,184 L88,190 L70,190 L60,184 L60,176 Z"/>
-        <!-- Kyushu: 서남쪽, 세로로 긴 배 모양 -->
-        <path class="jp-island" d="M22,162 L40,162 L52,172 L56,188 L52,205 L42,215 L26,215 L14,205 L8,188 L10,172 Z"/>
-        <!-- Okinawa archipelago — 멀리 남쪽, 골드 강조 -->
-        <ellipse class="oki-glow" cx="22" cy="248" rx="22" ry="9"/>
-        <ellipse class="oki-island" cx="22" cy="248" rx="14" ry="3.5"/>
-        <ellipse class="oki-island" cx="8" cy="243" rx="2.5" ry="1.5"/>
-        <ellipse class="oki-island" cx="38" cy="253" rx="2" ry="1.2"/>
-        <text x="22" y="253" class="oki-star">★</text>
+        <path class="jp-island" d="M82,152 Q96,150 101,160 Q98,168 88,170 Q76,168 73,161 Q75,154 82,152 Z"/>
+        <!-- Kyushu: 서남쪽 둥근 섬 -->
+        <path class="jp-island" d="M36,156 Q52,152 60,165 Q63,180 55,190 Q44,196 32,190 Q22,180 24,168 Q27,160 36,156 Z"/>
+        <!-- Okinawa — 남쪽으로 멀리, 골드 강조 + ★ -->
+        <circle class="oki-glow" cx="22" cy="248" r="22"/>
+        <circle class="oki-island" cx="22" cy="248" r="11"/>
+        <text x="22" y="248" class="oki-star">★</text>
       </svg>
 
       <div class="td-conquer-tag">TRIP CONQUERED</div>
@@ -11161,8 +11159,8 @@
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, W, 700);
 
-      // 일본 지도 — 손코딩 outline (화면 SVG 와 동일 좌표) — emoji 사용 X
-      drawJapanMap(ctx, W/2, 280, 4.0);
+      // 일본 지도 — 화면 SVG 와 동일 좌표 (viewBox 220x280, scale 1.5)
+      drawJapanMap(ctx, W/2, 280, 1.5);
 
       // TRIP CONQUERED tag
       ctx.fillStyle = '#ffc400';
@@ -11239,45 +11237,73 @@
 
   // 일본 지도 Canvas — 위도/경도 기반, SVG 좌표와 동일 (linear path 로 명확한 해안선)
   function drawJapanMap(ctx, cx, cy, scale) {
+    // viewBox 220 x 280, center (110, 140)
     ctx.save();
-    ctx.translate(cx - 120*scale, cy - 110*scale);
+    ctx.translate(cx - 110*scale, cy - 140*scale);
     ctx.scale(scale, scale);
-    ctx.fillStyle = 'rgba(255,255,255,0.18)';
-    ctx.strokeStyle = 'rgba(255,255,255,0.28)';
-    ctx.lineWidth = 0.6 / scale;
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+    ctx.lineWidth = 1.4 / scale;
+    ctx.lineJoin = 'round';
 
-    const drawPath = (pts) => {
-      ctx.beginPath();
-      pts.forEach((p, i) => i === 0 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]));
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-    };
+    // Hokkaido — 북동 다이아몬드
+    ctx.beginPath();
+    ctx.moveTo(152, 28);
+    ctx.quadraticCurveTo(170, 22, 187, 32);
+    ctx.quadraticCurveTo(199, 46, 196, 58);
+    ctx.quadraticCurveTo(186, 72, 170, 73);
+    ctx.quadraticCurveTo(155, 72, 148, 60);
+    ctx.quadraticCurveTo(146, 42, 152, 28);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
 
-    // Hokkaido
-    drawPath([[190,18],[205,16],[215,22],[218,32],[213,42],[208,50],[200,52],[188,52],[178,46],[172,38],[173,28],[182,20]]);
-    // Honshu (정확한 S-curve, 25 점)
-    drawPath([[173,58],[182,66],[186,76],[184,88],[178,96],[172,100],[168,103],[162,103],[155,105],[148,107],[138,110],[122,113],[105,115],[88,116],[72,118],[58,120],[48,122],[45,125],[48,127],[55,124],[72,118],[88,113],[105,108],[120,102],[138,96],[155,88],[168,80],[178,70]]);
+    // Honshu — 활처럼 휜 본섬
+    ctx.beginPath();
+    ctx.moveTo(158, 84);
+    ctx.quadraticCurveTo(176, 88, 176, 101);
+    ctx.quadraticCurveTo(170, 114, 158, 115);
+    ctx.quadraticCurveTo(140, 117, 121, 122);
+    ctx.quadraticCurveTo(100, 128, 80, 134);
+    ctx.quadraticCurveTo(62, 140, 50, 142);
+    ctx.quadraticCurveTo(42, 141, 44, 133);
+    ctx.quadraticCurveTo(49, 125, 60, 118);
+    ctx.quadraticCurveTo(78, 107, 96, 97);
+    ctx.quadraticCurveTo(118, 87, 140, 82);
+    ctx.quadraticCurveTo(151, 80, 158, 84);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
     // Shikoku
-    ctx.beginPath(); ctx.ellipse(108, 138, 16, 6, 0, 0, 2*Math.PI); ctx.fill(); ctx.stroke();
-    // Kyushu
-    drawPath([[55,124],[72,124],[82,130],[88,140],[88,152],[82,164],[72,168],[60,164],[52,156],[48,144],[48,134]]);
+    ctx.beginPath();
+    ctx.moveTo(82, 152);
+    ctx.quadraticCurveTo(96, 150, 101, 160);
+    ctx.quadraticCurveTo(98, 168, 88, 170);
+    ctx.quadraticCurveTo(76, 168, 73, 161);
+    ctx.quadraticCurveTo(75, 154, 82, 152);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
 
-    // Okinawa glow
-    ctx.fillStyle = 'rgba(255,196,0,0.22)';
-    ctx.beginPath(); ctx.ellipse(24, 200, 24, 9, 0, 0, 2*Math.PI); ctx.fill();
-    // Okinawa main island
+    // Kyushu
+    ctx.beginPath();
+    ctx.moveTo(36, 156);
+    ctx.quadraticCurveTo(52, 152, 60, 165);
+    ctx.quadraticCurveTo(63, 180, 55, 190);
+    ctx.quadraticCurveTo(44, 196, 32, 190);
+    ctx.quadraticCurveTo(22, 180, 24, 168);
+    ctx.quadraticCurveTo(27, 160, 36, 156);
+    ctx.closePath();
+    ctx.fill(); ctx.stroke();
+
+    // Okinawa glow + 본섬 + ★
+    ctx.fillStyle = 'rgba(255,196,0,0.32)';
+    ctx.beginPath(); ctx.arc(22, 248, 22, 0, 2*Math.PI); ctx.fill();
     ctx.fillStyle = '#ffc400';
-    ctx.beginPath(); ctx.ellipse(24, 200, 14, 3.5, 0, 0, 2*Math.PI); ctx.fill();
-    // Smaller islands
-    ctx.beginPath(); ctx.ellipse(10, 195, 2.5, 1.5, 0, 0, 2*Math.PI); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(40, 205, 2, 1.2, 0, 0, 2*Math.PI); ctx.fill();
-    // ★ on main Okinawa
+    ctx.beginPath(); ctx.arc(22, 248, 11, 0, 2*Math.PI); ctx.fill();
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 18px "Archivo Black", sans-serif';
+    ctx.font = 'bold 14px "Archivo Black", sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('★', 24, 200);
+    ctx.fillText('★', 22, 248);
     ctx.restore();
   }
   function roundRect(ctx, x, y, w, h, r) {
@@ -11348,21 +11374,26 @@
           // Bullet
           ctx.fillStyle = '#ffc400';
           ctx.beginPath(); ctx.arc(110, y + itemH/2, 8, 0, 2*Math.PI); ctx.fill();
-          // Time
+          // Time (measure width to position title properly — prevents overlap)
+          let titleX = 140;
           if (it.time) {
             ctx.fillStyle = '#0047ff';
             ctx.font = '700 18px "Space Grotesk", sans-serif';
             ctx.textAlign = 'left';
             ctx.fillText(it.time, 140, y + itemH/2);
+            const timeWidth = ctx.measureText(it.time).width;
+            titleX = 140 + timeWidth + 24; // 24px gap after time
           }
           // Title
           ctx.fillStyle = '#000a33';
           ctx.font = '600 22px "Pretendard Variable", Pretendard, sans-serif';
           ctx.textAlign = 'left';
-          const titleX = it.time ? 240 : 140;
-          // Truncate long titles
+          // Truncate based on remaining canvas width (right padding 80)
           let title = it.title;
-          if (title.length > 38) title = title.slice(0, 36) + '…';
+          const maxTitleWidth = W - titleX - 80;
+          while (title.length > 4 && ctx.measureText(title).width > maxTitleWidth) {
+            title = title.slice(0, -2) + '…';
+          }
           ctx.fillText(title, titleX, y + itemH/2);
           y += itemH;
         });
