@@ -11591,6 +11591,8 @@
           if (ts) ts.textContent = '';
           // 히든 unlock UI 즉시 갱신 (CTA 숨김 + 탭 다시 잠금)
           if (typeof updateHiddenUnlockUI === 'function') updateHiddenUnlockUI();
+          // ★ 동선·chip 번호 즉시 재계산 (미션 카드 chip 배지 사라지고 mid stop route 에서 제거)
+          refreshDayRouteForCard(card);
         });
         card.appendChild(undoBtn);
       }
@@ -11640,11 +11642,30 @@
         // CTA 버튼·tab UI 갱신
         if (typeof updateHiddenUnlockUI === 'function') updateHiddenUnlockUI();
         if (typeof updateHiddenCounter === 'function') updateHiddenCounter();
+        // ★ 동선·chip 번호 즉시 재계산 (mid stop 미션 카드에 번호 부여 + route 갱신)
+        refreshDayRouteForCard(card);
 
         // 버튼 blur (focus 잔류 방지)
         if (btn.blur) btn.blur();
       });
     });
+  }
+
+  // 미션 카드 동작 (도장/취소) 후 — 같은 Day 의 chip 번호 + 동선·미니맵 즉시 재계산
+  // ROUTE.md § 3-call-sites consistency rule 준수: assignPickNumbers + renderDayRoute + renderDayMap 동시
+  // hidden 페이지 (DAY_HOTEL 없음) 는 자동 skip
+  function refreshDayRouteForCard(card) {
+    try {
+      const page = card?.closest('.page');
+      if (!page) return;
+      const dayId = page.dataset?.page;
+      if (!dayId) return;
+      // DAY_HOTEL 없는 페이지 (back, hidden, prep, cover) 는 skip
+      if (typeof DAY_HOTEL === 'undefined' || !DAY_HOTEL[dayId]) return;
+      if (typeof assignPickNumbers === 'function') assignPickNumbers(dayId);
+      if (typeof renderDayRoute === 'function') renderDayRoute(dayId);
+      if (typeof renderDayMap === 'function') renderDayMap(dayId);
+    } catch(_) {}
   }
 
   // 미션 카드 timestamp 렌더 (textContent 만 사용)
@@ -12090,9 +12111,9 @@
 
       const detail = document.createElement('div');
       detail.className = 'mc-detail';
-      // 미션 총 개수를 동적으로 — 미션 추가/삭제 시 자동 반영
-      const totalMissions = (typeof getAllMissions === 'function') ? getAllMissions().length : 0;
-      detail.textContent = `오키나와 ${totalMissions}개 도장 모두 모았어 ✨`;
+      // ★ 메인 미션 (9개) 만 카운트 — Hidden 6개는 별도 시스템 (FAMILY LEGEND 로 별도 알림)
+      const totalMissions = (typeof getMainMissions === 'function') ? getMainMissions().length : 9;
+      detail.textContent = `오키나와 메인 미션 ${totalMissions}개 도장 모두 모았어 ✨`;
       card.appendChild(detail);
 
       const sub = document.createElement('div');
@@ -12469,10 +12490,13 @@
     try {
       const card = document.querySelector('.trip-conquer-card');
       if (!card) return;
-      // 도장 (완료/전체 — "9/9" 형식)
-      const missions = state.missions || {};
-      const totalMissions = (typeof getAllMissions === 'function') ? getAllMissions().length : 9;
-      const missionCount = Object.values(missions).filter(m => m && m.done).length;
+      // ★ 메인 미션 (9개) 만 카운트 — trip-conquer-card 는 메인 9/9 도장 인증
+      // Hidden 6개는 Hidden 페이지의 별도 카운터 (#hidden-counter-num) + Family Legend 알림
+      const allMain = (typeof getMainMissions === 'function') ? getMainMissions() : [];
+      const totalMissions = allMain.length || 9;
+      const missionCount = allMain.filter(m =>
+        state.missions && state.missions[m.id] && state.missions[m.id].done
+      ).length;
       const missionsFrac = `${missionCount}/${totalMissions}`;
       // 평균 만족도 (별점 평균, 0~5, 1 자리 + ★)
       const ratings = state.ratings || {};
