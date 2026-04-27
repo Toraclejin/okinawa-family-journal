@@ -3611,28 +3611,28 @@
     margin-bottom: 24px;
   }
 
-  /* === 일본 지도 — 4섬 outline (stroke only, 누끼 스타일) + 오키나와 골드 ★ === */
+  /* === 일본 지도 — 실제 SVG 누끼 (japan-map.svg) + 오키나와 골드 ★ === */
   .td-japan-map {
-    width: 220px;
-    max-width: 75%;
+    width: 240px;
+    max-width: 80%;
     height: auto;
     margin: 0 auto 8px;
     display: block;
+    overflow: visible; /* pulse 애니메이션이 viewBox 밖으로 나가도 잘리지 않게 */
   }
-  .td-japan-map .jp-island {
-    fill: rgba(255, 255, 255, 0.06);
-    stroke: rgba(255, 255, 255, 0.85);
-    stroke-width: 1.4;
-    stroke-linejoin: round;
+  .td-japan-map .jp-img {
+    /* 실제 SVG 누끼 — 회색→흰색 톤으로 보정 */
+    filter: brightness(2.4) contrast(0.6) opacity(0.62) drop-shadow(0 1px 2px rgba(0,0,0,0.4));
   }
   .td-japan-map .oki-glow {
-    fill: rgba(255, 196, 0, 0.32);
+    fill: rgba(255, 196, 0, 0.38);
     animation: oki-pulse 2.4s ease-in-out infinite;
-    transform-origin: 22px 248px;
+    transform-origin: center;
+    transform-box: fill-box;
   }
   @keyframes oki-pulse {
     0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.18); }
+    50% { transform: scale(1.22); }
   }
   .td-japan-map .oki-island {
     fill: var(--amber);
@@ -3640,7 +3640,7 @@
     stroke-width: 0.5;
   }
   .td-japan-map .oki-star {
-    font-size: 18px;
+    font-size: 11px;
     fill: #fff;
     text-anchor: middle;
     font-family: 'Archivo Black', sans-serif;
@@ -5489,8 +5489,8 @@
   <!-- ========== 미션 #2 — Orion 호텔 체크인 ========== -->
   <div class="mission-card" data-mission="d1-hotel">
     <span class="mission-tag">Mission · Check-in 15:00</span>
-    <h3 class="mission-title"><a class="hc-name-link" data-hotel-query="ホテル オリオンモトブリゾート&amp;スパ">Hotel Orion Motobu</a> — 도착!</h3>
-    <p class="mission-desc">키 받고 방문 열고 첫 발을 디뎠다면 — 이 여행의 첫 호텔 도장. 비세 후쿠기 길까지 도보 3분. <strong>호텔 이름을 누르면 구글맵</strong>이 열려.</p>
+    <h3 class="mission-title">Hotel Orion Motobu — 도착!</h3>
+    <p class="mission-desc">키 받고 방문 열고 첫 발을 디뎠다면 — 이 여행의 첫 호텔 도장. 비세 후쿠기 길까지 도보 3분.</p>
     <div class="mission-action-row">
       <button type="button" class="mission-stamp-btn" aria-label="미션 인증">
         <span class="ms-icon">✓</span>
@@ -5526,7 +5526,7 @@
       <span class="hc-key">Mapcode</span><span class="hc-val code">553 105 265*58</span>
       <span class="hc-key">Stay</span><span class="hc-val">5/10 (토) ~ 5/12 (월) · 2박</span>
     </div>
-    <div class="hc-tip">렌터카 네비는 <strong>전화번호</strong>나 <strong>매피온 코드</strong>로 검색이 가장 정확. 호텔 이름 클릭하면 구글맵 열림.</div>
+    <div class="hc-tip"><strong>운전자 메모</strong> · 렌터카 네비는 <strong>전화번호</strong>나 <strong>매피온 코드</strong>로 검색이 가장 정확. 위 <strong>호텔 이름을 누르면</strong> 구글맵이 바로 열림.</div>
   </div>
 
   <!-- DAY 1 MOODS -->
@@ -7667,20 +7667,14 @@
 
     <!-- 인증 뱃지 (다크 네이비 + 일본 지도 + 오키나와 강조) -->
     <div class="td-conquer">
-      <!-- 일본 열도 — 4섬 outline (실제 형태 단순화: 홋카이도·혼슈·시코쿠·큐슈) + 오키나와 골드 ★ -->
-      <svg viewBox="0 0 220 280" class="td-japan-map" aria-hidden="true">
-        <!-- Hokkaido: 북동 다이아몬드 형태 -->
-        <path class="jp-island" d="M152,28 Q170,22 187,32 Q199,46 196,58 Q186,72 170,73 Q155,72 148,60 Q146,42 152,28 Z"/>
-        <!-- Honshu: 활처럼 휜 긴 본섬 (S자 곡선) -->
-        <path class="jp-island" d="M158,84 Q176,88 176,101 Q170,114 158,115 Q140,117 121,122 Q100,128 80,134 Q62,140 50,142 Q42,141 44,133 Q49,125 60,118 Q78,107 96,97 Q118,87 140,82 Q151,80 158,84 Z"/>
-        <!-- Shikoku: 본토 남쪽 작은 섬 -->
-        <path class="jp-island" d="M82,152 Q96,150 101,160 Q98,168 88,170 Q76,168 73,161 Q75,154 82,152 Z"/>
-        <!-- Kyushu: 서남쪽 둥근 섬 -->
-        <path class="jp-island" d="M36,156 Q52,152 60,165 Q63,180 55,190 Q44,196 32,190 Q22,180 24,168 Q27,160 36,156 Z"/>
-        <!-- Okinawa — 남쪽으로 멀리, 골드 강조 + ★ -->
-        <circle class="oki-glow" cx="22" cy="248" r="22"/>
-        <circle class="oki-island" cx="22" cy="248" r="11"/>
-        <text x="22" y="248" class="oki-star">★</text>
+      <!-- 일본 열도 — 외부 SVG 누끼 (japan-map.svg) + 오키나와 골드 ★ overlay -->
+      <svg viewBox="0 0 582 580" class="td-japan-map" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <!-- 실제 일본 지도 SVG (Ozean 제거된 누끼 버전) -->
+        <image class="jp-img" href="japan-map.svg" x="0" y="0" width="582" height="580"/>
+        <!-- 오키나와 강조 — 실제 좌표 (380, 540) 부근, 좌측 잘림 방지 위해 충분한 안쪽 여유 -->
+        <circle class="oki-glow" cx="381" cy="535" r="22"/>
+        <circle class="oki-island" cx="381" cy="535" r="11"/>
+        <text x="381" y="538" class="oki-star">★</text>
       </svg>
 
       <div class="td-conquer-tag">TRIP CONQUERED</div>
@@ -9584,21 +9578,61 @@
   //  Day Route — 선택한 옵션 동선 시각화 + 구글맵 multi-stop
   // ==========================================
   const DAY_HOTEL = {
-    // D1: 공항 도착 → Orion 호텔 (편도)
-    d1: { start: '那覇空港', end: 'ホテル オリオンモトブリゾート&スパ', startLabel: '나하 공항', endLabel: 'Orion 호텔' },
+    // D1: 공항 도착 → 점심·간식 픽 → Orion 호텔 체크인 (mid) → 일몰·디너 픽 → Orion 호텔 (End)
+    // 호텔 체크인은 픽 사이에 강제 삽입 — afterMission 기준으로 DOM 위치 자동 분할
+    d1: {
+      start: '那覇空港',
+      end: 'ホテル オリオンモトブリゾート&スパ',
+      startLabel: '나하 공항',
+      endLabel: 'Orion 호텔',
+      midHotel: { tag: 'Check-in', label: 'Orion 호텔', afterMission: 'd1-hotel' },
+    },
     // D2: Orion 호텔 풀데이 (왕복)
     d2: { start: 'ホテル オリオンモトブリゾート&スパ', end: 'ホテル オリオンモトブリゾート&スパ', startLabel: 'Orion 호텔', endLabel: 'Orion 호텔' },
-    // D3: Orion 호텔 → Vessel 체크인(2번 강제) → 차탄 픽들 → Vessel End
+    // D3: Orion 호텔 → Vessel 체크인(차탄 도착 시점, 픽 시작 전 위치) → 차탄 픽들 → Vessel End
     d3: {
       start: 'ホテル オリオンモトブリゾート&スパ',
       end: 'ベッセルホテル カンパーナ沖縄',
       startLabel: 'Orion 호텔',
       endLabel: 'Vessel 호텔',
-      // Mid Hotel — D3 이동일은 픽 사이에 Vessel 체크인을 강제 정거장으로 삽입
-      // (옵션 ✓ 선택 여부와 무관하게 항상 chip 2번 위치)
-      midHotel: { tag: 'Check-in', label: 'Vessel 호텔' },
+      // Mid Hotel — afterMission 의 DOM 위치 기준으로 픽 사이에 자동 삽입
+      midHotel: { tag: 'Check-in', label: 'Vessel 호텔', afterMission: 'd3-vessel' },
     },
   };
+
+  // afterMission DOM 위치 기준으로 mid stop 삽입 인덱스 계산
+  // — picks 배열 중 missionEl 보다 DOM 상 앞에 위치한 슬롯의 픽 개수 = 삽입 인덱스
+  function computeMidInsertIdx(dayId, afterMissionId) {
+    const page = document.querySelector(`.page[data-page="${dayId}"]`);
+    if (!page || !afterMissionId) return 0;
+    const missionEl = page.querySelector(`.mission-card[data-mission="${afterMissionId}"], .opt[data-mission="${afterMissionId}"]`);
+    if (!missionEl) return 0;
+    let idx = 0;
+    page.querySelectorAll('.options').forEach(optsEl => {
+      const slotKey = (typeof slotKeyOf === 'function') ? slotKeyOf(optsEl) : null;
+      if (!slotKey) return;
+      const chosen = state.chosen && state.chosen[slotKey];
+      if (!Array.isArray(chosen) || !chosen.length) return;
+      // optsEl이 missionEl보다 DOM 상 앞에 있으면 chosen 길이만큼 더하기
+      const cmp = optsEl.compareDocumentPosition(missionEl);
+      // DOCUMENT_POSITION_FOLLOWING (4) = mission이 optsEl 뒤에 있음 → optsEl 픽들이 mid 앞
+      if (cmp & Node.DOCUMENT_POSITION_FOLLOWING) {
+        // 단, DIR sentinel pick 은 픽 카운트에서 제외 (route 에서도 제외됨)
+        const opts = optsEl.querySelectorAll(':scope > .opt');
+        chosen.forEach(idxStr => {
+          const i = parseInt(idxStr, 10);
+          if (!Number.isFinite(i)) return;
+          const opt = opts[i];
+          if (!opt) return;
+          const placeText = opt.querySelector('.opt-place')?.textContent?.trim() || '';
+          const mq = placeText ? resolveMapQuery(placeText) : null;
+          const isDir = typeof mq === 'string' && mq.startsWith('DIR:');
+          if (!isDir) idx += 1;
+        });
+      }
+    });
+    return idx;
+  }
 
   // 옵션 카드 좌상단 번호 배지
   // 두 개의 분리된 네임스페이스:
@@ -9612,8 +9646,14 @@
     page.querySelectorAll('.opt[data-pick-num], .opt-write[data-pick-num]').forEach(el => delete el.dataset.pickNum);
 
     const dayHotel = (typeof DAY_HOTEL !== 'undefined') ? DAY_HOTEL[dayId] : null;
-    let n = (dayHotel && dayHotel.midHotel) ? 2 : 1; // 지도 시퀀스 (Start=1, [Mid=2])
+    let n = 1; // 지도 시퀀스 (Start=1)
     let extraN = 0; // 추가옵션 시퀀스 (+1부터)
+    // mid stop 위치 — 사전 정의된 픽 중 미션 DOM 위치 기준
+    const midInsertIdx = (dayHotel && dayHotel.midHotel)
+      ? computeMidInsertIdx(dayId, dayHotel.midHotel.afterMission)
+      : -1;
+    let pickIdx = 0;
+    let midPlaced = false;
 
     // [1] 사전 옵션 (.opt) — 지도 네임스페이스 (chip·지도 마커와 동일 번호)
     page.querySelectorAll('.options').forEach(optsEl => {
@@ -9630,8 +9670,14 @@
         const mq = placeText ? resolveMapQuery(placeText) : null;
         const isDir = typeof mq === 'string' && mq.startsWith('DIR:');
         if (isDir) return;
+        // mid stop 이 이 픽 앞에 들어가야 하면 번호 한 칸 미리 차지
+        if (midInsertIdx >= 0 && !midPlaced && pickIdx === midInsertIdx) {
+          n += 1; // mid 자리 비우기
+          midPlaced = true;
+        }
         n += 1;
         opt.dataset.pickNum = String(n);
+        pickIdx += 1;
       });
     });
 
@@ -9926,16 +9972,26 @@
 
     let stopNum = 0;
     stops.appendChild(makeStop(++stopNum, 'Start', hotel.startLabel, true, hotelCoords.start));
-    // D3는 Vessel 체크인 chip을 2번 위치에 강제 삽입 (이동일 흐름)
-    if (hotel.midHotel && hotelCoords.mid) {
-      stops.appendChild(makeArrow());
-      stops.appendChild(makeStop(++stopNum, hotel.midHotel.tag, hotel.midHotel.label, true, hotelCoords.mid));
-    }
-    picks.forEach(p => {
+    // 호텔 체크인 mid stop — afterMission 의 DOM 위치 기준으로 픽 사이에 삽입
+    // (D1: d1-hotel 미션 위치 = Blue Seal 픽 다음, 일몰/디너 픽 앞)
+    // (D3: d3-vessel 미션 위치 = 픽 시작 전 — 즉 picks[0] 앞)
+    const midInsertIdx = (hotel.midHotel && hotelCoords.mid)
+      ? computeMidInsertIdx(dayId, hotel.midHotel.afterMission)
+      : -1;
+    const renderMid = () => {
+      if (hotel.midHotel && hotelCoords.mid) {
+        stops.appendChild(makeArrow());
+        stops.appendChild(makeStop(++stopNum, hotel.midHotel.tag, hotel.midHotel.label, true, hotelCoords.mid));
+      }
+    };
+    picks.forEach((p, i) => {
+      if (i === midInsertIdx) renderMid();
       stops.appendChild(makeArrow());
       const c = getCoords(p.place, pickFallback);
       stops.appendChild(makeStop(++stopNum, p.time || '·', p.title, false, c));
     });
+    // 모든 픽이 mid 앞에 있는 경우 — 픽 끝나고 mid 삽입 (e.g., midInsertIdx === picks.length)
+    if (midInsertIdx >= picks.length) renderMid();
     stops.appendChild(makeArrow());
     stops.appendChild(makeStop(++stopNum, 'End', hotel.endLabel, true, hotelCoords.end));
     container.appendChild(stops);
@@ -9997,11 +10053,12 @@
       body.className = 'day-ratings-body';
 
       // 동선 픽 평점 — chip 번호와 동일
-      // (Start=1, [mid=2 D3만], 픽 시작 번호 = midHotel ? 3 : 2)
+      // mid stop 은 midInsertIdx 위치에서 번호 한 칸 차지 → 그 이후 픽은 +1 shift
       const page = document.querySelector(`.page[data-page="${dayId}"]`);
-      const pickStartNum = hotel.midHotel ? 3 : 2;
       picks.forEach((p, i) => {
-        const num = i + pickStartNum;
+        // Start=1, 그 다음 픽=2,3,...; mid 가 i 위치에 들어가면 mid=2+midInsertIdx, 이후 픽은 +1
+        let num = i + 2;
+        if (midInsertIdx >= 0 && i >= midInsertIdx) num += 1;
         const targetEl = (p.ratingKey && page) ? page.querySelector(`.opt-dots[data-key="${p.ratingKey}"]`)?.closest('.opt') : null;
         body.appendChild(buildRatingRow(num, p.title, p.ratingKey, false, targetEl));
       });
@@ -10146,9 +10203,9 @@
   };
 
   const DAY_HOTEL_COORDS = {
-    d1: { start: [26.2058, 127.6458], end: [26.6917, 127.8788] }, // 공항 → Orion
+    d1: { start: [26.2058, 127.6458], end: [26.6917, 127.8788], mid: [26.6917, 127.8788] }, // 공항 → 픽들 → Orion(mid 체크인) → 픽들 → Orion(End)
     d2: { start: [26.6917, 127.8788], end: [26.6917, 127.8788] }, // Orion 왕복
-    d3: { start: [26.6917, 127.8788], end: [26.3175, 127.7583], mid: [26.3175, 127.7583] }, // Orion → Vessel(체크인 강제) → 픽 → Vessel(End)
+    d3: { start: [26.6917, 127.8788], end: [26.3175, 127.7583], mid: [26.3175, 127.7583] }, // Orion → Vessel(체크인) → 픽들 → Vessel(End)
   };
 
   // 좌표 조회: place 텍스트 → resolveMapQuery → PLACE_COORDS, 매핑 없으면 호텔 좌표 fallback
@@ -10223,15 +10280,20 @@
     }
     container.classList.remove('empty');
 
-    // 동선 좌표: hotel.start → [hotel.mid?] → picks → hotel.end
+    // 동선 좌표: hotel.start → [픽들 (앞부분)] → [hotel.mid?] → [픽들 (뒷부분)] → hotel.end
     // 호텔 활동(별 보기 등) fallback은 도착 호텔(end) — D1 공항→호텔 편도 대응
     const pickFallback = (dayId === 'd1') ? hotelCoords.end : hotelCoords.start;
+    const dayHotel = DAY_HOTEL[dayId];
+    const midInsertIdx = (dayHotel && dayHotel.midHotel && hotelCoords.mid)
+      ? computeMidInsertIdx(dayId, dayHotel.midHotel.afterMission)
+      : -1;
     const route = [hotelCoords.start];
-    if (hotelCoords.mid) route.push(hotelCoords.mid); // D3 Vessel 체크인 강제 삽입
-    picks.forEach(p => {
+    picks.forEach((p, i) => {
+      if (midInsertIdx >= 0 && i === midInsertIdx) route.push(hotelCoords.mid);
       const c = getCoords(p.place, pickFallback);
       if (c) route.push(c);
     });
+    if (midInsertIdx >= picks.length && hotelCoords.mid) route.push(hotelCoords.mid);
     route.push(hotelCoords.end);
 
     // 기존 인스턴스가 있으면 제거하고 다시 (옵션 변경 시)
@@ -10255,8 +10317,12 @@
     }).addTo(map);
 
     // 마커 — 시작·픽들·끝, 모두 숫자로 번호 매김 (chip의 stop num과 일치)
+    // mid stop 도 호텔 스타일로 강조 (Start/End 와 동일)
     const markerLabels = route.map((_, i) => String(i + 1));
-    const isHotelMarker = (i) => i === 0 || i === route.length - 1;
+    const midRouteIdx = (midInsertIdx >= 0 && hotelCoords.mid)
+      ? Math.min(1 + midInsertIdx, route.length - 2)
+      : -1;
+    const isHotelMarker = (i) => i === 0 || i === route.length - 1 || i === midRouteIdx;
     route.forEach((coord, i) => {
       const lbl = markerLabels[i];
       const div = document.createElement('div');
@@ -11139,7 +11205,8 @@
 
   // 인증 카드 이미지 다운로드 — 1080×1240 Canvas 직접 그리기 (라이브러리 X)
   // 화면 인증 카드 레이아웃 유지: 지도 + 정복 텍스트 + 통계 4칸. 액션 버튼/스크린샷 안내 X.
-  function downloadConquerImage() {
+  // 일본 지도는 실제 japan-map.svg 를 비동기 로드 (실패 시 단순화 도형 fallback)
+  async function downloadConquerImage() {
     try {
       const W = 1080, H = 1240;  // 1080 → 1240 (footer 가 stats grid 와 겹치지 않게 여유)
       const canvas = document.createElement('canvas');
@@ -11159,8 +11226,11 @@
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, W, 700);
 
-      // 일본 지도 — 화면 SVG 와 동일 좌표 (viewBox 220x280, scale 1.5)
-      drawJapanMap(ctx, W/2, 280, 1.5);
+      // 일본 지도 — 실제 SVG 를 비동기 로드해서 그리기 (실패 시 단순화 도형 fallback)
+      await drawJapanMapFromSvg(ctx, W, 280, 360).catch(() => {
+        // SVG 로드 실패 fallback — 단순화 도형
+        drawJapanMap(ctx, W/2, 280, 1.5);
+      });
 
       // TRIP CONQUERED tag
       ctx.fillStyle = '#ffc400';
@@ -11236,6 +11306,57 @@
   }
 
   // 일본 지도 Canvas — 위도/경도 기반, SVG 좌표와 동일 (linear path 로 명확한 해안선)
+  // 실제 japan-map.svg 를 로드해 canvas 에 그리기 + 오키나와 골드 ★ overlay
+  // — 화면 SVG 와 동일 좌표 (source viewBox 582x580, Okinawa @ 380,540)
+  // — Promise 반환: SVG load 완료 후 resolve, 실패 시 reject
+  function drawJapanMapFromSvg(ctx, canvasW, mapTopY, mapH) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          // 정사각형에 가까운 source(582x580) 를 mapH 만큼 그리기
+          const scale = mapH / 580;
+          const drawW = 582 * scale;
+          const drawH = 580 * scale;
+          const drawX = (canvasW - drawW) / 2;
+          const drawY = mapTopY - drawH / 2;
+          // 회색 톤 → 흰색 톤 보정: offscreen canvas 에 그리고 source-in 으로 흰색 합성
+          const off = document.createElement('canvas');
+          off.width = drawW;
+          off.height = drawH;
+          const offCtx = off.getContext('2d');
+          offCtx.drawImage(img, 0, 0, drawW, drawH);
+          // 회색 픽셀을 흰색 으로 — source-atop 으로 알파 유지하며 색상 덮어쓰기
+          offCtx.globalCompositeOperation = 'source-atop';
+          offCtx.fillStyle = 'rgba(255,255,255,0.62)';
+          offCtx.fillRect(0, 0, drawW, drawH);
+          // 본 canvas 에 그리기
+          ctx.drawImage(off, drawX, drawY);
+
+          // 오키나와 강조 — source 좌표 (381, 535) 를 canvas 좌표로 변환
+          const okiX = drawX + 381 * scale;
+          const okiY = drawY + 535 * scale;
+          const okiR = 22 * scale * 1.6; // 살짝 키워서 잘 보이게
+          // glow
+          ctx.fillStyle = 'rgba(255,196,0,0.38)';
+          ctx.beginPath(); ctx.arc(okiX, okiY, okiR * 1.2, 0, 2*Math.PI); ctx.fill();
+          // island
+          ctx.fillStyle = '#ffc400';
+          ctx.beginPath(); ctx.arc(okiX, okiY, okiR * 0.6, 0, 2*Math.PI); ctx.fill();
+          // ★
+          ctx.fillStyle = '#ffffff';
+          ctx.font = `bold ${Math.round(okiR * 0.7)}px "Archivo Black", sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('★', okiX, okiY);
+          resolve();
+        } catch (e) { reject(e); }
+      };
+      img.onerror = reject;
+      img.src = 'japan-map.svg';
+    });
+  }
+
   function drawJapanMap(ctx, cx, cy, scale) {
     // viewBox 220 x 280, center (110, 140)
     ctx.save();
