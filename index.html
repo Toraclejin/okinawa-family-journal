@@ -5990,13 +5990,13 @@
   </div>
 </div>
 
-<!-- Family Master 풀스크린 (6/6 완료, 1.8초) -->
+<!-- Family Legend 풀스크린 (6/6 완료, 1.8초) -->
 <div class="family-master-overlay" id="family-master-overlay" aria-hidden="true">
   <div class="fmo-content">
-    <div class="fmo-medal">🥇</div>
-    <div class="fmo-tag">FAMILY MASTER</div>
-    <div class="fmo-title">패밀리 마스터!</div>
-    <p class="fmo-body">메인 9개 + 가족 보너스 6개 = 진짜 잘 했어. 이번 여행 너 덕분에 더 따뜻했어.</p>
+    <div class="fmo-medal">🏆</div>
+    <div class="fmo-tag">FAMILY LEGEND</div>
+    <div class="fmo-title">패밀리 레전드!</div>
+    <p class="fmo-body">메인 9개 + 시크릿 레벨 6개 = 진짜 잘 했어. 이번 여행 너 덕분에 더 따뜻했어. <strong>친구한테 자랑해도 돼</strong>.</p>
   </div>
 </div>
 
@@ -8570,7 +8570,7 @@
 <!-- ========== HIDDEN MISSION 페이지 (d1-hotel 도착 후 unlock) ========== -->
 <div class="page" data-page="hidden">
   <section class="hidden-page">
-    <div class="hidden-mark">🎫 BONUS · For 조카 Only ✺</div>
+    <div class="hidden-mark">🎮 SECRET LEVEL · 너만 풀었어</div>
     <div class="hidden-page-head">
       <h2>Hidden<br/><em>Mission.</em></h2>
       <p class="hidden-page-sub">호텔 도착 미션 클리어 → <strong>티켓 발급 완료</strong>.<br/>5개 비밀 미션은 가족이랑 함께 — 메인 9개와는 별도.</p>
@@ -8578,7 +8578,7 @@
         <span class="hc-num" id="hidden-counter-num">0</span>
         <span class="hc-divider">/</span>
         <span class="hc-total">6</span>
-        <span class="hc-lbl">FAMILY MASTER</span>
+        <span class="hc-lbl">FAMILY LEGEND</span>
       </div>
     </div>
 
@@ -8691,11 +8691,11 @@
       <div class="mission-timestamp"></div>
     </div>
 
-    <!-- 6/6 완료 시 패밀리 마스터 메시지 -->
+    <!-- 6/6 완료 시 패밀리 레전드 메시지 -->
     <div class="family-master-msg" id="family-master-msg" hidden>
-      <div class="fm-eyebrow">🥇 FAMILY MASTER</div>
-      <h3 class="fm-headline">진짜 잘 했어 — 가족이 다 자랑스러워하는 5번 클리어.</h3>
-      <p class="fm-body">메인 미션 9개랑 다른 5개. 이건 <strong>가족이랑 같이 만든 추억</strong>이라 더 의미 있어. 다음 여행에서도 또 해보자.</p>
+      <div class="fm-eyebrow">🏆 FAMILY LEGEND</div>
+      <h3 class="fm-headline">진짜 잘 했어 — 시크릿 레벨 6번 다 클리어.</h3>
+      <p class="fm-body">메인 미션 9개랑 다른 6개. 이건 <strong>가족이랑 같이 만든 진짜 레전드</strong>라 더 의미 있어. 친구한테 자랑해도 돼 — 다음 여행에서도 또 해보자.</p>
     </div>
   </section>
 </div><!-- /page hidden -->
@@ -11507,7 +11507,8 @@
         celebrateMission(title);  // 마지막 미션이면 fireTripComplete + auto nav, 아니면 fireMissionComplete
 
         // d1-hotel 첫 done 시 — 히든 미션 unlock 모달 (한 번만, hiddenUnlocked === false 일 때)
-        if (id === 'd1-hotel' && !state.hiddenUnlocked) {
+        // ⚠️ 변수명 주의: 이 wireMissionCards 안에서는 'missionId' 사용 (이전에 'id' 라 써서 항상 false 였던 회귀 fix)
+        if (missionId === 'd1-hotel' && !state.hiddenUnlocked) {
           // celebrateMission (1.8초 풀스크린) 끝난 후 모달 등장
           setTimeout(() => {
             if (typeof showHiddenUnlockModal === 'function' && !state.hiddenUnlocked) showHiddenUnlockModal();
