@@ -113,14 +113,50 @@ JS 안 `PLACE_QUERIES` 배열. `[['키 substring', 'Google Maps 정확한 검색
 
 ```js
 {
-  ratings: { 'd1-icecream': 3, ... },        // 별점 (0-5)
-  texts: { 'traveler-name': '...', ... },    // 입력 필드
-  packing: { 'pack-item-0': true, ... },     // 체크박스
-  photos: { 'day1': [{id, dataUrl}, ...] },  // 사진 (base64)
-  chosen: { 'd1-ts0': ['0', '2'], ... },     // 옵션 선택 (복수 가능, 문자열 idx 배열)
-  extraOptions: { ... }                      // 사용자 추가 옵션
+  ratings: { 'd1-icecream': 3, ... },         // 별점 (0-5)
+  texts: { 'traveler-name': '...', ... },     // 입력 필드
+  packing: { 'pack-item-0': true, ... },      // 체크박스
+  photos: { 'day1': [{id, dataUrl}, ...] },   // 사진 (base64)
+  chosen: { 'd1-ts0': ['0', '2'], ... },      // 사전 .opt 선택 (복수, 문자열 idx 배열)
+  chosenWrites: { 'd1-ts0': true, ... },      // placeholder ✓ (slotKey 기반)
+  chosenExtras: { 'abc123': true, ... },      // 동적 .opt-write.extra ✓ (extraId 기반)
+  extras: { 'd1-ts0': ['abc123'], ... },      // 동적 추가된 카드 list (slot별)
 }
 ```
+
+### 3-namespace 동시 점검 룰 (필수)
+선택 상태는 **3개 분리 namespace**로 관리됨:
+- `state.chosen` — 사전 정의 옵션 (.opt)
+- `state.chosenWrites` — placeholder (.opt-write:not(.extra))
+- `state.chosenExtras` — 사용자 동적 추가 (.opt-write.extra)
+
+**한 곳을 건드리는 변경은 다른 두 곳도 영향 받는지 확인**. 영향 받는 6개 코드 위치:
+1. `clearBtn` (오늘 선택 초기화)
+2. `undoBtn` (되돌리기)
+3. `getDayPicks` / `getDayExtras` (Today's Picks 데이터)
+4. `assignPickNumbers` (옵션 카드 좌상단 번호)
+5. 평점·chip·지도 마커 렌더링
+6. `sanitizeImportedState` (import 검증)
+
+체크리스트 누락 시 발생한 회귀: 2026-04-25 placeholder/extras가 초기화로 안 지워짐.
+
+## 번호 시스템 — 두 개 분리 네임스페이스 (필수 룰)
+
+지도 chip·옵션 카드 번호 배지·Today's Picks 평점 시퀀스는 **두 개 분리된 네임스페이스**:
+
+| 네임스페이스 | 멤버 | 표기 | 위치 |
+|---|---|---|---|
+| **지도** | Start, [Mid], 사전 .opt 픽, End | `1, 2, 3, ...` | chip + Leaflet 마커 + .opt 카드 좌상단 |
+| **추가옵션** | placeholder, 동적 extras | `+1, +2, +3, ...` | Today's Picks 평점 + .opt-write 카드 좌상단 |
+
+**왜 분리하나**: 둘 다 `1, 2, 3...` 쓰면 "End chip = 3" 과 "TEST extras = 3" 이 충돌해 의미 모호. 사용자가 "extras도 지도에 들어가는 픽" 으로 오해.
+
+**구현 위치** (`index.html` 검색):
+- `assignPickNumbers()` — `n` (지도) + `extraN` (추가옵션) 두 카운터
+- `buildRatingRow(num, ...)` — picks=숫자, extras=`'+' + i`
+- CSS `.opt-write[data-pick-num]::before` — 점선 + 흰 배경 (지도 픽은 실선 + 파랑)
+
+회귀 사례 (2026-04-27): 두 네임스페이스가 합쳐져 있어 #3 = End chip = TEST extra 충돌.
 
 ## 디자인 토큰 (CSS 변수)
 

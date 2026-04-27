@@ -128,22 +128,56 @@
     !afterClear.chosenExtras?.['__test_extra__']
   ) ? 'PASS' : 'FAIL (clear leaked)';
 
+  // [N] 평점 stale 회귀 — 별 클릭 시 Today's Picks 즉시 갱신
+  // 회귀 케이스: 2026-04-27 — refreshDayRatings 정의돼 있는데 호출 안 돼서 별 클릭해도 화면 안 바뀜
+  state.chosen = state.chosen || {};
+  state.chosen['d1-ts1'] = ['0'];
+  state.ratings = state.ratings || {};
+  state.ratings['d1-emerald'] = 0;
+  saveState(state);
+  renderDayRoute('d1');
+  await new Promise(r => setTimeout(r, 200));
+  // 별점 직접 변경 + refreshDayRatings 호출 시뮬
+  state.ratings['d1-emerald'] = 4;
+  saveState(state);
+  if (typeof refreshDayRatings === 'function') refreshDayRatings('d1');
+  await new Promise(r => setTimeout(r, 100));
+  const ratingRow = document.querySelector('[data-day-route="d1"] .day-rating-row[data-rating-key="d1-emerald"]');
+  const onDots = ratingRow?.querySelectorAll('.dr-dot.on').length || 0;
+  checks.N_ratingRefresh = (typeof refreshDayRatings === 'function' && onDots === 4)
+    ? 'PASS' : `FAIL (refreshFn=${typeof refreshDayRatings}, onDots=${onDots})`;
+
+  // [O] 번호 네임스페이스 분리 — 지도 픽은 숫자, 추가옵션은 +N
+  // 회귀 케이스: 2026-04-27 — End chip "3" === Today's Picks extras "3" 충돌
+  // (예: D1 픽 1개 + extra 1개 → 픽=2, End chip=3, extra=+1)
+  const optWithNum = document.querySelector('[data-page="d1"] .opt[data-pick-num]');
+  const optWriteWithNum = document.querySelector('[data-page="d1"] .opt-write[data-pick-num]');
+  const optNumStr = optWithNum?.dataset?.pickNum || '';
+  const optWriteNumStr = optWriteWithNum?.dataset?.pickNum || '';
+  // 사전 .opt 는 숫자만, .opt-write 는 + prefix
+  const optNumOK = optNumStr && /^\d+$/.test(optNumStr);
+  const optWriteNumOK = !optWriteWithNum || /^\+\d+$/.test(optWriteNumStr);
+  checks.O_numberNamespaces = (optNumOK && optWriteNumOK)
+    ? 'PASS' : `FAIL (opt=${optNumStr}, optWrite=${optWriteNumStr})`;
+
   // 정리
   delete state.chosen['d1-ts0'];
+  delete state.chosen['d1-ts1'];
   delete state.chosen['d1-ts1b'];
   delete state.chosen['d1-ts2'];
+  delete state.ratings['d1-emerald'];
   saveState(state);
   renderDayRoute('d1');
 
   console.table(checks);
   const failed = Object.entries(checks).filter(([k, v]) => !String(v).startsWith('PASS'));
-  if (failed.length === 0) console.log('%c✓ ALL 13 PASS', 'color: green; font-weight: bold');
+  if (failed.length === 0) console.log('%c✓ ALL 15 PASS', 'color: green; font-weight: bold');
   else console.warn('✗ FAILED:', failed);
   return checks;
 })();
 ```
 
-**기대 결과**: 13/13 PASS.
+**기대 결과**: 15/15 PASS.
 
 ---
 
@@ -261,3 +295,6 @@
 
 - 2026-04-26 초안 (transit-system PR과 함께 도입, 12 자동 + 8 수동)
 - 2026-04-25 [M] 항목 추가 — 오늘 선택 초기화가 placeholder/extras를 안 지우던 회귀 (state 3-namespace 시스템 도입 시 누락) 자동 검증으로 등록
+- 2026-04-27 [N] [O] 항목 추가
+  - [N] 별 클릭 시 Today's Picks 즉시 갱신 — `refreshDayRatings` 호출 누락 회귀
+  - [O] 지도 chip 번호 vs 추가옵션 + prefix 네임스페이스 분리 — 충돌 방지

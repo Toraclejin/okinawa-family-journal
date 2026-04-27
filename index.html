@@ -770,6 +770,15 @@
     z-index: 5;
     pointer-events: none;
   }
+  /* 추가옵션(placeholder + dynamic extra) — 점선 + 투명 배경으로 지도 픽과 시각 분리
+     "지도엔 안 나오는 별도 시퀀스(+1, +2, ...)" 임을 명시 */
+  .opt-write[data-pick-num]::before {
+    background: #fff;
+    color: var(--blue);
+    border: 2.5px dashed var(--blue);
+    box-shadow: 0 2px 6px rgba(0, 71, 255, 0.18);
+    font-size: 12.5px;
+  }
 
   /* Leaflet 마커 라벨 — divIcon 기본 스타일 무력화 후 우리 디자인 적용 */
   .leaflet-div-icon.map-marker-wrapper {
@@ -6122,6 +6131,9 @@
           if (!state.ratings) state.ratings = {};
           state.ratings[key] = count;
           saveState(state);
+          // Today's Picks 평점 섹션 즉시 갱신 (renderDayRoute 안 거치고 별점만 update)
+          const dayPage = group.closest('.page')?.dataset.page;
+          if (dayPage && typeof refreshDayRatings === 'function') refreshDayRatings(dayPage);
         }
       });
     });
@@ -6572,6 +6584,9 @@
             if (!state.ratings) state.ratings = {};
             state.ratings[key] = count;
             saveState(state);
+            // Today's Picks 평점 섹션 즉시 갱신
+            const dayPage = card.closest('.page')?.dataset.page;
+            if (dayPage && typeof refreshDayRatings === 'function') refreshDayRatings(dayPage);
           }
         });
       });
@@ -7667,8 +7682,11 @@
     },
   };
 
-  // 옵션 카드 좌상단 번호 배지 — chip 마커와 동일 시퀀스
-  // 사전 .opt 는 chip·지도에 들어감, 추가 옵션(extras·placeholder)은 chip엔 없지만 번호는 이어서
+  // 옵션 카드 좌상단 번호 배지
+  // 두 개의 분리된 네임스페이스:
+  //   ① 지도 네임스페이스: Start=1, 픽=2,3,... (chip·지도 마커와 동일)
+  //   ② 추가옵션 네임스페이스: placeholder·extras = +1, +2, +3,... (지도엔 없음, 평점 모음에만)
+  // 두 시퀀스를 분리한 이유: 지도 End chip 번호와 extras 번호가 충돌하던 회귀 (2026-04-27)
   function assignPickNumbers(dayId) {
     const page = document.querySelector(`.page[data-page="${dayId}"]`);
     if (!page) return;
@@ -7676,9 +7694,10 @@
     page.querySelectorAll('.opt[data-pick-num], .opt-write[data-pick-num]').forEach(el => delete el.dataset.pickNum);
 
     const dayHotel = (typeof DAY_HOTEL !== 'undefined') ? DAY_HOTEL[dayId] : null;
-    let n = (dayHotel && dayHotel.midHotel) ? 2 : 1; // 다음 = n+1 (Start=1, [Mid=2])
+    let n = (dayHotel && dayHotel.midHotel) ? 2 : 1; // 지도 시퀀스 (Start=1, [Mid=2])
+    let extraN = 0; // 추가옵션 시퀀스 (+1부터)
 
-    // [1] 사전 옵션 (.opt) — chip·지도에 들어가는 픽
+    // [1] 사전 옵션 (.opt) — 지도 네임스페이스 (chip·지도 마커와 동일 번호)
     page.querySelectorAll('.options').forEach(optsEl => {
       const slotKey = slotKeyOf(optsEl);
       const chosen = state.chosen && state.chosen[slotKey];
@@ -7698,23 +7717,23 @@
       });
     });
 
-    // [2] placeholder (.opt-write — extra 아님) chosen → 이어서 번호
+    // [2] placeholder (.opt-write — extra 아님) chosen → 추가옵션 네임스페이스
     page.querySelectorAll('.options > .opt-write:not(.extra)').forEach(card => {
       const slotKey = card.dataset.writeKey;
       const title = card.querySelector('input[type="text"]')?.value?.trim();
       if (!title || !slotKey || !state.chosenWrites || !state.chosenWrites[slotKey]) return;
-      n += 1;
-      card.dataset.pickNum = String(n);
+      extraN += 1;
+      card.dataset.pickNum = '+' + extraN;
     });
 
-    // [3] 동적 extras (.opt-write.extra) chosen → 이어서 번호
+    // [3] 동적 extras (.opt-write.extra) chosen → 추가옵션 네임스페이스 (placeholder 다음)
     page.querySelectorAll('.opt-write.extra').forEach(card => {
       const title = card.querySelector('input[type="text"]')?.value?.trim();
       if (!title) return;
       const extraId = card.dataset.extra;
       if (!extraId || !state.chosenExtras || !state.chosenExtras[extraId]) return;
-      n += 1;
-      card.dataset.pickNum = String(n);
+      extraN += 1;
+      card.dataset.pickNum = '+' + extraN;
     });
   }
 
@@ -8069,16 +8088,15 @@
         body.appendChild(buildRatingRow(num, p.title, p.ratingKey, false, targetEl));
       });
 
-      // 추가 옵션 평점 (사전 옵션 다음 시퀀스 번호 유지, sub-title로 시각 구분)
+      // 추가 옵션 평점 — 별도 네임스페이스 (+1, +2, +3...) — 지도 chip 번호와 충돌 방지
+      // 지도엔 안 나오므로 지리 시퀀스가 아님을 명확히 하는 prefix
       if (extras.length) {
         const sub = document.createElement('div');
         sub.className = 'day-ratings-subtitle';
-        sub.textContent = '+ 내가 추가한 옵션';
+        sub.textContent = '+ 내가 추가한 옵션 (지도엔 표시 안 됨)';
         body.appendChild(sub);
-        let extraNum = pickStartNum + picks.length;
-        extras.forEach(e => {
-          body.appendChild(buildRatingRow(extraNum, e.title, e.ratingKey, true, e.element));
-          extraNum += 1;
+        extras.forEach((e, i) => {
+          body.appendChild(buildRatingRow('+' + (i + 1), e.title, e.ratingKey, true, e.element));
         });
       }
 
