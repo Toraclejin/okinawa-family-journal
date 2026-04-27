@@ -2545,6 +2545,866 @@
     }
   }
 
+  /* ========== 미션 시스템 (게임적 인증 layer) ==========
+     미션 = 여행에서 "내가 했다" 한 번뿐인 인증 액션
+     옵션 ✓ (toggle)와 다름 — 동선 chip / 지도 마커에 영향 X
+     상세: state.missions, sanitizer 화이트리스트, fireMissionComplete() */
+
+  /* 미션 카드 — 호텔/공항/메인 액티비티에 부착
+     미완료: 앰버 베이스 + 부드러운 호버링 + 펄스 그림자로 시선 유도
+     완료: 골드 도장 + 가라앉음 (성취감) */
+  .mission-card {
+    position: relative;
+    margin: 18px 0;
+    padding: 24px 24px 22px;
+    border: 2.5px dashed var(--amber);
+    border-radius: 16px;
+    background: linear-gradient(135deg, #fffaeb 0%, #ffe680 50%, #fffaeb 100%);
+    background-size: 200% 200%;
+    overflow: hidden;
+    transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease, background 0.4s ease;
+    animation:
+      mission-card-shimmer 5s ease-in-out infinite,
+      mission-card-float 3.4s ease-in-out infinite;
+  }
+  @keyframes mission-card-shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  @keyframes mission-card-float {
+    0%, 100% { transform: translateY(0); box-shadow: 0 8px 22px rgba(255, 196, 0, 0.28); }
+    50% { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(255, 196, 0, 0.4); }
+  }
+  /* 도장 버튼 자체에도 살짝 펄스 — 누르고 싶게 */
+  .mission-card:not(.completed) .mission-stamp-btn {
+    animation: stamp-btn-pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes stamp-btn-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0, 71, 255, 0.35); }
+    50% { box-shadow: 0 0 0 8px rgba(0, 71, 255, 0.0); }
+  }
+  /* 출발 미션 (boarding) — 한국 색깔 한 도트 */
+  .mission-card.boarding {
+    background: linear-gradient(135deg, #fff5d8 0%, #ffd966 50%, #fff5d8 100%);
+    background-size: 200% 200%;
+  }
+  /* 완료 — 골드 채움, 무브먼트 정지 (성취감 안정) */
+  .mission-card.completed {
+    border: 2.5px solid var(--amber);
+    box-shadow: 0 14px 36px rgba(255, 196, 0, 0.28);
+    background: linear-gradient(135deg, #fffaeb 0%, #fff 100%);
+    animation: none;
+    transform: none;
+  }
+  .mission-card.completed .mission-stamp-btn { animation: none; }
+  /* 도장 자국 (완료 후 우측 상단 떠오름) */
+  .mission-card.completed::after {
+    content: '✓';
+    position: absolute;
+    top: -18px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--amber);
+    color: var(--blue-ink);
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 30px;
+    line-height: 56px;
+    text-align: center;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    transform: rotate(-12deg);
+  }
+  /* 애니메이션은 just-completed 클래스가 추가될 때만 — 페이지 전환 시 재발화 방지 */
+  .mission-card.completed.just-completed::after {
+    animation: mission-stamp-drop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  }
+  @keyframes mission-stamp-drop {
+    0% { transform: rotate(-30deg) scale(0); opacity: 0; }
+    70% { transform: rotate(-8deg) scale(1.2); opacity: 1; }
+    100% { transform: rotate(-12deg) scale(1); opacity: 1; }
+  }
+
+  /* 도장 취소 버튼 — 완료된 미션에서만 표시 (실수 누름 복구) */
+  .mission-undo-btn {
+    display: none;
+    margin-top: 10px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1.5px solid var(--blue-deep);
+    background: transparent;
+    color: var(--blue-deep);
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s, background 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .mission-card.completed .mission-undo-btn { display: inline-block; }
+  @media (hover: hover) {
+    .mission-undo-btn:hover { opacity: 1; background: rgba(0, 31, 102, 0.06); }
+  }
+
+  /* MISSION COMPLETE overlay — 닫기 버튼 (우상단 작게) */
+  .mc-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: transparent;
+    color: #fff;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    z-index: 1;
+  }
+  .mission-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--blue);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .mission-card.boarding .mission-tag { background: var(--blue-ink); }
+  .mission-card.completed .mission-tag {
+    background: var(--amber);
+    color: var(--blue-ink);
+  }
+  .mission-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.25;
+    color: var(--blue-ink);
+    margin: 0 0 8px;
+  }
+  .mission-desc {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--blue-deep);
+    margin: 0 0 16px;
+    opacity: 0.85;
+  }
+  /* 미션 도장 버튼 (✓) */
+  .mission-stamp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 22px 12px 16px;
+    border-radius: 999px;
+    border: 2px solid var(--blue);
+    background: #fff;
+    color: var(--blue);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    position: relative;
+  }
+  .mission-stamp-btn .ms-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 900;
+  }
+  @media (hover: hover) {
+    .mission-stamp-btn:hover {
+      background: var(--blue);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 71, 255, 0.3);
+    }
+  }
+  .mission-card.completed .mission-stamp-btn {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: var(--blue-ink);
+    cursor: default;
+    box-shadow: 0 4px 12px rgba(255, 196, 0, 0.35);
+  }
+  .mission-card.completed .mission-stamp-btn:hover { transform: none; }
+  .mission-timestamp {
+    display: none;
+    margin-top: 12px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--blue-deep);
+    opacity: 0.7;
+  }
+  .mission-card.completed .mission-timestamp { display: block; }
+
+  /* 미션 도장 + hint — 가로로 나란히 (flex container) */
+  .mission-action-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  /* 미완료 미션 hint — "여기를 눌러!" 펄스 */
+  .mission-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--blue);
+    animation: mission-hint-pulse 2s ease-in-out infinite;
+    white-space: nowrap;
+  }
+  .mission-card.completed .mission-hint { display: none; }
+  .mission-hint::before {
+    content: '←';
+    font-size: 18px;
+    font-weight: 700;
+    animation: mission-hint-arrow 1.5s ease-in-out infinite;
+  }
+  @keyframes mission-hint-pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+  }
+  @keyframes mission-hint-arrow {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-6px); }
+  }
+
+  @media (max-width: 600px) {
+    .mission-card { padding: 20px 18px 18px; }
+    .mission-title { font-size: 20px; }
+    .mission-card.completed::after { width: 48px; height: 48px; line-height: 48px; font-size: 26px; right: 16px; }
+    .mission-stamp-btn { padding: 11px 18px 11px 14px; font-size: 12px; }
+    .mission-hint { font-size: 13px; }
+    .mission-action-row { gap: 10px; }
+  }
+
+  /* ========== 미션 옵션 카드 (.opt[data-mission]) — A안 통합 시각 ==========
+     - 옵션 뱃지(OPTION 1, TODAY'S MAIN) 숨김 → ★ MISSION 단일 뱃지로 교체
+     - ✓ 이걸로 chosen 마크 숨김 → 미션 도장 stamp 가 단일 indicator
+     - 카드 자체에 골드 보더 + 글로우 + 펄스 (시선 유도)
+     - 미완료: "여기 눌러!" hint pill (.opt-select 옆)
+     - 완료: 골드 도장 + COMPLETED 타임스탬프 */
+
+  /* 카드 베이스 — 골드 보더 + 글로우 펄스 */
+  .opt[data-mission] {
+    position: relative;
+    border: 2.5px solid var(--amber) !important;
+    box-shadow: 0 8px 24px rgba(255, 196, 0, 0.32);
+    animation: opt-mission-glow 3s ease-in-out infinite;
+  }
+  @keyframes opt-mission-glow {
+    0%, 100% { box-shadow: 0 8px 24px rgba(255, 196, 0, 0.32); }
+    50% { box-shadow: 0 14px 36px rgba(255, 196, 0, 0.52); }
+  }
+
+  /* 원래 옵션 뱃지·chosen 마크 숨김 (mission 으로 통합되니 redundant) */
+  .opt[data-mission] .opt-badge,
+  .opt[data-mission] .opt-chosen-mark { display: none !important; }
+
+  /* ★ MISSION 단일 뱃지 — JS로 동적 주입한 .opt-mission-tag 스타일 */
+  .opt-mission-tag {
+    position: absolute;
+    top: -14px;
+    left: 16px;
+    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--amber);
+    color: var(--blue-ink);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    box-shadow: 0 6px 14px rgba(255, 196, 0, 0.5);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .opt-mission-tag .omt-star {
+    font-size: 13px;
+    line-height: 1;
+  }
+
+  /* "여기 눌러!" hint pill — .opt-select 위쪽에 펄스 */
+  .opt-mission-hint {
+    position: absolute;
+    top: 70px;        /* opt-select 아래 */
+    right: 14px;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: var(--blue);
+    color: #fff;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 12px;
+    box-shadow: 0 4px 12px rgba(0, 71, 255, 0.35);
+    pointer-events: none;
+    animation: mission-hint-pulse 1.6s ease-in-out infinite;
+    white-space: nowrap;
+  }
+  .opt-mission-hint::before {
+    content: '↑';
+    font-size: 14px;
+    font-weight: 700;
+    animation: mission-hint-arrow-up 1.5s ease-in-out infinite;
+  }
+  @keyframes mission-hint-arrow-up {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+  .opt[data-mission].mission-done .opt-mission-hint { display: none; }
+
+  /* opt-select 자체에 펄스 — 더 눈에 띄게 */
+  .opt[data-mission]:not(.mission-done) .opt-select {
+    animation: opt-select-pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes opt-select-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 196, 0, 0.6); }
+    50% { box-shadow: 0 0 0 10px rgba(255, 196, 0, 0); }
+  }
+
+  /* 미션 완료 — 가라앉음 (글로우 정지) + 도장 + 타임스탬프 */
+  .opt[data-mission].mission-done {
+    animation: none;
+    box-shadow: 0 8px 22px rgba(255, 196, 0, 0.35);
+  }
+  /* 완료 시 chosen ✓ 버튼 숨김 — 골드 도장 stamp 가 단일 시각 */
+  .opt[data-mission].mission-done .opt-select { display: none !important; }
+
+  /* 완료 시 태그 텍스트 바꿈 (CSS only — JS 변경 X) — "★ MISSION" → "✓ 다녀왔어" 느낌 */
+  .opt[data-mission].mission-done .opt-mission-tag {
+    background: #fff;
+    color: var(--blue-ink);
+    border: 1.5px solid var(--blue-ink);
+  }
+  .opt[data-mission].mission-done .opt-mission-tag .omt-star { display: none; }
+  .opt[data-mission].mission-done .opt-mission-tag::before {
+    content: '✓';
+    font-size: 13px;
+    line-height: 1;
+    margin-right: 4px;
+  }
+  /* 텍스트 자체를 "다녀왔어" 로 — 두번째 span은 JS로 'Mission' 이라 적혀있는데 visually 가림하고 새 텍스트 ::after */
+  .opt[data-mission].mission-done .opt-mission-tag > span:last-child {
+    visibility: hidden;
+    position: relative;
+  }
+  .opt[data-mission].mission-done .opt-mission-tag > span:last-child::after {
+    content: '다녀왔어';
+    visibility: visible;
+    position: absolute;
+    left: 0;
+    top: 0;
+    white-space: nowrap;
+  }
+  /* 다크 카드 — 흰 배경 태그 위치 색 그대로 OK (대비 유지) */
+  .opt.highlight[data-mission].mission-done .opt-mission-tag {
+    background: var(--amber);
+    color: var(--blue-ink);
+    border: none;
+  }
+
+  /* 도장 stamp (대형 ✓ 우측 상단) */
+  .opt[data-mission] .opt-mission-stamp { display: none; }
+  .opt[data-mission].mission-done .opt-mission-stamp {
+    display: block;
+    position: absolute;
+    top: -18px;
+    right: 50px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--amber);
+    color: var(--blue-ink);
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 28px;
+    line-height: 52px;
+    text-align: center;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+    transform: rotate(-12deg);
+    z-index: 6;
+    pointer-events: none;
+  }
+  .opt[data-mission].mission-done.just-completed .opt-mission-stamp {
+    animation: mission-stamp-drop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  }
+
+  /* 타임스탬프 — 카드 하단에 작게 */
+  .opt[data-mission] .opt-mission-timestamp { display: none; }
+  .opt[data-mission].mission-done .opt-mission-timestamp {
+    display: block;
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(255, 196, 0, 0.4);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blue-deep);
+    opacity: 0.75;
+  }
+  .opt.highlight[data-mission].mission-done .opt-mission-timestamp {
+    color: var(--amber);
+    opacity: 1;
+    border-top-color: rgba(255, 196, 0, 0.3);
+  }
+
+  /* 도장 취소 버튼 — 완료 카드에서만 보임 */
+  .opt[data-mission] .opt-mission-undo {
+    display: none;
+    margin-top: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1.5px solid var(--blue-deep);
+    background: rgba(255,255,255,0.85);
+    color: var(--blue-deep);
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    opacity: 0.7;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .opt[data-mission].mission-done .opt-mission-undo { display: inline-block; }
+  .opt.highlight[data-mission].mission-done .opt-mission-undo {
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    border-color: rgba(255,255,255,0.4);
+    opacity: 0.9;
+  }
+  @media (max-width: 600px) {
+    .opt-mission-tag { font-size: 10px; padding: 5px 12px; left: 12px; }
+    .opt-mission-hint { font-size: 11px; padding: 4px 9px; top: 62px; right: 12px; }
+    .opt[data-mission].mission-done .opt-mission-stamp { width: 44px; height: 44px; line-height: 44px; font-size: 24px; right: 46px; }
+  }
+
+  /* ========== MISSION COMPLETE 풀스크린 연출 ========== */
+  .mission-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 10, 51, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+  }
+  .mission-overlay.show { opacity: 1; }
+  .mission-overlay.fade { opacity: 0; }
+
+  .mc-card {
+    position: relative;
+    padding: 40px 56px;
+    text-align: center;
+    transform: scale(0.5) rotate(-3deg);
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .mission-overlay.show .mc-card {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  .mc-star {
+    font-size: 64px;
+    line-height: 1;
+    color: var(--amber);
+    text-shadow: 0 0 30px rgba(255, 196, 0, 0.6), 0 0 60px rgba(255, 196, 0, 0.3);
+    margin-bottom: 12px;
+    display: inline-block;
+    animation: mc-star-spin 2s ease-in-out infinite;
+  }
+  @keyframes mc-star-spin {
+    0%, 100% { transform: rotate(-8deg) scale(1); }
+    50% { transform: rotate(8deg) scale(1.15); }
+  }
+  .mc-title {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 44px;
+    line-height: 1;
+    color: #fff;
+    letter-spacing: 0.04em;
+    text-shadow: 0 4px 20px rgba(0, 71, 255, 0.5);
+    margin: 0 0 8px;
+  }
+  .mc-title .mc-line2 {
+    color: var(--amber);
+    display: block;
+  }
+  .mc-detail {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 22px;
+    color: #fff;
+    margin: 14px 0 0;
+    opacity: 0.95;
+  }
+
+  /* 컨페티 (CSS only) — 15개 점이 위→아래 회전 낙하 */
+  .mc-confetti {
+    position: absolute;
+    inset: -100px -100px 0 -100px;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .mc-confetti span {
+    position: absolute;
+    top: -20px;
+    width: 10px;
+    height: 14px;
+    border-radius: 2px;
+    opacity: 0;
+    animation: mc-confetti-fall 1.6s ease-in forwards;
+  }
+  .mission-overlay.show .mc-confetti span { opacity: 1; }
+  @keyframes mc-confetti-fall {
+    0% { transform: translateY(-30px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(700px) rotate(720deg); opacity: 0; }
+  }
+  /* 15개 위치 + 색상 + 딜레이 — 코발트·앰버·민트·코랄 */
+  .mc-confetti span:nth-child(1)  { left: 8%;  background: var(--blue);  animation-delay: 0.05s; }
+  .mc-confetti span:nth-child(2)  { left: 15%; background: var(--amber); animation-delay: 0.20s; }
+  .mc-confetti span:nth-child(3)  { left: 22%; background: var(--frame); animation-delay: 0.10s; }
+  .mc-confetti span:nth-child(4)  { left: 30%; background: var(--blue);  animation-delay: 0.30s; }
+  .mc-confetti span:nth-child(5)  { left: 38%; background: var(--amber); animation-delay: 0.15s; }
+  .mc-confetti span:nth-child(6)  { left: 45%; background: var(--frame); animation-delay: 0.25s; }
+  .mc-confetti span:nth-child(7)  { left: 52%; background: var(--blue);  animation-delay: 0.35s; }
+  .mc-confetti span:nth-child(8)  { left: 60%; background: var(--amber); animation-delay: 0.05s; }
+  .mc-confetti span:nth-child(9)  { left: 68%; background: var(--frame); animation-delay: 0.40s; }
+  .mc-confetti span:nth-child(10) { left: 75%; background: var(--blue);  animation-delay: 0.20s; }
+  .mc-confetti span:nth-child(11) { left: 82%; background: var(--amber); animation-delay: 0.10s; }
+  .mc-confetti span:nth-child(12) { left: 88%; background: var(--frame); animation-delay: 0.30s; }
+  .mc-confetti span:nth-child(13) { left: 12%; background: var(--amber); animation-delay: 0.45s; }
+  .mc-confetti span:nth-child(14) { left: 50%; background: var(--blue);  animation-delay: 0.50s; }
+  .mc-confetti span:nth-child(15) { left: 90%; background: var(--frame); animation-delay: 0.15s; }
+
+  @media (max-width: 600px) {
+    .mc-card { padding: 30px 24px; }
+    .mc-title { font-size: 32px; }
+    .mc-star { font-size: 48px; }
+    .mc-detail { font-size: 17px; }
+  }
+
+  /* TRIP COMPLETE — 마지막 미션 보상 (더 화려) */
+  .mission-overlay.trip-complete {
+    background: radial-gradient(ellipse at center, rgba(0, 71, 255, 0.7) 0%, rgba(0, 10, 51, 0.85) 100%);
+  }
+  .mc-card.trip-card .tc-stars {
+    font-size: 80px;
+    letter-spacing: -0.04em;
+    text-shadow: 0 0 40px rgba(255, 196, 0, 0.7), 0 0 80px rgba(255, 196, 0, 0.4);
+  }
+  .mc-card.trip-card .mc-title { font-size: 56px; }
+  .mc-trip-sub {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 14px;
+    color: #fff;
+    margin: 18px 0 0;
+    opacity: 0.85;
+    letter-spacing: 0.04em;
+  }
+  /* 30개 컨페티 — 더 큰 영역 + 더 많은 색상 */
+  .mc-confetti.tc-confetti span:nth-child(n+16):nth-child(-n+30) {
+    width: 12px;
+    height: 16px;
+    animation-duration: 2s;
+  }
+  .mc-confetti.tc-confetti span:nth-child(16) { left: 5%;  background: var(--blue);  animation-delay: 0.0s; }
+  .mc-confetti.tc-confetti span:nth-child(17) { left: 14%; background: var(--amber); animation-delay: 0.1s; }
+  .mc-confetti.tc-confetti span:nth-child(18) { left: 24%; background: var(--frame); animation-delay: 0.2s; }
+  .mc-confetti.tc-confetti span:nth-child(19) { left: 35%; background: var(--blue);  animation-delay: 0.3s; }
+  .mc-confetti.tc-confetti span:nth-child(20) { left: 45%; background: var(--amber); animation-delay: 0.05s; }
+  .mc-confetti.tc-confetti span:nth-child(21) { left: 56%; background: var(--frame); animation-delay: 0.4s; }
+  .mc-confetti.tc-confetti span:nth-child(22) { left: 67%; background: var(--blue);  animation-delay: 0.15s; }
+  .mc-confetti.tc-confetti span:nth-child(23) { left: 78%; background: var(--amber); animation-delay: 0.5s; }
+  .mc-confetti.tc-confetti span:nth-child(24) { left: 88%; background: var(--frame); animation-delay: 0.25s; }
+  .mc-confetti.tc-confetti span:nth-child(25) { left: 95%; background: var(--blue);  animation-delay: 0.6s; }
+  .mc-confetti.tc-confetti span:nth-child(26) { left: 30%; background: var(--amber); animation-delay: 0.7s; }
+  .mc-confetti.tc-confetti span:nth-child(27) { left: 60%; background: var(--frame); animation-delay: 0.55s; }
+  .mc-confetti.tc-confetti span:nth-child(28) { left: 18%; background: var(--blue);  animation-delay: 0.8s; }
+  .mc-confetti.tc-confetti span:nth-child(29) { left: 72%; background: var(--amber); animation-delay: 0.9s; }
+  .mc-confetti.tc-confetti span:nth-child(30) { left: 50%; background: var(--frame); animation-delay: 0.35s; }
+  @media (max-width: 600px) {
+    .mc-card.trip-card .tc-stars { font-size: 56px; }
+    .mc-card.trip-card .mc-title { font-size: 40px; }
+    .mc-trip-sub { font-size: 13px; }
+  }
+
+  /* ========== 미션 카운터 배지 (진행률) ==========
+     fixed 위치 — 툴바와 충돌 안 되게 보정
+     데스크탑: 툴바(top:50px) 아래 / 모바일: 툴바(bottom:14px) 위 */
+  .mission-counter {
+    position: fixed;
+    top: 50px;
+    right: 116px;
+    z-index: 99;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 2px solid var(--blue);
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    font-family: 'Space Grotesk', sans-serif;
+    box-shadow: 0 4px 12px rgba(0, 71, 255, 0.15);
+  }
+  .mission-counter .mc-star {
+    color: var(--amber);
+    font-size: 14px;
+    line-height: 1;
+  }
+  .mission-counter .mc-count {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--blue);
+    letter-spacing: 0.04em;
+  }
+  .mission-counter .mc-label {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: var(--blue-deep);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  /* 모두 완료 — 골드 배경 + 펄스 */
+  .mission-counter.all-done {
+    background: var(--amber);
+    border-color: var(--amber);
+    animation: mc-allDone-pulse 2.4s ease-in-out infinite;
+  }
+  .mission-counter.all-done .mc-count,
+  .mission-counter.all-done .mc-label { color: var(--blue-ink); }
+  .mission-counter.all-done .mc-star { color: var(--blue-ink); }
+  @keyframes mc-allDone-pulse {
+    0%, 100% { box-shadow: 0 4px 12px rgba(255, 196, 0, 0.4); transform: scale(1); }
+    50% { box-shadow: 0 6px 24px rgba(255, 196, 0, 0.7); transform: scale(1.04); }
+  }
+  @media (hover: hover) {
+    .mission-counter:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 71, 255, 0.25);
+    }
+  }
+  @media (max-width: 900px) {
+    .mission-counter {
+      top: auto;
+      bottom: calc(max(14px, env(safe-area-inset-bottom)) + 56px);
+      right: 20px;
+      padding: 6px 12px;
+    }
+    .mission-counter .mc-count { font-size: 12px; }
+    .mission-counter .mc-label { font-size: 9px; }
+  }
+  /* 미션이 0개일 때(혹은 cover/back 페이지) 배지 숨김 */
+  .mission-counter.hidden { opacity: 0; pointer-events: none; transform: translateY(8px); }
+
+  /* ========== 마무리 페이지 도장 컬렉션 ========== */
+  .stamp-collection {
+    margin: 36px 0 28px;
+    padding: 26px 22px 22px;
+    border: 1.5px solid var(--blue);
+    border-radius: 16px;
+    background: var(--page-tint);
+  }
+  .stamp-collection-head {
+    text-align: center;
+    margin-bottom: 22px;
+  }
+  .stamp-collection-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: var(--blue);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .stamp-collection-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 22px;
+    color: var(--blue-ink);
+    margin: 0;
+  }
+  .stamp-collection-progress {
+    margin-top: 6px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    color: var(--blue-deep);
+    text-transform: uppercase;
+  }
+  .stamp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+  }
+  .stamp-item {
+    aspect-ratio: 1;
+    border-radius: 14px;
+    border: 2px dashed var(--blue);
+    background: rgba(255,255,255,0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px;
+    text-align: center;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .stamp-item.collected {
+    border: 2px solid var(--amber);
+    background: var(--amber);
+    box-shadow: 0 6px 16px rgba(255, 196, 0, 0.32);
+  }
+  .stamp-item.collected.just-collected {
+    animation: stamp-collected-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes stamp-collected-bounce {
+    0% { transform: scale(0.6) rotate(-12deg); }
+    60% { transform: scale(1.08) rotate(4deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+  .stamp-icon-large {
+    font-size: 32px;
+    line-height: 1;
+    color: var(--blue);
+    opacity: 0.35;
+  }
+  .stamp-item.collected .stamp-icon-large {
+    color: var(--blue-ink);
+    opacity: 1;
+  }
+  .stamp-day-tag {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    color: var(--blue);
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+  .stamp-item.collected .stamp-day-tag {
+    color: var(--blue-ink);
+    opacity: 0.8;
+  }
+  .stamp-name {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--blue-ink);
+    line-height: 1.3;
+    opacity: 0.55;
+  }
+  .stamp-item.collected .stamp-name { opacity: 1; }
+  @media (max-width: 600px) {
+    .stamp-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stamp-icon-large { font-size: 26px; }
+    .stamp-name { font-size: 11px; }
+  }
+
+  /* ========== 트립 완료 메시지 (도장 다 모으면 등장 — 여행 회상 톤) ========== */
+  .trip-done-msg {
+    margin-top: 18px;
+    padding: 22px 22px 20px;
+    border: 2px solid var(--amber);
+    border-radius: 14px;
+    background: linear-gradient(135deg, #fffaeb 0%, #fff 100%);
+    box-shadow: 0 8px 24px rgba(255, 196, 0, 0.18);
+    animation: trip-done-fadein 0.7s ease;
+  }
+  @keyframes trip-done-fadein {
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .trip-done-msg .td-ribbon {
+    display: inline-block;
+    margin-bottom: 10px;
+    padding: 4px 14px;
+    border-radius: 999px;
+    background: var(--amber);
+    color: var(--blue-ink);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .trip-done-msg .td-line {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--blue-ink);
+    margin: 0 0 12px;
+  }
+  .trip-done-msg .td-line strong {
+    color: var(--blue);
+    font-weight: 700;
+  }
+  .trip-done-msg .td-sign {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--blue-deep);
+    margin: 0;
+    opacity: 0.8;
+  }
+  /* 토글: data-state 속성으로 control */
+  .back-intro[hidden] { display: none !important; }
+
   /* ========== Info 모달 ========== */
   .modal-bg {
     position: fixed;
@@ -3707,6 +4567,13 @@
 <div class="frame-deco bottom-right">✺ Summer Issue</div>
 
 
+<!-- 미션 진행률 배지 (툴바와 별도, 클릭 → 다음 미완료 미션으로 이동) -->
+<button type="button" class="mission-counter hidden" id="mission-counter" aria-label="미션 진행률">
+  <span class="mc-star">★</span>
+  <span class="mc-count">0/5</span>
+  <span class="mc-label">Mission</span>
+</button>
+
 <!-- 툴바 -->
 <div class="toolbar" id="toolbar">
   <button type="button" id="btn-map" title="오늘의 동선 지도로">
@@ -3917,13 +4784,13 @@
       </li>
       <li><span class="no">IV</span>
         <a href="#d3" class="title-link">
-          <span class="t-main">Conveyor Sushi<span class="sub">회전초밥, 그리고 해변 마을</span></span>
+          <span class="t-main">Crossing South<span class="sub">차탄, 미국촌, 그리고 일몰</span></span>
           <span class="pg">p. 03</span>
         </a>
       </li>
       <li><span class="no">V</span>
         <a href="#d4" class="title-link">
-          <span class="t-main">Farewell<span class="sub">돌아가는 날</span></span>
+          <span class="t-main">Going Home<span class="sub">집에 돌아가는 날</span></span>
           <span class="pg">p. 04</span>
         </a>
       </li>
@@ -3969,7 +4836,37 @@
     </div>
   </div>
 
-  <!-- 호텔 체크인 카드 -->
+  <!-- ========== 미션 #1 — 인천 출발 (한국 → 좌표·맵 반영 X) ========== -->
+  <div class="mission-card boarding" data-mission="d1-boarding">
+    <span class="mission-tag">Mission · Departure</span>
+    <h3 class="mission-title">인천 → 오키나와 비행기 ✈️</h3>
+    <p class="mission-desc">탑승 직전, 비행기 좌석에서 — 도장 한 번 찍고 출발하자. 여행 시작이야.</p>
+    <div class="mission-action-row">
+      <button type="button" class="mission-stamp-btn" aria-label="미션 인증">
+        <span class="ms-icon">✓</span>
+        <span class="ms-label">비행기 탔어!</span>
+      </button>
+      <span class="mission-hint">여기를 눌러!</span>
+    </div>
+    <div class="mission-timestamp"></div>
+  </div>
+
+  <!-- ========== 미션 #2 — Orion 호텔 체크인 ========== -->
+  <div class="mission-card" data-mission="d1-hotel">
+    <span class="mission-tag">Mission · Check-in 15:00</span>
+    <h3 class="mission-title">Hotel Orion Motobu — 도착!</h3>
+    <p class="mission-desc">키 받고 방문 열고 첫 발을 디뎠다면 — 이 여행의 첫 호텔 도장. 비세 후쿠기 길까지 도보 3분.</p>
+    <div class="mission-action-row">
+      <button type="button" class="mission-stamp-btn" aria-label="미션 인증">
+        <span class="ms-icon">✓</span>
+        <span class="ms-label">호텔 도착!</span>
+      </button>
+      <span class="mission-hint">여기를 눌러!</span>
+    </div>
+    <div class="mission-timestamp"></div>
+  </div>
+
+  <!-- 호텔 체크인 카드 (정보) -->
   <div class="hotel-card">
     <span class="hc-tag">Check-in · 15:00</span>
     <div class="hc-name"><a class="hc-name-link" data-hotel-query="ホテル オリオンモトブリゾート&amp;スパ">Hotel Orion Motobu Resort &amp; Spa</a></div>
@@ -4575,7 +5472,7 @@
   </div>
 
   <!-- 오전 수족관 -->
-  
+
   <!-- DAY 2 MOODS -->
   <section class="mood-section">
     <div class="mood-section-head">
@@ -4625,8 +5522,9 @@
       </div>
     </div>
   </div>
+
   <div class="options single">
-    <div class="opt highlight">
+    <div class="opt highlight" data-mission="d2-churaumi" data-mission-label="고래상어 — 만났어!">
       <span class="opt-badge amber"><span class="dot"></span>Today's Main ✦</span>
       <div class="opt-title">세계 최대급 <em>수족관</em></div>
       <div class="opt-place">Churaumi Aquarium · Motobu · 호텔 도보 7분</div>
@@ -4822,8 +5720,9 @@
       </div>
     </div>
   </div>
+
   <div class="options">
-    <div class="opt">
+    <div class="opt" data-mission="d2-kouri-bridge" data-mission-label="코우리 대교 — 건넜어!">
       <span class="opt-badge"><span class="dot"></span>Option 1</span>
       <div class="opt-title">Kouri <em>Island</em></div>
       <div class="opt-place">Kouri Island · 코우리 대교 경유 · 호텔 차로 35~40분</div>
@@ -5467,6 +6366,21 @@
       <button type="button" class="opt-add-btn" data-block="d3-ts-move">Add Another Option</button>
   </div>
 
+  <!-- ========== 미션 #4 — Vessel 체크인 (이동 끝, 차탄 도착 시점) ========== -->
+  <div class="mission-card" data-mission="d3-vessel">
+    <span class="mission-tag">Mission · Check-in 13:00</span>
+    <h3 class="mission-title">Vessel Campana — 도착!</h3>
+    <p class="mission-desc">차탄 아메리칸 빌리지 안. 짐 풀고 새 호텔 첫 발 — 두 번째 도장.</p>
+    <div class="mission-action-row">
+      <button type="button" class="mission-stamp-btn" aria-label="미션 인증">
+        <span class="ms-icon">✓</span>
+        <span class="ms-label">호텔 도착!</span>
+      </button>
+      <span class="mission-hint">여기를 눌러!</span>
+    </div>
+    <div class="mission-timestamp"></div>
+  </div>
+
   <!-- 점심 -->
   <div class="time-slot">
     <div class="time-slot-head">
@@ -5770,7 +6684,7 @@
       </div>
     </div>
 
-    <div class="opt">
+    <div class="opt" data-mission="d3-chatan-sunset" data-mission-label="차탄 선셋 — 봤어!">
       <span class="opt-badge amber"><span class="dot"></span>Option 3 · 마지막 밤바다</span>
       <div class="opt-title">Sunset Beach <em>야간 산책</em></div>
       <div class="opt-place">Chatan Park Sunset Beach · 호텔 도보 1분</div>
@@ -5909,6 +6823,21 @@
     </div>
   </div>
 
+  <!-- ========== 미션 #5 — 귀국 비행기 (마지막) ========== -->
+  <div class="mission-card boarding final" data-mission="d4-departure">
+    <span class="mission-tag">Mission · Going Home</span>
+    <h3 class="mission-title">오키나와 → 인천 ✈️</h3>
+    <p class="mission-desc">창가 자리 잡고, 에메랄드 바다 한 번 더 보고 — 여행의 마지막 도장. 다 모았다면 ★ 특별 연출.</p>
+    <div class="mission-action-row">
+      <button type="button" class="mission-stamp-btn" aria-label="미션 인증">
+        <span class="ms-icon">✓</span>
+        <span class="ms-label">비행기 탔어!</span>
+      </button>
+      <span class="mission-hint">여기를 눌러!</span>
+    </div>
+    <div class="mission-timestamp"></div>
+  </div>
+
   <!-- DAY 4 MOODS -->
   <section class="mood-section">
     <div class="mood-section-head">
@@ -5948,22 +6877,6 @@
       </div>
     </div>
   </section>
-
-  <div class="reader-note">
-    <div class="rn-label">
-      <span class="lbl">Day Four · Your Notes</span>
-      <span class="title">여행 전체에서 <em>가장 좋았던 것</em></span>
-    </div>
-    <textarea placeholder="이 자리에 적기" data-save="day4-note"></textarea>
-
-    <div class="reader-note-photos">
-      <div class="reader-note-photos-head">
-        <span class="label">📷 Photos · 오늘의 사진</span>
-        <button type="button" class="add-photo-btn" data-photo-target="day4">사진 추가</button>
-      </div>
-      <div class="photo-grid" data-photo-grid="day4"></div>
-    </div>
-  </div>
 
   <div class="flourish">
     <div class="flourish-inner">
@@ -6064,10 +6977,49 @@
   <div class="back-mark">End of Issue · Volume I ✺</div>
   <div class="back-main">
     <h2>Enjoy<br/>the <em>sea.</em></h2>
-    <p>
+    <!-- 기본 메시지 (여행 전·중) — 도장 다 모으면 숨겨짐 -->
+    <p class="back-intro" data-state="default">
       계획은 지도일 뿐. 그날 컨디션에 따라 옵션을 골라도 괜찮음. 재밌게 놀고 돌아와, 빈 자리에 남기고 싶은 것을 채우면 이 여행책이 완성됨.
     </p>
+    <!-- 트립 완료 메시지 (도장 다 모으면 등장) — 여행 회상 톤 -->
+    <div class="back-intro trip-done-msg" data-state="trip-done" hidden>
+      <div class="td-ribbon">★ Trip Complete</div>
+      <p class="td-line">
+        고래상어 만나고, 호텔 두 곳 들렀고,<br/>
+        바다 다리 건너고, 마지막 일몰까지 봤지?<br/>
+        <strong>이 여행은 너만의 도장 일기로 남았어.</strong>
+      </p>
+      <p class="td-sign">또 가자, 오키나와 — Family ✺</p>
+    </div>
   </div>
+
+  <!-- ========== 미션 도장 컬렉션 (도장 그리드, JS로 동적 채움) ========== -->
+  <div class="stamp-collection" id="stamp-collection">
+    <div class="stamp-collection-head">
+      <span class="stamp-collection-tag">Mission Stamps</span>
+      <h3 class="stamp-collection-title">내가 모은 도장</h3>
+      <div class="stamp-collection-progress" id="stamp-collection-progress">0 / 0</div>
+    </div>
+    <div class="stamp-grid" id="stamp-grid"></div>
+  </div>
+
+  <!-- ========== 여행 전체 베스트 메모 (D4에서 옮겨옴 — 조카가 끝까지 보게) ========== -->
+  <div class="reader-note">
+    <div class="rn-label">
+      <span class="lbl">After the Trip · Your Notes</span>
+      <span class="title">여행 전체에서 <em>가장 좋았던 것</em></span>
+    </div>
+    <textarea placeholder="이 자리에 적기" data-save="day4-note"></textarea>
+
+    <div class="reader-note-photos">
+      <div class="reader-note-photos-head">
+        <span class="label">📷 Photos · 베스트 컷</span>
+        <button type="button" class="add-photo-btn" data-photo-target="day4">사진 추가</button>
+      </div>
+      <div class="photo-grid" data-photo-grid="day4"></div>
+    </div>
+  </div>
+
   <div class="back-sig">
     <span>The Family Journal · Vol. I</span>
     <span>Okinawa, Spring 2026</span>
@@ -6384,6 +7336,21 @@
       for (const k of Object.keys(raw.chosenWrites)) {
         if (!safeKey(k)) continue;
         if (raw.chosenWrites[k] === true) clean.chosenWrites[k] = true;
+      }
+    }
+
+    // missions: { missionId: { done: true, at?: number } }
+    // missionId는 SAFE_KEY, done은 boolean, at은 finite number
+    if (isPlainObject(raw.missions)) {
+      clean.missions = Object.create(null);
+      for (const k of Object.keys(raw.missions)) {
+        if (!safeKey(k)) continue;
+        const m = raw.missions[k];
+        if (!isPlainObject(m)) continue;
+        const entry = Object.create(null);
+        if (m.done === true) entry.done = true;
+        if (typeof m.at === 'number' && Number.isFinite(m.at) && m.at > 0) entry.at = m.at;
+        if (entry.done) clean.missions[k] = entry;
       }
     }
 
@@ -8453,6 +9420,594 @@
 
   // 페이지 로드 시 초기 렌더 (D1·D2·D3)
   ['d1', 'd2', 'd3'].forEach(d => renderDayRoute(d));
+
+  // ==========================================
+  //  미션 시스템 (게임적 인증 layer)
+  //  - state.missions = { missionId: { done: bool, at: timestamp } }
+  //  - 동선 chip / 지도 마커에 영향 X (인증 전용)
+  // ==========================================
+
+  // 풀스크린 MISSION COMPLETE 연출
+  // missionTitle 만 사용자 입력 — textContent 로만 주입 (XSS 차단)
+  // 안전성: 싱글톤 lock + try/catch + 4중 닫기(탭/ESC/X 버튼/안전 타임아웃)
+  let _missionOverlayLock = false;
+  function fireMissionComplete(missionTitle) {
+    try {
+      // 싱글톤 — 이미 떠 있으면 정리하고 새로 (회귀 방지)
+      if (_missionOverlayLock) {
+        document.querySelectorAll('.mission-overlay').forEach(o => o.remove());
+      }
+      _missionOverlayLock = true;
+
+      const overlay = document.createElement('div');
+      overlay.className = 'mission-overlay';
+
+      const card = document.createElement('div');
+      card.className = 'mc-card';
+
+      // 닫기 버튼 (우상단 X)
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'mc-close';
+      closeBtn.setAttribute('aria-label', '닫기');
+      closeBtn.textContent = '×';
+      card.appendChild(closeBtn);
+
+      const star = document.createElement('div');
+      star.className = 'mc-star';
+      star.textContent = '★';
+      card.appendChild(star);
+
+      const title = document.createElement('h3');
+      title.className = 'mc-title';
+      title.textContent = 'MISSION';
+      const line2 = document.createElement('span');
+      line2.className = 'mc-line2';
+      line2.textContent = 'COMPLETE!';
+      title.appendChild(line2);
+      card.appendChild(title);
+
+      const detail = document.createElement('div');
+      detail.className = 'mc-detail';
+      detail.textContent = missionTitle || '';  // ← textContent (안전)
+      card.appendChild(detail);
+
+      // 컨페티 15개
+      const conf = document.createElement('div');
+      conf.className = 'mc-confetti';
+      for (let i = 0; i < 15; i++) conf.appendChild(document.createElement('span'));
+      card.appendChild(conf);
+
+      overlay.appendChild(card);
+      document.body.appendChild(overlay);
+
+      // 정리 함수 (한 번만 실행되게)
+      let cleaned = false;
+      const cleanup = () => {
+        if (cleaned) return;
+        cleaned = true;
+        try {
+          overlay.classList.add('fade');
+          setTimeout(() => { try { overlay.remove(); } catch(_) {} }, 380);
+          document.removeEventListener('keydown', escHandler);
+        } finally {
+          _missionOverlayLock = false;
+        }
+      };
+      const escHandler = (e) => { if (e.key === 'Escape') cleanup(); };
+
+      // 트리거 — show 클래스 (다음 frame)
+      requestAnimationFrame(() => overlay.classList.add('show'));
+
+      // 자동 fade — 1.8초 (안전 타임아웃 — 어떤 핸들러가 깨져도 발화)
+      setTimeout(cleanup, 1800);
+      // 더블 안전망 — 4초 시점에 무조건 제거 (cleanup이 안 됐다면)
+      setTimeout(() => { try { overlay.remove(); _missionOverlayLock = false; } catch(_) {} }, 4000);
+
+      // 닫는 4가지 방법:
+      // ① 오버레이 어디든 탭
+      overlay.addEventListener('click', cleanup);
+      // ② × 닫기 버튼 (이미 클릭 위임)
+      closeBtn.addEventListener('click', (e) => { e.stopPropagation(); cleanup(); });
+      // ③ ESC 키
+      document.addEventListener('keydown', escHandler);
+      // ④ 4초 안전망 (위에 setTimeout)
+    } catch (err) {
+      // overlay 생성 자체가 실패해도 state는 이미 저장됐으니 사용자 데이터 안전
+      console.warn('mission overlay error:', err);
+      _missionOverlayLock = false;
+      document.querySelectorAll('.mission-overlay').forEach(o => o.remove());
+    }
+  }
+
+  // 미션 카드 wiring
+  function wireMissionCards() {
+    document.querySelectorAll('.mission-card').forEach(card => {
+      const missionId = card.dataset.mission;
+      if (!missionId) return;
+      // 보안: missionId 검증 (영숫자·하이픈·언더스코어, 최대 32자)
+      if (!/^[a-zA-Z0-9_-]{1,32}$/.test(missionId)) return;
+
+      // 저장된 상태 복원 — 단, 애니메이션은 발화 안 됨 (just-completed 클래스 X)
+      if (state.missions && state.missions[missionId] && state.missions[missionId].done) {
+        card.classList.add('completed');
+        renderTimestamp(card, state.missions[missionId].at);
+      }
+
+      // 도장 취소 버튼 동적 생성 (완료된 카드에서만 보임)
+      if (!card.querySelector('.mission-undo-btn')) {
+        const undoBtn = document.createElement('button');
+        undoBtn.type = 'button';
+        undoBtn.className = 'mission-undo-btn';
+        undoBtn.textContent = '↶ 도장 취소';
+        undoBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!confirm('도장을 취소할까요?')) return;
+          if (state.missions && state.missions[missionId]) {
+            delete state.missions[missionId];
+            saveState(state);
+          }
+          card.classList.remove('completed', 'just-completed');
+          const ts = card.querySelector('.mission-timestamp');
+          if (ts) ts.textContent = '';
+        });
+        card.appendChild(undoBtn);
+      }
+
+      // ✓ 도장 클릭
+      const btn = card.querySelector('.mission-stamp-btn');
+      if (!btn) return;
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        // 이미 완료된 미션은 다시 클릭 못 함
+        if (card.classList.contains('completed')) return;
+
+        const now = Date.now();
+        // state 먼저 저장 (이후 overlay 코드 깨져도 데이터 안전)
+        try {
+          if (!state.missions) state.missions = {};
+          state.missions[missionId] = { done: true, at: now };
+          saveState(state);
+        } catch (err) { console.warn('mission save error:', err); }
+
+        // 시각 업데이트 — just-completed 로 stamp drop 애니메이션 트리거
+        card.classList.add('completed', 'just-completed');
+        renderTimestamp(card, now);
+        // 0.7초 후 just-completed 제거 (애니메이션 1회만 발화 보장)
+        setTimeout(() => card.classList.remove('just-completed'), 700);
+
+        // 미션 제목 추출 (textContent — XSS 차단)
+        const title = card.querySelector('.mission-title')?.textContent?.trim() || '';
+        fireMissionComplete(title);
+
+        // 버튼 blur (focus 잔류 방지)
+        if (btn.blur) btn.blur();
+      });
+    });
+  }
+
+  // 미션 카드 timestamp 렌더 (textContent 만 사용)
+  function renderTimestamp(card, at) {
+    const el = card.querySelector('.mission-timestamp');
+    if (!el || !at) return;
+    const d = new Date(at);
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    el.textContent = `Completed · ${m}/${day} ${hh}:${mm}`;
+  }
+
+  wireMissionCards();
+
+  // ==========================================
+  //  옵션 카드(.opt[data-mission]) 미션 통합 (A안)
+  //  ✓ chosen 클릭 시 미션도 동시 처리 — 기존 chosen 시스템에 가벼운 hook
+  //  미션 visual: 골드 도장 ✓ stamp + 골드 글로우 + ★ MISSION 리본
+  // ==========================================
+  function wireOptionMissions() {
+    document.querySelectorAll('.opt[data-mission]').forEach(opt => {
+      const missionId = opt.dataset.mission;
+      if (!missionId || !/^[a-zA-Z0-9_-]{1,32}$/.test(missionId)) return;
+
+      // ★ MISSION 태그 — opt-badge 자리 대체
+      if (!opt.querySelector('.opt-mission-tag')) {
+        const tag = document.createElement('span');
+        tag.className = 'opt-mission-tag';
+        const star = document.createElement('span');
+        star.className = 'omt-star';
+        star.textContent = '★';
+        tag.appendChild(star);
+        const lbl = document.createElement('span');
+        lbl.textContent = 'Mission';
+        tag.appendChild(lbl);
+        opt.appendChild(tag);
+      }
+
+      // "여기 눌러!" hint pill — opt-select 아래에 펄스
+      if (!opt.querySelector('.opt-mission-hint')) {
+        const hint = document.createElement('span');
+        hint.className = 'opt-mission-hint';
+        hint.textContent = '여기 눌러!';
+        opt.appendChild(hint);
+      }
+
+      // 큰 ✓ 도장 — 완료 시각
+      if (!opt.querySelector('.opt-mission-stamp')) {
+        const stamp = document.createElement('div');
+        stamp.className = 'opt-mission-stamp';
+        stamp.textContent = '✓';
+        stamp.setAttribute('aria-hidden', 'true');
+        opt.appendChild(stamp);
+      }
+
+      // 타임스탬프 — 완료 시각만 표시
+      if (!opt.querySelector('.opt-mission-timestamp')) {
+        const ts = document.createElement('div');
+        ts.className = 'opt-mission-timestamp';
+        opt.appendChild(ts);
+      }
+
+      // 도장 + 동선 동시 취소 버튼 (실수로 ✓ 눌렀을 때 둘 다 한 번에 되돌림)
+      if (!opt.querySelector('.opt-mission-undo')) {
+        const undoBtn = document.createElement('button');
+        undoBtn.type = 'button';
+        undoBtn.className = 'opt-mission-undo';
+        undoBtn.textContent = '↶ 도장·동선 둘 다 취소';
+        undoBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (!confirm('도장과 동선에서 모두 빼낼까요? (미션 + 지도 마커 둘 다 사라집니다)')) return;
+          // [1] 미션 제거
+          if (state.missions && state.missions[missionId]) {
+            delete state.missions[missionId];
+          }
+          // [2] 동선(.chosen) 제거 — slotKey 추출 후 해당 idx 제거
+          const optionsEl = opt.closest('.options');
+          if (optionsEl && typeof slotKeyOf === 'function') {
+            const slotKey = slotKeyOf(optionsEl);
+            const optIdx = String(opt.dataset.optIdx);
+            if (slotKey && state.chosen && Array.isArray(state.chosen[slotKey])) {
+              state.chosen[slotKey] = state.chosen[slotKey].filter(v => String(v) !== optIdx);
+              if (state.chosen[slotKey].length === 0) delete state.chosen[slotKey];
+            }
+            // 시각 — applyChosen 으로 슬롯 상태 갱신
+            if (typeof applyChosen === 'function' && typeof getChosenArr === 'function') {
+              applyChosen(optionsEl, getChosenArr(slotKey));
+            }
+          }
+          saveState(state);
+          // [3] 시각 정리 (mission visual 제거)
+          opt.classList.remove('mission-done', 'just-completed');
+          const ts = opt.querySelector('.opt-mission-timestamp');
+          if (ts) ts.textContent = '';
+          // [4] Day Route + 카운터/그리드 갱신
+          const dayPage = opt.closest('.page')?.dataset.page;
+          if (dayPage && typeof renderDayRoute === 'function') renderDayRoute(dayPage);
+          updateMissionCounter();
+          refreshStampGrid();
+        });
+        opt.appendChild(undoBtn);
+      }
+
+      // 저장된 상태 복원
+      if (state.missions && state.missions[missionId] && state.missions[missionId].done) {
+        opt.classList.add('mission-done');
+        const at = state.missions[missionId].at;
+        if (at) renderOptMissionTimestamp(opt, at);
+      }
+    });
+  }
+  function renderOptMissionTimestamp(opt, at) {
+    const el = opt.querySelector('.opt-mission-timestamp');
+    if (!el || !at) return;
+    const d = new Date(at);
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    el.textContent = `Completed · ${m}/${day} ${hh}:${mm}`;
+  }
+  wireOptionMissions();
+
+  // ✓ chosen 버튼 클릭 → 미션 자동 처리
+  // (기존 .opt-select 핸들러는 옵션 슬롯 시스템 안에서 처리됨 — capture phase에서 hook)
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.opt-select');
+    if (!btn) return;
+    const opt = btn.closest('.opt[data-mission]');
+    if (!opt) return;
+    const missionId = opt.dataset.mission;
+    if (!missionId || !/^[a-zA-Z0-9_-]{1,32}$/.test(missionId)) return;
+
+    // 이미 done 이면 — 그냥 chosen 토글, 미션은 그대로
+    if (state.missions && state.missions[missionId] && state.missions[missionId].done) return;
+
+    // 다음 frame 에서 chosen 상태 확인 (기존 핸들러가 먼저 실행)
+    requestAnimationFrame(() => {
+      // chosen 클래스가 추가됐을 때만 미션 fire (선택 → 미션. 해제 → 미션 X)
+      if (!opt.classList.contains('chosen')) return;
+      // state 저장
+      const now = Date.now();
+      try {
+        if (!state.missions) state.missions = {};
+        state.missions[missionId] = { done: true, at: now };
+        saveState(state);
+      } catch(_) {}
+      // 시각 업데이트 — 도장 떨어지는 애니메이션 + 타임스탬프
+      opt.classList.add('mission-done', 'just-completed');
+      setTimeout(() => opt.classList.remove('just-completed'), 700);
+      renderOptMissionTimestamp(opt, now);
+      // 풀스크린 연출 — 카드 라벨 (data-mission-label) 우선, 없으면 opt-title
+      const label = opt.dataset.missionLabel
+        || opt.querySelector('.opt-title')?.textContent?.trim()
+        || '';
+      fireMissionComplete(label);
+      // 카운터 + 그리드 갱신
+      updateMissionCounter();
+      refreshStampGrid();
+    });
+  }, true);
+
+  // ==========================================
+  //  미션 카운터 배지 (진행률 + 다음 미션으로 점프)
+  // ==========================================
+  // 모든 미션 = standalone .mission-card[data-mission] + .opt[data-mission]
+  function getAllMissions() {
+    const out = [];
+    document.querySelectorAll('.mission-card[data-mission]').forEach(c => {
+      out.push({ el: c, id: c.dataset.mission, kind: 'standalone' });
+    });
+    document.querySelectorAll('.opt[data-mission]').forEach(c => {
+      out.push({ el: c, id: c.dataset.mission, kind: 'opt' });
+    });
+    // missionId 중복 제거 (안전)
+    const seen = new Set();
+    return out.filter(m => {
+      if (seen.has(m.id)) return false;
+      seen.add(m.id);
+      return true;
+    });
+  }
+
+  function updateMissionCounter() {
+    const counter = document.getElementById('mission-counter');
+    if (!counter) return;
+    const allMissions = getAllMissions();
+    const total = allMissions.length;
+    if (total === 0) {
+      counter.classList.add('hidden');
+      return;
+    }
+    let done = 0;
+    allMissions.forEach(m => {
+      if (state.missions && state.missions[m.id] && state.missions[m.id].done) done += 1;
+    });
+    const countEl = counter.querySelector('.mc-count');
+    if (countEl) countEl.textContent = `${done}/${total}`;
+    counter.classList.remove('hidden');
+    const allDone = (done === total && total > 0);
+    counter.classList.toggle('all-done', allDone);
+
+    // back 페이지 인트로 토글 — 도장 다 모았으면 회상 메시지
+    const introDefault = document.querySelector('.back-intro[data-state="default"]');
+    const introTripDone = document.querySelector('.back-intro[data-state="trip-done"]');
+    if (introDefault && introTripDone) {
+      introDefault.hidden = allDone;
+      introTripDone.hidden = !allDone;
+    }
+  }
+  // 카운터 클릭 → 마무리 페이지 도장 그리드로 이동 (단일 동작 — 컬렉션 보기)
+  const counterBtn = document.getElementById('mission-counter');
+  if (counterBtn) {
+    counterBtn.addEventListener('click', () => {
+      // back 페이지 활성화
+      const navBack = [...document.querySelectorAll('.page-nav-btn')].find(b => b.dataset.nav === 'back');
+      if (navBack) navBack.click();
+      else location.hash = '#back';
+      // 그리드로 부드럽게 스크롤
+      setTimeout(() => {
+        const grid = document.getElementById('stamp-collection');
+        if (grid) grid.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }, 350);
+      if (counterBtn.blur) counterBtn.blur();
+    });
+  }
+  // ==========================================
+  //  도장 컬렉션 그리드 (마무리 페이지)
+  // ==========================================
+  function buildStampGrid() {
+    const grid = document.getElementById('stamp-grid');
+    if (!grid) return;
+    while (grid.firstChild) grid.removeChild(grid.firstChild);
+    const allMissions = getAllMissions();
+    allMissions.forEach(m => {
+      const card = m.el;
+      const id = m.id;
+      const title = (m.kind === 'opt')
+        ? (card.dataset.missionLabel || card.querySelector('.opt-title')?.textContent?.trim() || id)
+        : (card.querySelector('.mission-title')?.textContent?.trim() || id);
+      // dayId 추출 — 예: 'd1-boarding' → 'D1'
+      const dayMatch = id.match(/^(d\d)-/i);
+      const dayLabel = dayMatch ? dayMatch[1].toUpperCase() : '';
+
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'stamp-item';
+      item.dataset.mission = id;
+      item.setAttribute('aria-label', `${dayLabel} 미션: ${title}`);
+
+      const icon = document.createElement('span');
+      icon.className = 'stamp-icon-large';
+      icon.textContent = '✓';
+      item.appendChild(icon);
+
+      const dayTag = document.createElement('span');
+      dayTag.className = 'stamp-day-tag';
+      dayTag.textContent = dayLabel;
+      item.appendChild(dayTag);
+
+      const name = document.createElement('span');
+      name.className = 'stamp-name';
+      name.textContent = title;
+      item.appendChild(name);
+
+      // 도장 클릭 → 해당 미션 카드 페이지로 이동 + 카드로 스크롤
+      // standalone .mission-card 또는 .opt[data-mission] 둘 다 지원
+      item.addEventListener('click', () => {
+        const targetCard = document.querySelector(
+          `.mission-card[data-mission="${id}"], .opt[data-mission="${id}"]`
+        );
+        if (!targetCard) return;
+        const targetPage = targetCard.closest('.page');
+        if (targetPage) {
+          const pageId = targetPage.dataset.page;
+          const navBtn = pageId && [...document.querySelectorAll('.page-nav-btn')].find(b => b.dataset.nav === pageId);
+          if (navBtn) navBtn.click();
+          else if (pageId) location.hash = '#' + pageId;
+        }
+        setTimeout(() => targetCard.scrollIntoView({ block: 'center', behavior: 'smooth' }), 350);
+        if (item.blur) item.blur();
+      });
+
+      grid.appendChild(item);
+    });
+    refreshStampGrid();
+  }
+  function refreshStampGrid() {
+    const items = document.querySelectorAll('.stamp-item');
+    let done = 0;
+    items.forEach(item => {
+      const id = item.dataset.mission;
+      const isDone = !!(state.missions && state.missions[id] && state.missions[id].done);
+      if (isDone) {
+        if (!item.classList.contains('collected')) {
+          item.classList.add('collected', 'just-collected');
+          setTimeout(() => item.classList.remove('just-collected'), 700);
+        }
+        done += 1;
+      } else {
+        item.classList.remove('collected', 'just-collected');
+      }
+    });
+    const progEl = document.getElementById('stamp-collection-progress');
+    if (progEl) progEl.textContent = `${done} / ${items.length}`;
+  }
+  buildStampGrid();
+
+  // ==========================================
+  //  TRIP COMPLETE — 마지막 미션 클리어 시 더 화려한 풀스크린 (C안)
+  //  state.missions 모두 done 일 때 fireMissionComplete 대신 fireTripComplete 호출
+  // ==========================================
+  function fireTripComplete() {
+    try {
+      _missionOverlayLock = true;
+      // 기존 mission overlay 정리
+      document.querySelectorAll('.mission-overlay').forEach(o => o.remove());
+
+      const overlay = document.createElement('div');
+      overlay.className = 'mission-overlay trip-complete';
+
+      const card = document.createElement('div');
+      card.className = 'mc-card trip-card';
+
+      const closeBtn = document.createElement('button');
+      closeBtn.type = 'button';
+      closeBtn.className = 'mc-close';
+      closeBtn.setAttribute('aria-label', '닫기');
+      closeBtn.textContent = '×';
+      card.appendChild(closeBtn);
+
+      // 별 3개 강화
+      const stars = document.createElement('div');
+      stars.className = 'mc-star tc-stars';
+      stars.textContent = '★★★';
+      card.appendChild(stars);
+
+      const title = document.createElement('h3');
+      title.className = 'mc-title';
+      title.textContent = 'TRIP';
+      const line2 = document.createElement('span');
+      line2.className = 'mc-line2';
+      line2.textContent = 'COMPLETE!';
+      title.appendChild(line2);
+      card.appendChild(title);
+
+      const detail = document.createElement('div');
+      detail.className = 'mc-detail';
+      detail.textContent = '오키나와 5개 도장 모두 모았어 ✨';
+      card.appendChild(detail);
+
+      const sub = document.createElement('div');
+      sub.className = 'mc-trip-sub';
+      sub.textContent = '잘 다녀왔어. 다음 여행에서 또 보자.';
+      card.appendChild(sub);
+
+      // 컨페티 30개 (TRIP은 더 많이)
+      const conf = document.createElement('div');
+      conf.className = 'mc-confetti tc-confetti';
+      for (let i = 0; i < 30; i++) conf.appendChild(document.createElement('span'));
+      card.appendChild(conf);
+
+      overlay.appendChild(card);
+      document.body.appendChild(overlay);
+
+      let cleaned = false;
+      const cleanup = () => {
+        if (cleaned) return;
+        cleaned = true;
+        try {
+          overlay.classList.add('fade');
+          setTimeout(() => { try { overlay.remove(); } catch(_) {} }, 380);
+          document.removeEventListener('keydown', escHandler);
+        } finally {
+          _missionOverlayLock = false;
+        }
+      };
+      const escHandler = (e) => { if (e.key === 'Escape') cleanup(); };
+
+      requestAnimationFrame(() => overlay.classList.add('show'));
+      // TRIP 은 더 길게 — 3.2초 (조카가 음미하게)
+      setTimeout(cleanup, 3200);
+      setTimeout(() => { try { overlay.remove(); _missionOverlayLock = false; } catch(_) {} }, 5500);
+
+      overlay.addEventListener('click', cleanup);
+      closeBtn.addEventListener('click', (e) => { e.stopPropagation(); cleanup(); });
+      document.addEventListener('keydown', escHandler);
+    } catch (err) {
+      console.warn('trip complete error:', err);
+      _missionOverlayLock = false;
+      document.querySelectorAll('.mission-overlay').forEach(o => o.remove());
+    }
+  }
+
+  // ✓ 도장 클릭 후 — 모든 미션 완료됐는지 체크 → 마지막 클리어라면 TRIP COMPLETE
+  // standalone mission-stamp-btn + .opt[data-mission] .opt-select 둘 다
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.mission-stamp-btn') && !e.target.closest('.opt[data-mission] .opt-select')) return;
+    // state 갱신 → 다음 frame 에서 검사
+    requestAnimationFrame(() => {
+      const allMissions = getAllMissions();
+      if (allMissions.length === 0) return;
+      const allDone = allMissions.every(m =>
+        state.missions && state.missions[m.id] && state.missions[m.id].done
+      );
+      if (allDone) {
+        // fireMissionComplete 가 1.8초 만에 끝나니, 그 후에 TRIP COMPLETE 띄우기
+        setTimeout(fireTripComplete, 2400);
+      }
+    });
+  }, true);
+
+  // 미션 클릭 / 취소 후 카운터·그리드 즉시 갱신
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.mission-stamp-btn, .mission-undo-btn, .opt-mission-undo, .opt[data-mission] .opt-select')) {
+      requestAnimationFrame(() => { updateMissionCounter(); refreshStampGrid(); });
+      setTimeout(() => { updateMissionCounter(); refreshStampGrid(); }, 100);
+    }
+  }, true);
+  updateMissionCounter();
 
   // ==========================================
   //  OPT-BODY 더보기/접기 (모바일 전용)
