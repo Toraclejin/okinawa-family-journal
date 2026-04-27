@@ -3664,8 +3664,9 @@
     overflow: visible; /* pulse 애니메이션이 viewBox 밖으로 나가도 잘리지 않게 */
   }
   .td-japan-map .jp-img {
-    /* 실제 SVG 누끼 — 회색→흰색 톤으로 보정 */
-    filter: brightness(2.4) contrast(0.6) opacity(0.62) drop-shadow(0 1px 2px rgba(0,0,0,0.4));
+    /* 실제 SVG 누끼 — 원본 #FEFEE9 (cream) 가 다크 네이비 위에 깔끔하게 보임. 필터 최소 */
+    opacity: 0.92;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
   }
   .td-japan-map .oki-glow {
     fill: rgba(255, 196, 0, 0.38);
@@ -7710,14 +7711,15 @@
 
     <!-- 인증 뱃지 (다크 네이비 + 일본 지도 + 오키나와 강조) -->
     <div class="td-conquer">
-      <!-- 일본 열도 — 외부 SVG 누끼 (japan-map.svg) + 오키나와 골드 ★ overlay -->
-      <svg viewBox="0 0 582 580" class="td-japan-map" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-        <!-- 실제 일본 지도 SVG (Ozean 제거된 누끼 버전) -->
-        <image class="jp-img" href="japan-map.svg" x="0" y="0" width="582" height="580"/>
-        <!-- 오키나와 강조 — 실제 좌표 (380, 540) 부근, 좌측 잘림 방지 위해 충분한 안쪽 여유 -->
-        <circle class="oki-glow" cx="381" cy="535" r="22"/>
-        <circle class="oki-island" cx="381" cy="535" r="11"/>
-        <text x="381" y="538" class="oki-star">★</text>
+      <!-- 일본 열도 — 외부 SVG 누끼 (japan-map.svg, 한반도·중국·기타 제거) + 오키나와 골드 ★ overlay -->
+      <!-- japan-map.svg 의 viewBox "10 40 470 530" → 렌더링 시 470×530 비트맵으로 변환 -->
+      <!-- 인라인 SVG 도 동일 사이즈 사용해서 좌표 일관 -->
+      <svg viewBox="0 0 470 530" class="td-japan-map" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <image class="jp-img" href="japan-map.svg" x="0" y="0" width="470" height="530"/>
+        <!-- 오키나와 본섬 강조 — 파일 좌표 (105, 502), viewBox offset (10,40) 빼서 비트맵 좌표 (95, 462) -->
+        <circle class="oki-glow" cx="95" cy="462" r="20"/>
+        <circle class="oki-island" cx="95" cy="462" r="10"/>
+        <text x="95" y="464" class="oki-star">★</text>
       </svg>
 
       <div class="td-conquer-tag">TRIP CONQUERED</div>
@@ -11406,36 +11408,37 @@
 
   // 일본 지도 Canvas — 위도/경도 기반, SVG 좌표와 동일 (linear path 로 명확한 해안선)
   // 실제 japan-map.svg 를 로드해 canvas 에 그리기 + 오키나와 골드 ★ overlay
-  // — 화면 SVG 와 동일 좌표 (source viewBox 582x580, Okinawa @ 380,540)
+  // — japan-map.svg 의 viewBox 가 "10 40 470 530" 으로 크롭되어 있음 (한반도·중국 제거 후)
+  // — Okinawa 본섬 좌표: (105, 502) — Präfekturen path 분석으로 확정
   // — Promise 반환: SVG load 완료 후 resolve, 실패 시 reject
   function drawJapanMapFromSvg(ctx, canvasW, mapTopY, mapH) {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => {
         try {
-          // 정사각형에 가까운 source(582x580) 를 mapH 만큼 그리기
-          const scale = mapH / 580;
-          const drawW = 582 * scale;
-          const drawH = 580 * scale;
+          // SVG 자체 viewBox 크기 (470 x 530) 기준으로 그리기
+          const SVG_W = 470, SVG_H = 530;
+          const scale = mapH / SVG_H;
+          const drawW = SVG_W * scale;
+          const drawH = SVG_H * scale;
           const drawX = (canvasW - drawW) / 2;
           const drawY = mapTopY - drawH / 2;
-          // 회색 톤 → 흰색 톤 보정: offscreen canvas 에 그리고 source-in 으로 흰색 합성
+          // 회색 톤 → 흰색 톤 보정: offscreen canvas 에 그리고 source-atop 으로 합성
           const off = document.createElement('canvas');
           off.width = drawW;
           off.height = drawH;
           const offCtx = off.getContext('2d');
           offCtx.drawImage(img, 0, 0, drawW, drawH);
-          // 회색 픽셀을 흰색 으로 — source-atop 으로 알파 유지하며 색상 덮어쓰기
           offCtx.globalCompositeOperation = 'source-atop';
-          offCtx.fillStyle = 'rgba(255,255,255,0.62)';
+          offCtx.fillStyle = 'rgba(255,255,255,0.65)';
           offCtx.fillRect(0, 0, drawW, drawH);
-          // 본 canvas 에 그리기
           ctx.drawImage(off, drawX, drawY);
 
-          // 오키나와 강조 — source 좌표 (381, 535) 를 canvas 좌표로 변환
-          const okiX = drawX + 381 * scale;
-          const okiY = drawY + 535 * scale;
-          const okiR = 22 * scale * 1.6; // 살짝 키워서 잘 보이게
+          // 오키나와 본섬 강조 — source 좌표 (105, 502) 를 canvas 좌표로 변환
+          // viewBox offset (10, 40) 빼야 함 (img 안 좌표 → 화면 좌표)
+          const okiX = drawX + (105 - 10) * scale;
+          const okiY = drawY + (502 - 40) * scale;
+          const okiR = 20 * scale * 1.6; // 살짝 키워서 잘 보이게
           // glow
           ctx.fillStyle = 'rgba(255,196,0,0.38)';
           ctx.beginPath(); ctx.arc(okiX, okiY, okiR * 1.2, 0, 2*Math.PI); ctx.fill();
