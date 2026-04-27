@@ -24,11 +24,25 @@
 
 ```
 index.html          단일 파일 (HTML + CSS + JS 한 덩어리)
+japan-map.svg       마무리 페이지 일본 지도 누끼 (Ozean 제거 버전)
+
+DOC-MAP.md          ★ 마스터 인덱스 — 모든 문서 + 참조 관계 + 변경 영향 매트릭스
+DESIGN.md           아키텍처·상태 모델·디자인 토큰·페이지 구조·Auth·Export/Import
+ROUTE.md            구글맵 동선 시스템 (DAY_HOTEL, midHotel, computeMidInsertIdx, 3-call-sites rule)
+MISSIONS.md         미션 시스템 (9개 + 자동 번호 + stamp grid + trip-conquer-card)
+VERIFICATION.md     회귀 검증 절차 (자동 console eval + 수동 모바일 체크)
 TODO.md             미완료 작업 백로그
 learning.md         개발 과정 회고 (사용자용)
-CLAUDE.md           이 파일 (Claude 세션용 가이드)
+CLAUDE.md           이 파일 (Claude 세션용 가이드 — 빠른 참조)
+
 .claude/launch.json npx serve 로 로컬 프리뷰 (포트 8765)
 ```
+
+**문서 룰**:
+- **코드 수정 전** → `DOC-MAP.md` 변경 영향 매트릭스 확인 → 어떤 *.md 같이 봐야 하는지 파악
+- **코드 수정 후** → 영향 받은 *.md 같이 갱신 (스토리·표·예시 코드)
+- **새 문서 추가 시** → `DOC-MAP.md` 표 + 다이어그램에 등록 (안 등록하면 미아)
+- 새 미션·새 픽·새 페이지·새 state 필드 → 각 영역별 체크리스트 (`MISSIONS.md`, `ROUTE.md`, `DESIGN.md`)
 
 ## index.html 레이아웃 (상단→하단)
 
