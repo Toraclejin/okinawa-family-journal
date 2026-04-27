@@ -2717,32 +2717,129 @@
     0%, 100% { transform: translateY(0); box-shadow: 0 8px 22px rgba(255, 196, 0, 0.28); }
     50% { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(255, 196, 0, 0.4); }
   }
-  /* 🎫 어그로 티저 — 미션 클릭 전 호기심 유도 (히든 미션 트리거 암시) */
-  .mission-teaser {
-    margin: 8px 0 14px;
-    padding: 10px 14px;
-    background: linear-gradient(90deg, rgba(22, 160, 133, 0.14) 0%, rgba(22, 160, 133, 0.08) 100%);
-    border-left: 3px solid #16a085;
-    border-radius: 0 8px 8px 0;
+  /* === Mission 3 특별 강조 — Hidden Mission 트리거 카드 ===
+     다른 미션보다 더 화려한 borders, glow, ribbon — 11살 시선 강하게 유도 */
+  .mission-card.mission-special {
+    border: 3px solid var(--amber);
+    border-image: linear-gradient(135deg, #ffc400 0%, #16a085 50%, #ffc400 100%) 1;
+    background: linear-gradient(135deg, #fffaeb 0%, #ffe680 35%, #ebf9f3 65%, #fffaeb 100%);
+    background-size: 250% 250%;
+    box-shadow: 0 12px 32px rgba(255, 196, 0, 0.35), 0 0 0 0 rgba(22, 160, 133, 0);
+    animation:
+      mission-special-shimmer 4s ease-in-out infinite,
+      mission-special-glow 2.4s ease-in-out infinite;
+  }
+  @keyframes mission-special-shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  @keyframes mission-special-glow {
+    0%, 100% { box-shadow: 0 12px 32px rgba(255, 196, 0, 0.35), 0 0 0 0 rgba(22, 160, 133, 0); }
+    50% { box-shadow: 0 16px 40px rgba(255, 196, 0, 0.5), 0 0 0 6px rgba(22, 160, 133, 0.18); }
+  }
+  /* 좌상단 리본 — 다른 미션 카드와 명확한 시각 구분 */
+  .mission-special-ribbon {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #16a085 0%, #0e6b56 100%);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    padding: 5px 14px;
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(22, 160, 133, 0.5);
+    z-index: 4;
+    white-space: nowrap;
+    animation: mission-special-ribbon-pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes mission-special-ribbon-pulse {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.08); }
+  }
+  /* 완료 후엔 리본·shimmer·glow 다 가라앉음 (자연스러운 transition) */
+  .mission-card.mission-special.completed .mission-special-ribbon { display: none; }
+  .mission-card.mission-special.completed {
+    animation: none;
+    border: 2.5px solid var(--amber);
+    background: linear-gradient(135deg, #fffaeb 0%, #fff 100%);
+  }
+
+  /* 🎫 어그로 티저 — Mission 3 안에서 가장 시선 끄는 박스 */
+  .mission-teaser-big {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 12px 0 16px;
+    padding: 16px 18px;
+    background: linear-gradient(135deg, #16a085 0%, #0e6b56 100%);
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(22, 160, 133, 0.35);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    animation: mtb-pulse 2s ease-in-out infinite;
+  }
+  @keyframes mtb-pulse {
+    0%, 100% { box-shadow: 0 6px 20px rgba(22, 160, 133, 0.35); transform: scale(1); }
+    50% { box-shadow: 0 10px 28px rgba(22, 160, 133, 0.55); transform: scale(1.015); }
+  }
+  /* 안쪽 광택 띠 (왼쪽→오른쪽 흐르는) */
+  .mission-teaser-big::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
+    animation: mtb-shine 2.8s ease-in-out infinite;
+  }
+  @keyframes mtb-shine {
+    0% { left: -100%; }
+    50% { left: 200%; }
+    100% { left: 200%; }
+  }
+  .mtb-icon {
+    font-size: 36px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    animation: mtb-icon-shake 1.6s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  @keyframes mtb-icon-shake {
+    0%, 88%, 100% { transform: rotate(0); }
+    91% { transform: rotate(-15deg); }
+    94% { transform: rotate(15deg); }
+    97% { transform: rotate(-8deg); }
+  }
+  .mtb-text { flex: 1; min-width: 0; }
+  .mtb-headline {
     font-family: 'Pretendard Variable', Pretendard, sans-serif;
-    font-size: 13.5px;
-    color: #0e6b56;
-    font-weight: 700;
-    line-height: 1.45;
-    animation: mission-teaser-shimmer 2.4s ease-in-out infinite;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.4;
+    color: #fff;
+    margin-bottom: 4px;
+    letter-spacing: -0.005em;
   }
-  .mission-teaser em {
-    font-family: 'Fraunces', serif;
-    font-style: italic;
+  .mtb-sub {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 12.5px;
+    color: #c8efde;
     font-weight: 600;
-    color: #0e6b56;
-  }
-  @keyframes mission-teaser-shimmer {
-    0%, 100% { background-position: 0% 50%; box-shadow: 0 0 0 0 rgba(22, 160, 133, 0); }
-    50% { background-position: 100% 50%; box-shadow: 0 0 0 4px rgba(22, 160, 133, 0.12); }
   }
   /* 미션 완료되면 티저 사라짐 — 이미 비밀 풀렸으니 */
-  .mission-card.completed .mission-teaser { display: none; }
+  .mission-card.completed .mission-teaser-big { display: none; }
+  /* 모바일 */
+  @media (max-width: 600px) {
+    .mtb-icon { font-size: 30px; }
+    .mtb-headline { font-size: 14.5px; }
+    .mtb-sub { font-size: 11.5px; }
+    .mission-special-ribbon { font-size: 10px; padding: 4px 11px; }
+  }
 
   /* 도장 버튼 자체에도 살짝 펄스 — 누르고 싶게 */
   .mission-card:not(.completed) .mission-stamp-btn {
@@ -6353,12 +6450,20 @@
   <!-- ========== 미션 #2 — Orion 호텔 체크인 (Blue Seal 들른 후 → 북부 도착 시점) ========== -->
   <!-- DOM 위치 = afterMission 기준점. Blue Seal options 다음·Settling-In 옵션 앞에 위치해야 -->
   <!-- computeMidInsertIdx 가 Blue Seal 픽 다음에 mid stop (CHECK-IN) 을 정확히 끼움 -->
-  <div class="mission-card" data-mission="d1-hotel">
+  <!-- mission-special: Hidden Mission 트리거 카드라 다른 미션보다 화려하게 강조 -->
+  <div class="mission-card mission-special" data-mission="d1-hotel">
+    <span class="mission-special-ribbon">🎫 SECRET TRIGGER</span>
     <span class="mission-tag">Mission · Check-in 15:00</span>
     <h3 class="mission-title">Hotel Orion Motobu — 도착!</h3>
     <p class="mission-desc">키 받고 방문 열고 첫 발을 디뎠다면 — 이 여행의 첫 호텔 도장. 비세 후쿠기 길까지 도보 3분.</p>
     <!-- 🎫 어그로 티저 — completed 전에만 노출 (히든 미션 트리거 암시) -->
-    <p class="mission-teaser">🎫 <em>호텔 도착한 다음 — 예상 못 한 일이 생길지도?!?</em></p>
+    <div class="mission-teaser-big">
+      <span class="mtb-icon">🎫</span>
+      <div class="mtb-text">
+        <div class="mtb-headline">호텔 도착한 다음 — 예상 못한 일이 생길지도?!?</div>
+        <div class="mtb-sub">도장 ✓ 누르면 비밀 풀려 · 가족이랑만 아는 미션</div>
+      </div>
+    </div>
     <div class="mission-action-row">
       <button type="button" class="mission-stamp-btn" aria-label="미션 인증">
         <span class="ms-icon">✓</span>
