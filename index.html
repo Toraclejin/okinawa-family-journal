@@ -4887,6 +4887,583 @@
     .page-nav-btn.current::after { left: 11px; right: 11px; height: 2px; }
   }
 
+  /* === 마무리 페이지 히든 unlock CTA — d1-hotel done 후 unlock 안 했을 때 상시 노출 === */
+  .hidden-unlock-cta {
+    margin: 32px 0 0;
+    padding: 24px 22px 22px;
+    background: linear-gradient(135deg, #ebf9f3 0%, #d1f0e1 100%);
+    border: 2px dashed #16a085;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(22, 160, 133, 0.18);
+    animation: huc-pulse 3s ease-in-out infinite;
+  }
+  .hidden-unlock-cta[hidden] { display: none !important; }
+  @keyframes huc-pulse {
+    0%, 100% { box-shadow: 0 8px 24px rgba(22, 160, 133, 0.18); }
+    50% { box-shadow: 0 12px 32px rgba(22, 160, 133, 0.32); }
+  }
+  .huc-icon {
+    font-size: 38px;
+    margin-bottom: 6px;
+  }
+  .huc-tag {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.28em;
+    color: #16a085;
+    margin-bottom: 8px;
+  }
+  .huc-title {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #0e6b56;
+    margin: 0 0 8px;
+  }
+  .huc-body {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 13.5px;
+    color: var(--blue-ink);
+    margin: 0 0 14px;
+    line-height: 1.5;
+  }
+  .huc-btn {
+    background: #16a085;
+    color: #fff;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 999px;
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .huc-btn:hover { background: #0e6b56; transform: translateY(-1px); }
+
+  /* === 히든 미션 unlock 확인 모달 — 11살 실수 클릭 안전망 === */
+  .hidden-unlock-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10500; /* mission-overlay (9999) 보다 높게 — 미션 클리어 후 자연스럽게 위에 등장 */
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 31, 102, 0.65);
+    backdrop-filter: blur(4px);
+    animation: hum-fade 0.3s ease-out;
+  }
+  .hidden-unlock-modal.open { display: flex; }
+  @keyframes hum-fade {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  .hum-card {
+    background: #fff;
+    border: 3px solid #16a085;
+    border-radius: 18px;
+    padding: 32px 28px 24px;
+    max-width: 380px;
+    width: 88%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    animation: hum-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes hum-pop {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .hum-icon {
+    font-size: 42px;
+    margin-bottom: 8px;
+  }
+  .hum-tag {
+    display: inline-block;
+    background: #16a085;
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.24em;
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  .hum-title {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 600;
+    font-size: 22px;
+    color: #0e6b56;
+    margin: 0 0 10px;
+    line-height: 1.3;
+  }
+  .hum-body {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 14.5px;
+    color: var(--blue-ink);
+    margin: 0 0 22px;
+    line-height: 1.55;
+  }
+  .hum-actions {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+  }
+  .hum-btn {
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: none;
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: transform 0.15s, background 0.15s;
+  }
+  .hum-btn-yes {
+    background: #16a085;
+    color: #fff;
+  }
+  .hum-btn-yes:hover { background: #0e6b56; transform: translateY(-1px); }
+  .hum-btn-no {
+    background: #fff;
+    color: #0e6b56;
+    border: 1.5px solid rgba(22, 160, 133, 0.45);
+  }
+  .hum-btn-no:hover { background: rgba(22, 160, 133, 0.06); }
+
+  /* === 히든 미션 풀스크린 티켓 발급 === */
+  .hidden-ticket-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10001;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(14, 107, 86, 0.92);
+    backdrop-filter: blur(8px);
+  }
+  .hidden-ticket-overlay.active { display: flex; animation: hto-fade 0.4s ease-out; }
+  @keyframes hto-fade {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  .ht-content {
+    text-align: center;
+    color: #fff;
+    animation: ht-zoom 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes ht-zoom {
+    0% { transform: scale(0.5) rotate(-8deg); opacity: 0; }
+    60% { transform: scale(1.05) rotate(2deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  .ht-icon {
+    font-size: 86px;
+    margin-bottom: 12px;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+  }
+  .ht-tag {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.32em;
+    color: #b2e5d2;
+    margin-bottom: 8px;
+  }
+  .ht-title {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 36px;
+    font-weight: 900;
+    margin: 0 0 12px;
+    letter-spacing: -0.02em;
+  }
+  .ht-body {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 16px;
+    color: #b2e5d2;
+    margin: 0;
+    max-width: 320px;
+  }
+  /* 티켓 발급 컨페티 — 그린 톤 30개 */
+  .ht-confetti {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: visible;
+  }
+  .ht-confetti span {
+    position: absolute;
+    width: 8px;
+    height: 14px;
+    background: #16a085;
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+    border-radius: 2px;
+    animation: ht-confetti-burst 1.4s ease-out forwards;
+  }
+  .ht-confetti span:nth-child(2n) { background: #b2e5d2; }
+  .ht-confetti span:nth-child(3n) { background: #ffc400; }
+  .ht-confetti span:nth-child(4n) { background: #fff; }
+  .ht-confetti span:nth-child(5n) { background: #0e6b56; }
+  /* 30개 개별 방향 — JS 없이 CSS 변수로 분산 */
+  .ht-confetti span:nth-child(1)  { --tx: -210px; --ty: -180px; --rot: -120deg; }
+  .ht-confetti span:nth-child(2)  { --tx:  180px; --ty: -200px; --rot:  140deg; }
+  .ht-confetti span:nth-child(3)  { --tx: -260px; --ty:   40px; --rot:  -80deg; }
+  .ht-confetti span:nth-child(4)  { --tx:  240px; --ty:   60px; --rot:   90deg; }
+  .ht-confetti span:nth-child(5)  { --tx:  -80px; --ty: -240px; --rot: -160deg; }
+  .ht-confetti span:nth-child(6)  { --tx:  120px; --ty: -240px; --rot:  170deg; }
+  .ht-confetti span:nth-child(7)  { --tx: -160px; --ty:  220px; --rot: -200deg; }
+  .ht-confetti span:nth-child(8)  { --tx:  200px; --ty:  220px; --rot:  220deg; }
+  .ht-confetti span:nth-child(9)  { --tx: -300px; --ty: -100px; --rot: -300deg; }
+  .ht-confetti span:nth-child(10) { --tx:  280px; --ty: -100px; --rot:  300deg; }
+  .ht-confetti span:nth-child(11) { --tx: -100px; --ty: -100px; --rot: -100deg; }
+  .ht-confetti span:nth-child(12) { --tx:  100px; --ty: -100px; --rot:  100deg; }
+  .ht-confetti span:nth-child(13) { --tx: -240px; --ty: -240px; --rot: -240deg; }
+  .ht-confetti span:nth-child(14) { --tx:  240px; --ty: -240px; --rot:  240deg; }
+  .ht-confetti span:nth-child(15) { --tx: -180px; --ty:  -40px; --rot: -180deg; }
+  .ht-confetti span:nth-child(16) { --tx:  220px; --ty:  -40px; --rot:  180deg; }
+  .ht-confetti span:nth-child(17) { --tx:  -60px; --ty:  220px; --rot:  -60deg; }
+  .ht-confetti span:nth-child(18) { --tx:   80px; --ty:  240px; --rot:   80deg; }
+  .ht-confetti span:nth-child(19) { --tx: -340px; --ty:  140px; --rot: -340deg; }
+  .ht-confetti span:nth-child(20) { --tx:  320px; --ty:  140px; --rot:  340deg; }
+  .ht-confetti span:nth-child(21) { --tx: -120px; --ty:  -80px; --rot: -120deg; }
+  .ht-confetti span:nth-child(22) { --tx:  140px; --ty:  -80px; --rot:  120deg; }
+  .ht-confetti span:nth-child(23) { --tx: -200px; --ty:  100px; --rot: -200deg; }
+  .ht-confetti span:nth-child(24) { --tx:  220px; --ty:  120px; --rot:  200deg; }
+  .ht-confetti span:nth-child(25) { --tx:  -40px; --ty: -180px; --rot:  -40deg; }
+  .ht-confetti span:nth-child(26) { --tx:   60px; --ty: -200px; --rot:   60deg; }
+  .ht-confetti span:nth-child(27) { --tx: -160px; --ty:  160px; --rot: -160deg; }
+  .ht-confetti span:nth-child(28) { --tx:  180px; --ty:  180px; --rot:  160deg; }
+  .ht-confetti span:nth-child(29) { --tx:    0px; --ty: -260px; --rot:  -10deg; }
+  .ht-confetti span:nth-child(30) { --tx:    0px; --ty:  240px; --rot:   10deg; }
+  @keyframes ht-confetti-burst {
+    0% { opacity: 1; transform: translate(0, 0) rotate(0); }
+    100% { opacity: 0; transform: translate(var(--tx), var(--ty)) rotate(var(--rot)); }
+  }
+
+  /* === Family Master 풀스크린 (5/5 완료) === */
+  .family-master-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10001;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(14, 107, 86, 0.95) 0%, rgba(22, 160, 133, 0.95) 100%);
+    backdrop-filter: blur(8px);
+  }
+  .family-master-overlay.active { display: flex; animation: hto-fade 0.4s ease-out; }
+  .fmo-content {
+    text-align: center;
+    color: #fff;
+    animation: ht-zoom 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .fmo-medal {
+    font-size: 96px;
+    margin-bottom: 8px;
+    animation: fmo-medal-spin 1.6s ease-out;
+  }
+  @keyframes fmo-medal-spin {
+    0% { transform: rotate(-720deg) scale(0); }
+    100% { transform: rotate(0deg) scale(1); }
+  }
+  .fmo-tag {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.32em;
+    color: #c8efde;
+    margin-bottom: 8px;
+  }
+  .fmo-title {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 44px;
+    font-weight: 900;
+    margin: 0 0 16px;
+  }
+  .fmo-body {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 17px;
+    color: #c8efde;
+    margin: 0;
+    max-width: 340px;
+  }
+
+  /* === Hidden Mission 페이지 — 그린 톤 (메인 골드와 구분) === */
+  .hidden-page {
+    padding: 60px 24px 80px;
+    background: linear-gradient(180deg, #e8f8f0 0%, #ffffff 100%);
+    min-height: 100vh;
+  }
+  .hidden-mark {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #16a085;
+    color: #fff;
+    border-radius: 999px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.24em;
+    margin-bottom: 14px;
+  }
+  .hidden-page-head h2 {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: clamp(40px, 11vw, 80px);
+    line-height: 0.95;
+    color: #0e6b56;
+    margin: 0 0 12px;
+    letter-spacing: -0.02em;
+  }
+  .hidden-page-head h2 em {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 600;
+    color: #16a085;
+  }
+  .hidden-page-sub {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 15px;
+    color: #0e6b56;
+    margin: 0 0 24px;
+    line-height: 1.5;
+    opacity: 0.8;
+  }
+  .hidden-counter {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    background: #fff;
+    border: 2px solid #16a085;
+    border-radius: 999px;
+    padding: 8px 18px;
+    margin-bottom: 28px;
+  }
+  .hidden-counter .hc-num {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 22px;
+    color: #16a085;
+  }
+  .hidden-counter .hc-divider, .hidden-counter .hc-total {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    color: #0e6b56;
+    font-weight: 700;
+  }
+  .hidden-counter .hc-lbl {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    color: #16a085;
+    margin-left: 8px;
+  }
+
+  /* Hidden mission card — 그린 톤 */
+  .mission-card.hidden-mission {
+    border: 2.5px dashed #16a085;
+    background: linear-gradient(135deg, #ebf9f3 0%, #b2e5d2 50%, #ebf9f3 100%);
+    background-size: 200% 200%;
+  }
+  .mission-card.hidden-mission.completed {
+    border: 2.5px solid #16a085;
+    box-shadow: 0 14px 36px rgba(22, 160, 133, 0.28);
+    background: linear-gradient(135deg, #ebf9f3 0%, #fff 100%);
+  }
+  .mission-card.hidden-mission.completed::after {
+    background: #16a085;
+    color: #fff;
+  }
+  .mission-tag-hidden {
+    background: #16a085 !important;
+    color: #fff !important;
+  }
+  .mission-card.hidden-mission .mission-stamp-btn {
+    background: #16a085;
+    color: #fff;
+  }
+  .mission-card.hidden-mission .mission-stamp-btn:hover {
+    background: #0e6b56;
+  }
+  .mission-card.hidden-mission .mission-hint {
+    color: #0e6b56;
+  }
+  .mission-card.hidden-mission:not(.completed) .mission-stamp-btn {
+    animation: stamp-btn-pulse-green 1.8s ease-in-out infinite;
+  }
+  @keyframes stamp-btn-pulse-green {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(22, 160, 133, 0.45); }
+    50% { box-shadow: 0 0 0 8px rgba(22, 160, 133, 0); }
+  }
+  .hidden-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(22, 160, 133, 0.08);
+    border-left: 3px solid #16a085;
+    padding: 10px 14px;
+    border-radius: 0 8px 8px 0;
+  }
+  .hidden-features li {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 13.5px;
+    color: var(--blue-ink);
+    display: flex;
+    gap: 8px;
+  }
+  .hidden-features li strong {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    color: #0e6b56;
+    min-width: 80px;
+  }
+  .hidden-write {
+    margin: 12px 0 14px;
+  }
+  .hidden-write .hw-lbl {
+    display: block;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #0e6b56;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .hidden-write .hw-area {
+    width: 100%;
+    min-height: 70px;
+    padding: 10px 12px;
+    border: 1.5px dashed #16a085;
+    border-radius: 8px;
+    background: #fff;
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 14px;
+    color: var(--blue-ink);
+    resize: vertical;
+    box-sizing: border-box;
+  }
+  .hidden-write .hw-area:focus { outline: none; border-style: solid; }
+
+  /* 5/5 완료 시 메시지 */
+  .family-master-msg {
+    margin: 24px 0 0;
+    padding: 28px 24px 24px;
+    background: linear-gradient(180deg, #ebf9f3 0%, #fff 100%);
+    border: 1.5px solid #16a085;
+    border-radius: 16px;
+    box-shadow: 0 10px 28px rgba(22, 160, 133, 0.15);
+    animation: fm-fadein 0.8s ease-out;
+  }
+  @keyframes fm-fadein {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .family-master-msg .fm-eyebrow {
+    display: inline-block;
+    background: #16a085;
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.24em;
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+  }
+  .family-master-msg .fm-headline {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #0e6b56;
+    line-height: 1.35;
+    margin: 0 0 12px;
+  }
+  .family-master-msg .fm-body {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 14px;
+    color: var(--blue-ink);
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  /* === Hidden Mission 탭 — 3 단계 가시성 ===
+     단계 1 (d1-hotel done X)         → display: none (완전 숨김)
+     단계 2 (d1-hotel done O, !unlock) → 자물쇠 🔒 만 + 반짝반짝 (애 관심 유도)
+     단계 3 (hiddenUnlocked O)        → "Hidden" 라벨 + NEW 배지 + 반짝반짝 */
+  .nav-hidden-tab {
+    color: #16a085 !important;
+    position: relative;
+    display: none; /* 기본 숨김 — JS 가 단계 2/3 일 때만 보이게 */
+    align-items: center;
+    gap: 5px;
+    font-weight: 800 !important;
+    animation: hidden-tab-shimmer 2.4s ease-in-out infinite;
+  }
+  /* 단계 2/3 — JS 가 .show 클래스 부여 시 보임 */
+  .nav-hidden-tab.show { display: inline-flex; }
+  @keyframes hidden-tab-shimmer {
+    0%, 100% {
+      text-shadow: 0 0 0 transparent;
+      transform: scale(1);
+    }
+    50% {
+      text-shadow: 0 0 10px rgba(22, 160, 133, 0.7), 0 0 4px rgba(22, 160, 133, 0.5);
+      transform: scale(1.06);
+    }
+  }
+  /* 단계 2 (locked + show) — 자물쇠만, 라벨 숨김 */
+  .nav-hidden-tab.locked .hidden-tab-lock {
+    display: inline-block;
+    font-size: 16px;
+    animation: hidden-tab-lock-jiggle 1.6s ease-in-out infinite;
+  }
+  .nav-hidden-tab.locked .hidden-tab-label,
+  .nav-hidden-tab.locked .hidden-tab-new {
+    display: none;
+  }
+  .nav-hidden-tab.locked { cursor: pointer; }
+  @keyframes hidden-tab-lock-jiggle {
+    0%, 88%, 100% { transform: rotate(0) scale(1); }
+    91% { transform: rotate(-15deg) scale(1.15); }
+    94% { transform: rotate(15deg) scale(1.15); }
+    97% { transform: rotate(-8deg) scale(1.1); }
+  }
+  /* 단계 3 (unlocked + show) — 라벨 + NEW 배지 */
+  .nav-hidden-tab:not(.locked) .hidden-tab-lock { display: none; }
+  .nav-hidden-tab:not(.locked) .hidden-tab-label { display: inline-block; }
+  .nav-hidden-tab:not(.locked) .hidden-tab-new {
+    display: inline-block;
+    background: linear-gradient(135deg, #16a085 0%, #0e6b56 100%);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 900;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.06em;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(22, 160, 133, 0.5);
+    animation: hidden-tab-new-pulse 1.4s ease-in-out infinite;
+  }
+  .nav-hidden-tab.seen .hidden-tab-new { display: none !important; }
+  @keyframes hidden-tab-new-pulse {
+    0%, 100% { transform: translateY(-1px) scale(1); box-shadow: 0 2px 6px rgba(22, 160, 133, 0.5); }
+    50% { transform: translateY(-1px) scale(1.18); box-shadow: 0 4px 14px rgba(22, 160, 133, 0.7); }
+  }
+  .nav-hidden-tab.current { color: #0e6b56 !important; animation: none; transform: scale(1); text-shadow: none; }
+  .nav-hidden-tab.current::after { background: #16a085 !important; }
+
   /* 좌우 페이지 이동 화살표 (고정) */
   .page-arrow {
     position: fixed;
@@ -5362,6 +5939,40 @@
 
 <input type="file" id="import-input" accept=".json,application/json" class="hidden-input" />
 
+<!-- 히든 미션 unlock 확인 모달 — 11살 실수 클릭 안전망 -->
+<div class="hidden-unlock-modal" id="hidden-unlock-modal" role="dialog" aria-modal="true" aria-labelledby="hum-title">
+  <div class="hum-card">
+    <div class="hum-icon">🎫</div>
+    <div class="hum-tag">TICKET ISSUED</div>
+    <h3 class="hum-title" id="hum-title">히든 미션 풀어볼래?</h3>
+    <p class="hum-body">호텔 도착 미션 클리어 — 비밀 보너스 미션 6개가 풀릴 수 있어.<br/>가족이랑 같이 하는 미션이라 메인 9개랑 별도야.</p>
+    <div class="hum-actions">
+      <button type="button" class="hum-btn hum-btn-yes" id="hum-yes">🗝 응! 지금 풀게</button>
+      <button type="button" class="hum-btn hum-btn-no" id="hum-no">나중에 풀게 (마무리 페이지에서 다시)</button>
+    </div>
+  </div>
+</div>
+
+<!-- 히든 미션 티켓 발급 풀스크린 (1.5초) -->
+<div class="hidden-ticket-overlay" id="hidden-ticket-overlay" aria-hidden="true">
+  <div class="ht-content">
+    <div class="ht-icon">🎫</div>
+    <div class="ht-tag">HIDDEN MISSION TICKET</div>
+    <div class="ht-title">티켓 발급!</div>
+    <p class="ht-body">위 네비에 <strong>Hidden 탭</strong>이 풀렸어 — 비밀 미션 6개 가족이랑 같이!</p>
+  </div>
+</div>
+
+<!-- Family Master 풀스크린 (6/6 완료, 1.8초) -->
+<div class="family-master-overlay" id="family-master-overlay" aria-hidden="true">
+  <div class="fmo-content">
+    <div class="fmo-medal">🥇</div>
+    <div class="fmo-tag">FAMILY MASTER</div>
+    <div class="fmo-title">패밀리 마스터!</div>
+    <p class="fmo-body">메인 9개 + 가족 보너스 6개 = 진짜 잘 했어. 이번 여행 너 덕분에 더 따뜻했어.</p>
+  </div>
+</div>
+
 <!-- 구글맵 확인 모달 -->
 <div class="modal-bg" id="modal-map">
   <div class="modal map-modal">
@@ -5427,6 +6038,12 @@
     <button type="button" class="page-nav-btn" data-nav="d3">Day 3</button>
     <button type="button" class="page-nav-btn" data-nav="d4">Day 4</button>
     <button type="button" class="page-nav-btn" data-nav="back">마무리</button>
+    <!-- Hidden Mission 탭 — d1-hotel done 시 unlock (CSS .locked → 숨김 / .new → NEW 배지) -->
+    <button type="button" class="page-nav-btn nav-hidden-tab locked" data-nav="hidden">
+      <span class="hidden-tab-lock">🔒</span>
+      <span class="hidden-tab-label">Hidden</span>
+      <span class="hidden-tab-new">NEW</span>
+    </button>
   </div>
 </nav>
 
@@ -7907,9 +8524,152 @@
     <span>The Family Journal · Vol. I</span>
     <span>Okinawa, Spring 2026</span>
   </div>
+
+  <!-- 히든 미션 unlock CTA — d1-hotel done 후 unlock 안 했을 때 마무리 페이지에 상시 노출.
+       "나중에" 눌렀어도 언제든 다시 풀 수 있게 안전망 -->
+  <div class="hidden-unlock-cta" id="hidden-unlock-cta" hidden>
+    <div class="huc-icon">🎫</div>
+    <div class="huc-tag">TICKET PENDING</div>
+    <h3 class="huc-title">히든 미션 풀기 — 가족 보너스 6개</h3>
+    <p class="huc-body">호텔 도착 미션 클리어해서 티켓이 발급됐어. 풀어볼래? 가족이랑 같이 하는 비밀 임무 6개야.</p>
+    <button type="button" class="huc-btn" id="hidden-unlock-cta-btn">🗝 지금 풀기</button>
+  </div>
 </section>
 
 </div><!-- /page back -->
+
+<!-- ========== HIDDEN MISSION 페이지 (d1-hotel 도착 후 unlock) ========== -->
+<div class="page" data-page="hidden">
+  <section class="hidden-page">
+    <div class="hidden-mark">🎫 BONUS · For 조카 Only ✺</div>
+    <div class="hidden-page-head">
+      <h2>Hidden<br/><em>Mission.</em></h2>
+      <p class="hidden-page-sub">호텔 도착 미션 클리어 → <strong>티켓 발급 완료</strong>.<br/>5개 비밀 미션은 가족이랑 함께 — 메인 9개와는 별도.</p>
+      <div class="hidden-counter">
+        <span class="hc-num" id="hidden-counter-num">0</span>
+        <span class="hc-divider">/</span>
+        <span class="hc-total">6</span>
+        <span class="hc-lbl">FAMILY MASTER</span>
+      </div>
+    </div>
+
+    <!-- ========== Hidden Mission H1 — 아빠 어깨 안마 ========== -->
+    <div class="mission-card hidden-mission" data-mission="hidden-h1-massage" data-mission-type="bonus">
+      <span class="mission-tag mission-tag-hidden">Hidden 1 · Family</span>
+      <h3 class="mission-title">아빠 어깨 5분 안마</h3>
+      <p class="mission-desc">호텔 객실에서, 온천 다녀온 뒤에, 또는 운전 끝난 뒤 아무 때나. 5분 안마 → 도장. 11살 조카만의 비밀 미션.</p>
+      <div class="mission-action-row">
+        <button type="button" class="mission-stamp-btn" aria-label="미션 인증">
+          <span class="ms-icon">✓</span>
+          <span class="ms-label">안마 했어!</span>
+        </button>
+        <span class="mission-hint">5분 채우면 눌러!</span>
+      </div>
+      <div class="mission-timestamp"></div>
+    </div>
+
+    <!-- ========== Hidden Mission H2 — 엄마 짐 들기 ========== -->
+    <div class="mission-card hidden-mission" data-mission="hidden-h2-bag" data-mission-type="bonus">
+      <span class="mission-tag mission-tag-hidden">Hidden 2 · Family</span>
+      <h3 class="mission-title">엄마 짐 들어주기</h3>
+      <p class="mission-desc">Don Quijote, AEON, 마트 어디든. 비행기 탈 때, 호텔 체크인할 때도 OK. 엄마 짐 1번 들어주면 도장.</p>
+      <div class="mission-action-row">
+        <button type="button" class="mission-stamp-btn" aria-label="미션 인증">
+          <span class="ms-icon">✓</span>
+          <span class="ms-label">짐 들었어!</span>
+        </button>
+        <span class="mission-hint">엄마한테 슬쩍 가서 들어줘!</span>
+      </div>
+      <div class="mission-timestamp"></div>
+    </div>
+
+    <!-- ========== Hidden Mission H3 — 류큐 시사상 헌터 ========== -->
+    <div class="mission-card hidden-mission photo-mission" data-mission="hidden-h3-shisa" data-mission-type="bonus" data-photo-mission="hidden-shisa">
+      <span class="mission-tag mission-tag-hidden">Hidden 3 · 오키나와 문화</span>
+      <h3 class="mission-title">류큐 시사(獅子) 1개 발견 + 사진</h3>
+      <p class="mission-desc">오키나와 어디나 사자상(시사) 가 있음. 호텔 입구, 식당 앞, 거리 — 1개 찾아 사진 찍기. <strong>시사는 액운 막아주는 류큐 왕국 부적</strong>이야.</p>
+      <div class="mission-action-row">
+        <button type="button" class="add-photo-btn mission-photo-btn" data-photo-target="hidden-shisa">
+          📷 시사 사진 올리기
+        </button>
+        <span class="mission-hint">1장 올리면 자동 도장!</span>
+      </div>
+      <div class="photo-grid mission-photo-grid" data-photo-grid="hidden-shisa"></div>
+      <div class="mission-timestamp"></div>
+    </div>
+
+    <!-- ========== Hidden Mission H4 — 추라우미 좋아하는 물고기 그림 ========== -->
+    <div class="mission-card hidden-mission" data-mission="hidden-h4-fish" data-mission-type="bonus">
+      <span class="mission-tag mission-tag-hidden">Hidden 4 · 추라우미</span>
+      <h3 class="mission-title">좋아하는 물고기 — 그림 그리고 가족에게 설명</h3>
+      <p class="mission-desc">추라우미에서 본 물고기 중 가장 좋아하는 1마리. <strong>이름 + 간단한 그림</strong>을 메모장이나 종이에 그려서 가족한테 1분 설명. 다 끝나면 도장.</p>
+      <div class="hidden-write">
+        <label class="hw-lbl">물고기 이름 / 한 줄 메모</label>
+        <textarea class="hw-area" data-save="hidden-h4-fish-memo" placeholder="예: 고래상어 — 8.8m 짜리 거대 상어. 그런데 사람 안 무서움."></textarea>
+      </div>
+      <div class="mission-action-row">
+        <button type="button" class="mission-stamp-btn" aria-label="미션 인증">
+          <span class="ms-icon">✓</span>
+          <span class="ms-label">그림 그리고 설명 끝!</span>
+        </button>
+        <span class="mission-hint">메모 적은 다음 눌러!</span>
+      </div>
+      <div class="mission-timestamp"></div>
+    </div>
+
+    <!-- ========== Hidden Mission H5 — 일본어 인사 챌린지 ========== -->
+    <div class="mission-card hidden-mission" data-mission="hidden-h5-japanese" data-mission-type="bonus">
+      <span class="mission-tag mission-tag-hidden">Hidden 5 · 일본어 인사</span>
+      <h3 class="mission-title">일본어 단어 — 가족 앞에서 3개 사용</h3>
+      <p class="mission-desc">3개 단어를 가족 앞에서 1번씩이라도 말하면 끝. 다음 미션의 워밍업.</p>
+      <ul class="hidden-features">
+        <li><strong>ありがとう</strong>아리가또 — 고맙습니다</li>
+        <li><strong>こんにちは</strong>곤니찌와 — 안녕하세요 (낮)</li>
+        <li><strong>おいしい</strong>오이시이 — 맛있어</li>
+      </ul>
+      <div class="mission-action-row">
+        <button type="button" class="mission-stamp-btn" aria-label="미션 인증">
+          <span class="ms-icon">✓</span>
+          <span class="ms-label">3개 다 말했어!</span>
+        </button>
+        <span class="mission-hint">엄마·아빠한테 1번씩!</span>
+      </div>
+      <div class="mission-timestamp"></div>
+    </div>
+
+    <!-- ========== Hidden Mission H6 — 현지 상점에서 직접 주문 (BOSS) ========== -->
+    <div class="mission-card hidden-mission" data-mission="hidden-h6-order" data-mission-type="bonus">
+      <span class="mission-tag mission-tag-hidden">Hidden 6 · BOSS 미션</span>
+      <h3 class="mission-title">현지 상점에서 직접 주문 1번</h3>
+      <p class="mission-desc">식당·편의점·아이스크림 가게 어디든. <strong>가족 도움 없이 혼자</strong> 점원한테 영어 또는 일본어로 주문 1번. 어렵게 느껴지면 H5 단어 활용 OK.</p>
+      <ul class="hidden-features">
+        <li><strong>これ ください</strong>코레 쿠다사이 — 이거 주세요 (가리키기 + 말)</li>
+        <li><strong>すみません</strong>스미마셍 — 실례합니다 (점원 부르기)</li>
+        <li><strong>This please</strong>영어로도 OK — 어디서든 통함</li>
+        <li><strong>ありがとう</strong>마지막에 한 번 더 (H5 워밍업 활용)</li>
+      </ul>
+      <div class="hidden-write">
+        <label class="hw-lbl">뭘 주문했어? (선택 입력)</label>
+        <textarea class="hw-area" data-save="hidden-h6-order-memo" placeholder="예: Blue Seal 에서 베니이모 아이스크림 — これ ください 했어. 점원이 웃었어."></textarea>
+      </div>
+      <div class="mission-action-row">
+        <button type="button" class="mission-stamp-btn" aria-label="미션 인증">
+          <span class="ms-icon">✓</span>
+          <span class="ms-label">주문 성공!</span>
+        </button>
+        <span class="mission-hint">혼자 한 번이라도 시도하면 OK!</span>
+      </div>
+      <div class="mission-timestamp"></div>
+    </div>
+
+    <!-- 6/6 완료 시 패밀리 마스터 메시지 -->
+    <div class="family-master-msg" id="family-master-msg" hidden>
+      <div class="fm-eyebrow">🥇 FAMILY MASTER</div>
+      <h3 class="fm-headline">진짜 잘 했어 — 가족이 다 자랑스러워하는 5번 클리어.</h3>
+      <p class="fm-body">메인 미션 9개랑 다른 5개. 이건 <strong>가족이랑 같이 만든 추억</strong>이라 더 의미 있어. 다음 여행에서도 또 해보자.</p>
+    </div>
+  </section>
+</div><!-- /page hidden -->
 
 </main>
 
@@ -8366,6 +9126,9 @@
         else if (typeof v === 'boolean' || (typeof v === 'number' && Number.isFinite(v))) clean.extraOptions[k] = v;
       }
     }
+
+    // hiddenUnlocked: boolean — d1-hotel done 후 사용자가 hidden 탭 unlock 했는지
+    if (raw.hiddenUnlocked === true) clean.hiddenUnlocked = true;
 
     return clean;
   }
@@ -9034,7 +9797,8 @@
     { id: 'd2',    label: 'Day 2 · Whale Shark', short: 'Day 2' },
     { id: 'd3',    label: 'Day 3 · Chatan', short: 'Day 3' },
     { id: 'd4',    label: 'Day 4 · Farewell', short: 'Day 4' },
-    { id: 'back',  label: '마무리', short: '마무리' }
+    { id: 'back',  label: '마무리', short: '마무리' },
+    { id: 'hidden', label: 'Hidden Mission', short: 'Hidden' } // d1-hotel done 시 unlock
   ];
   const PAGE_IDS = PAGES.map(p => p.id);
 
@@ -9735,6 +10499,15 @@
     },
   };
 
+  // mid hotel chip 이 동선·옵션·번호배지에 노출될지 — 미션 완료 시에만 active
+  // (.opt[data-mission] Churaumi 가 선택 시에만 chip 에 들어가는 것과 동일 패턴)
+  function isMidHotelActive(dayId) {
+    const hotel = (typeof DAY_HOTEL !== 'undefined') ? DAY_HOTEL[dayId] : null;
+    if (!hotel || !hotel.midHotel || !hotel.midHotel.afterMission) return false;
+    const id = hotel.midHotel.afterMission;
+    return !!(state.missions && state.missions[id] && state.missions[id].done);
+  }
+
   // afterMission DOM 위치 기준으로 mid stop 삽입 인덱스 계산
   // — picks 배열 중 missionEl 보다 DOM 상 앞에 위치한 슬롯의 픽 개수 = 삽입 인덱스
   function computeMidInsertIdx(dayId, afterMissionId) {
@@ -9783,14 +10556,15 @@
     const dayHotel = (typeof DAY_HOTEL !== 'undefined') ? DAY_HOTEL[dayId] : null;
     let n = 1; // 지도 시퀀스 (Start=1)
     let extraN = 0; // 추가옵션 시퀀스 (+1부터)
-    // mid stop 위치 — 사전 정의된 픽 중 미션 DOM 위치 기준
-    const midInsertIdx = (dayHotel && dayHotel.midHotel)
+    // mid stop 위치 — 미션 완료 시에만 active (안 했으면 -1, 픽 번호 정상 매겨짐)
+    const midActive = (typeof isMidHotelActive === 'function') && isMidHotelActive(dayId);
+    const midInsertIdx = (dayHotel && dayHotel.midHotel && midActive)
       ? computeMidInsertIdx(dayId, dayHotel.midHotel.afterMission)
       : -1;
     let pickIdx = 0;
     let midPlaced = false;
-    // midHotel 미션 카드 — 픽 사이에 mid 가 들어갈 때 그 chip 번호를 미션 카드 좌상단에도 배지로
-    const midMissionEl = (dayHotel && dayHotel.midHotel)
+    // midHotel 미션 카드 — active 시에만 chip 번호 배지 부여 (안 했으면 배지 X)
+    const midMissionEl = (dayHotel && dayHotel.midHotel && midActive)
       ? page.querySelector(`.mission-card[data-mission="${dayHotel.midHotel.afterMission}"]`)
       : null;
 
@@ -10117,10 +10891,10 @@
 
     let stopNum = 0;
     stops.appendChild(makeStop(++stopNum, 'Start', hotel.startLabel, true, hotelCoords.start));
-    // 호텔 체크인 mid stop — afterMission 의 DOM 위치 기준으로 픽 사이에 삽입
-    // (D1: d1-hotel 미션 위치 = Blue Seal 픽 다음, 일몰/디너 픽 앞)
-    // (D3: d3-vessel 미션 위치 = 픽 시작 전 — 즉 picks[0] 앞)
-    const midInsertIdx = (hotel.midHotel && hotelCoords.mid)
+    // 호텔 체크인 mid stop — afterMission 의 DOM 위치 기준 + 미션 완료 시에만 활성화
+    // (Churaumi(.opt-mission) 가 선택 시에만 chip 에 들어가는 것과 동일 패턴)
+    // 미션 안 했으면 mid 자리 X — 픽들이 그냥 2,3,4 로 순번 매겨짐
+    const midInsertIdx = (hotel.midHotel && hotelCoords.mid && isMidHotelActive(dayId))
       ? computeMidInsertIdx(dayId, hotel.midHotel.afterMission)
       : -1;
     const renderMid = () => {
@@ -10703,6 +11477,17 @@
         const title = card.querySelector('.mission-title')?.textContent?.trim() || '';
         celebrateMission(title);  // 마지막 미션이면 fireTripComplete + auto nav, 아니면 fireMissionComplete
 
+        // d1-hotel 첫 done 시 — 히든 미션 unlock 모달 (한 번만, hiddenUnlocked === false 일 때)
+        if (id === 'd1-hotel' && !state.hiddenUnlocked) {
+          // celebrateMission (1.8초 풀스크린) 끝난 후 모달 등장
+          setTimeout(() => {
+            if (typeof showHiddenUnlockModal === 'function' && !state.hiddenUnlocked) showHiddenUnlockModal();
+          }, 2100);
+        }
+        // CTA 버튼·tab UI 갱신
+        if (typeof updateHiddenUnlockUI === 'function') updateHiddenUnlockUI();
+        if (typeof updateHiddenCounter === 'function') updateHiddenCounter();
+
         // 버튼 blur (focus 잔류 방지)
         if (btn.blur) btn.blur();
       });
@@ -10889,12 +11674,13 @@
       seen.add(id);
       const pageEl = el.closest('.page');
       const pageId = pageEl?.dataset?.page || '';
+      const isBonus = el.dataset.missionType === 'bonus';
       out.push({
-        el, id, pageId,
+        el, id, pageId, isBonus,
         kind: el.classList.contains('mission-card') ? 'standalone' : 'opt'
       });
     });
-    // PAGES 순서대로 정렬 — prep(1) < d1(2) < d2(3) < d3(4) < d4(5)
+    // PAGES 순서대로 정렬 — prep(1) < d1(2) < d2(3) < d3(4) < d4(5) < back(6) < hidden(7)
     // 같은 페이지면 DOM 순서 유지 (Array.sort는 stable)
     out.sort((a, b) => {
       const aIdx = (typeof PAGE_IDS !== 'undefined') ? PAGE_IDS.indexOf(a.pageId) : 0;
@@ -10903,18 +11689,27 @@
     });
     return out;
   }
+  // 메인 9개만 (data-mission-type="bonus" 제외) — 9/9 카운터, stamp grid 등에 사용
+  function getMainMissions() {
+    return getAllMissions().filter(m => !m.isBonus);
+  }
+  // 히든 6개만 (data-mission-type="bonus") — 패밀리 마스터 카운터, 히든 stamp 에 사용
+  function getHiddenMissions() {
+    return getAllMissions().filter(m => m.isBonus);
+  }
 
   function updateMissionCounter() {
     const counter = document.getElementById('mission-counter');
     if (!counter) return;
-    const allMissions = getAllMissions();
-    const total = allMissions.length;
+    // 메인 9개만 카운트 (히든은 별도 시퀀스)
+    const mainMissions = getMainMissions();
+    const total = mainMissions.length;
     if (total === 0) {
       counter.classList.add('hidden');
       return;
     }
     let done = 0;
-    allMissions.forEach(m => {
+    mainMissions.forEach(m => {
       if (state.missions && state.missions[m.id] && state.missions[m.id].done) done += 1;
     });
     const countEl = counter.querySelector('.mc-count');
@@ -10934,6 +11729,10 @@
     if (visitedList) visitedList.hidden = !allDone;
     // 통계 grid 갱신 (도장·만족도·사진·방문 곳) + 방문 리스트
     if (allDone && typeof updateTripStats === 'function') updateTripStats();
+    // 히든 unlock UI 갱신 — d1-hotel done 시 마무리 CTA 노출, hidden tab 갱신
+    if (typeof updateHiddenUnlockUI === 'function') updateHiddenUnlockUI();
+    // 히든 카운터 갱신 (Hidden 페이지 진입 시)
+    if (typeof updateHiddenCounter === 'function') updateHiddenCounter();
   }
   // 카운터 클릭 → 마무리 페이지 도장 그리드로 이동 (단일 동작 — 컬렉션 보기)
   const counterBtn = document.getElementById('mission-counter');
@@ -10958,7 +11757,8 @@
     const grid = document.getElementById('stamp-grid');
     if (!grid) return;
     while (grid.firstChild) grid.removeChild(grid.firstChild);
-    const allMissions = getAllMissions();
+    // 메인 9개만 stamp grid 에 (히든은 Hidden 페이지에서 별도)
+    const allMissions = getMainMissions();
     allMissions.forEach(m => {
       const card = m.el;
       const id = m.id;
@@ -11230,24 +12030,262 @@
   // 모든 미션 완료 시 자동으로 마무리 페이지 nav + trip-done-msg 화려한 등장 트리거
   function celebrateMission(title) {
     try {
-      const all = (typeof getAllMissions === 'function') ? getAllMissions() : [];
-      const allDone = all.length > 0 && all.every(m =>
+      // 메인 미션 / 히든 미션 분기
+      const allMain = (typeof getMainMissions === 'function') ? getMainMissions() : [];
+      const allHidden = (typeof getHiddenMissions === 'function') ? getHiddenMissions() : [];
+      const mainDone = allMain.length > 0 && allMain.every(m =>
         state.missions && state.missions[m.id] && state.missions[m.id].done
       );
-      if (allDone) {
-        // 마지막 미션 — 큰 화면 (★★★ + 컨페티) 한 번만 fire, 그 후 자동 nav
+      const hiddenDone = allHidden.length > 0 && allHidden.every(m =>
+        state.missions && state.missions[m.id] && state.missions[m.id].done
+      );
+      if (mainDone) {
+        // 메인 9개 다 모았을 때 — TRIP COMPLETE
         if (typeof fireTripComplete === 'function') fireTripComplete();
-        // fireTripComplete 화면 유지 3.2초 + fade 0.4 = 3.6 → 3.7초 후 nav
         setTimeout(navToBackAndReveal, 3700);
+      } else if (hiddenDone) {
+        // 히든 6개 다 모았을 때 — FAMILY MASTER (TRIP COMPLETE 와 다른 톤)
+        if (typeof fireFamilyMaster === 'function') fireFamilyMaster();
       } else {
         // 일반 미션
         if (typeof fireMissionComplete === 'function') fireMissionComplete(title);
       }
     } catch(_) {
-      // fallback — 어떤 이유로든 fire 실패 시 일반 풀스크린
       if (typeof fireMissionComplete === 'function') fireMissionComplete(title);
     }
   }
+
+  // ==========================================
+  //  HIDDEN MISSION 시스템 — d1-hotel 클리어 시 unlock + 화려한 티켓 발급
+  // ==========================================
+  // "화아아악!" 사운드 — ascending sweep + chime (도파민 폭발용)
+  function playHiddenUnlockSound() {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      const ctx = new AC();
+      const now = ctx.currentTime;
+      // [1] 화아아악 sweep — 200Hz → 1200Hz 빠르게 올라감 (0.4s)
+      const sweep = ctx.createOscillator();
+      const sweepGain = ctx.createGain();
+      sweep.type = 'sawtooth';
+      sweep.frequency.setValueAtTime(200, now);
+      sweep.frequency.exponentialRampToValueAtTime(1200, now + 0.35);
+      sweepGain.gain.setValueAtTime(0, now);
+      sweepGain.gain.linearRampToValueAtTime(0.12, now + 0.05);
+      sweepGain.gain.linearRampToValueAtTime(0.16, now + 0.3);
+      sweepGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+      sweep.connect(sweepGain).connect(ctx.destination);
+      sweep.start(now);
+      sweep.stop(now + 0.5);
+      // [2] 띠리링 chime — sweep 끝나고 0.05초 후 시작 (도-솔-도 3음)
+      const notes = [523.25, 783.99, 1046.5];
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        const start = now + 0.4 + i * 0.08;
+        gain.gain.setValueAtTime(0, start);
+        gain.gain.linearRampToValueAtTime(0.22, start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.5);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(start);
+        osc.stop(start + 0.55);
+      });
+      // [3] 깊은 boom (저음 임팩트) — sweep 시작과 동시에
+      const boom = ctx.createOscillator();
+      const boomGain = ctx.createGain();
+      boom.type = 'sine';
+      boom.frequency.setValueAtTime(60, now);
+      boom.frequency.exponentialRampToValueAtTime(40, now + 0.3);
+      boomGain.gain.setValueAtTime(0, now);
+      boomGain.gain.linearRampToValueAtTime(0.4, now + 0.02);
+      boomGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+      boom.connect(boomGain).connect(ctx.destination);
+      boom.start(now);
+      boom.stop(now + 0.55);
+      setTimeout(() => { try { ctx.close(); } catch(_) {} }, 1500);
+    } catch(_) {}
+  }
+
+  // 티켓 발급 풀스크린 (1.5초) + confetti + sound
+  function fireTicketIssued() {
+    try {
+      const overlay = document.getElementById('hidden-ticket-overlay');
+      if (!overlay) return;
+      // 컨페티 그린 톤 30개 동적 추가
+      let conf = overlay.querySelector('.ht-confetti');
+      if (!conf) {
+        conf = document.createElement('div');
+        conf.className = 'ht-confetti';
+        for (let i = 0; i < 30; i++) conf.appendChild(document.createElement('span'));
+        overlay.querySelector('.ht-content')?.appendChild(conf);
+      }
+      overlay.classList.add('active');
+      playHiddenUnlockSound();
+      // 1.7초 후 페이드 아웃
+      setTimeout(() => {
+        overlay.classList.remove('active');
+      }, 1700);
+    } catch(_) {}
+  }
+
+  // FAMILY MASTER 풀스크린 (6/6 완료) — TRIP COMPLETE 와 다른 톤
+  function fireFamilyMaster() {
+    try {
+      const overlay = document.getElementById('family-master-overlay');
+      if (!overlay) return;
+      overlay.classList.add('active');
+      // 다른 사운드 — 미-솔-시-미 (장조)
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (AC) {
+          const ctx = new AC();
+          const now = ctx.currentTime;
+          const notes = [659.25, 783.99, 987.77, 1318.5]; // E5 G5 B5 E6
+          notes.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            const start = now + i * 0.13;
+            gain.gain.setValueAtTime(0, start);
+            gain.gain.linearRampToValueAtTime(0.2, start + 0.03);
+            gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.5);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(start);
+            osc.stop(start + 0.55);
+          });
+          setTimeout(() => { try { ctx.close(); } catch(_) {} }, 1500);
+        }
+      } catch(_) {}
+      setTimeout(() => overlay.classList.remove('active'), 2200);
+      // 패밀리 마스터 메시지 (Hidden 페이지 안) 노출
+      const msg = document.getElementById('family-master-msg');
+      if (msg) msg.hidden = false;
+    } catch(_) {}
+  }
+
+  // 히든 미션 unlock (영구) — state.hiddenUnlocked = true
+  function unlockHiddenMissions() {
+    state.hiddenUnlocked = true;
+    if (typeof saveState === 'function') saveState(state);
+    // CTA 숨김, hidden tab 의 locked 클래스 제거
+    updateHiddenUnlockUI();
+    // 화려한 티켓 발급 풀스크린
+    fireTicketIssued();
+  }
+
+  // 히든 unlock 모달 표시 — d1-hotel done 시 한 번 (state.hiddenUnlocked 가 false 일 때만)
+  function showHiddenUnlockModal() {
+    const modal = document.getElementById('hidden-unlock-modal');
+    if (!modal) return;
+    if (typeof updateUnlockModalText === 'function') updateUnlockModalText();
+    modal.classList.add('open');
+  }
+  function hideHiddenUnlockModal() {
+    const modal = document.getElementById('hidden-unlock-modal');
+    if (!modal) return;
+    modal.classList.remove('open');
+  }
+
+  // UI 갱신 — 3 단계 가시성
+  // 단계 1 (d1-hotel done X)         → 탭 완전 숨김 + CTA 숨김
+  // 단계 2 (d1-hotel done O, !unlock) → 탭 자물쇠 + 반짝 / CTA 노출
+  // 단계 3 (hiddenUnlocked O)        → 탭 라벨 + NEW / CTA 숨김
+  function updateHiddenUnlockUI() {
+    const d1HotelDone = state.missions && state.missions['d1-hotel'] && state.missions['d1-hotel'].done;
+    const hiddenUnlocked = !!state.hiddenUnlocked;
+    // 마무리 페이지 CTA — d1-hotel done && !hiddenUnlocked 일 때만 노출
+    const cta = document.getElementById('hidden-unlock-cta');
+    if (cta) cta.hidden = !(d1HotelDone && !hiddenUnlocked);
+    // Hidden tab — 3 단계 가시성 토글
+    const tab = document.querySelector('.nav-hidden-tab');
+    if (tab) {
+      if (!d1HotelDone) {
+        // 단계 1: 완전 숨김
+        tab.classList.remove('show', 'locked');
+      } else if (!hiddenUnlocked) {
+        // 단계 2: 자물쇠만 노출
+        tab.classList.add('show', 'locked');
+      } else {
+        // 단계 3: 정상 (라벨 + NEW)
+        tab.classList.add('show');
+        tab.classList.remove('locked');
+      }
+    }
+  }
+
+  // 모달 텍스트 동적 갱신 — 사용자 이름 반영
+  function updateUnlockModalText() {
+    const modal = document.getElementById('hidden-unlock-modal');
+    if (!modal) return;
+    const titleEl = modal.querySelector('#hum-title');
+    const bodyEl = modal.querySelector('.hum-body');
+    if (!titleEl || !bodyEl) return;
+    const rawName = (state.texts && state.texts['traveler-name']) || '';
+    const name = (typeof rawName === 'string' && rawName.trim()) ? rawName.trim() : '조카';
+    // d1-hotel done 후 첫 진입 / 자물쇠 재클릭 모두 동일 텍스트
+    titleEl.textContent = `${name}님께서 Hidden Mission을 활성화시키셨습니다`;
+    bodyEl.innerHTML = '비밀 보너스 미션 6개가 풀릴 수 있어.<br/>가족이랑 같이 하는 미션 — 메인 9개랑 별도야.<br/><br/><strong>Hidden Mission을 진행하시겠습니까?</strong>';
+    // 버튼 라벨도 YES / NO 로 통일
+    const yesBtn = modal.querySelector('#hum-yes');
+    const noBtn = modal.querySelector('#hum-no');
+    if (yesBtn) yesBtn.textContent = '🗝 YES — 지금 풀게';
+    if (noBtn) noBtn.textContent = 'NO — 나중에 풀게';
+  }
+
+  // 히든 카운터 (Hidden 페이지) 갱신
+  function updateHiddenCounter() {
+    const el = document.getElementById('hidden-counter-num');
+    if (!el) return;
+    const hidden = (typeof getHiddenMissions === 'function') ? getHiddenMissions() : [];
+    let done = 0;
+    hidden.forEach(m => {
+      if (state.missions && state.missions[m.id] && state.missions[m.id].done) done += 1;
+    });
+    el.textContent = String(done);
+  }
+
+  // 모달·CTA 이벤트 와이어
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#hum-yes')) {
+      hideHiddenUnlockModal();
+      unlockHiddenMissions();
+      return;
+    }
+    if (e.target.closest('#hum-no')) {
+      hideHiddenUnlockModal();
+      return;
+    }
+    if (e.target.closest('#hidden-unlock-cta-btn')) {
+      unlockHiddenMissions();
+      return;
+    }
+    // Hidden 탭 클릭 — locked 일 때는 안내 메시지 또는 modal
+    const tab = e.target.closest('.nav-hidden-tab');
+    if (tab && tab.classList.contains('locked')) {
+      e.preventDefault();
+      e.stopPropagation();
+      // d1-hotel done 이라면 unlock modal, 아니면 안내
+      if (state.missions && state.missions['d1-hotel'] && state.missions['d1-hotel'].done) {
+        showHiddenUnlockModal();
+      } else {
+        // 11살한테 친절 — D1 호텔 도착 미션 클리어 필요 안내
+        alert('🎫 Hidden Mission 잠금 해제 조건:\n\nDay 1 호텔 도착 미션 (Mission 3) 을 먼저 클리어해야 티켓이 발급돼!');
+      }
+      return;
+    }
+    if (tab && !tab.classList.contains('locked')) {
+      // 한 번 들어가면 NEW 배지 사라짐
+      tab.classList.add('seen');
+    }
+  });
+
+  // 초기화 — DOM 로드 후 + 페이지 active 변경 시 UI 동기
+  updateHiddenUnlockUI();
+  updateHiddenCounter();
 
   // 방문한 곳 데이터 — DOM 기반, Day 별 시간순으로 정렬
   // 미션 + chosen 옵션 다 포함. 무오류 보장 (try/catch + 가드).
