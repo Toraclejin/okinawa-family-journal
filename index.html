@@ -3618,16 +3618,16 @@
   /* 토글: data-state 속성으로 control */
   .back-intro[hidden] { display: none !important; }
 
-  /* trip-done-msg 위·아래 박스와의 간격 — 안정감 있게 36~40px */
+  /* trip-done-msg 위·아래 박스와의 간격 — 사용자 요청: 40px → 16px (40%) */
   .back > .stamp-collection + .trip-done-msg {
-    margin-top: 40px;
+    margin-top: 16px;
   }
   .back > .trip-done-msg + .reader-note {
-    margin-top: 40px;
+    margin-top: 16px;
   }
-  /* trip-done-msg 가 숨김 상태 (미션 미완료) — stamp-collection ↔ reader-note 간격 확장 */
+  /* trip-done-msg 가 숨김 상태 (미션 미완료) — stamp-collection ↔ reader-note 간격 — 28px */
   .back .stamp-collection + .trip-done-msg[hidden] + .reader-note {
-    margin-top: 72px !important;
+    margin-top: 28px !important;
   }
 
   /* 마지막 미션 직후 자동 nav 시 — trip-done-msg 강한 재등장 (just-revealed) */
