@@ -137,3 +137,12 @@ type State = {
 | 동선 변경 | `DAY_HOTEL`, `DAY_HOTEL_COORDS` | ROUTE.md |
 | state 새 필드 | `sanitizeImportedState` + 3-namespace 점검 | DESIGN.md (이 문서) |
 | 페이지 추가 | `<div class="page">` + `PAGES` 배열 + 네비 | DESIGN.md § Page Structure |
+
+## 참조
+
+- 위로 → `CONCEPT.md` (왜 이 매거진을 만드나) · `PRD.md` (어떤 기능을 갖나)
+- 룰북 → `CLAUDE.md` (Claude 운영 가이드)
+- 인덱스 → `DOC-MAP.md` (모든 문서 위계 + 영향 매트릭스)
+- 옆 도메인 → `ROUTE.md` (동선) · `MISSIONS.md` (미션)
+- 검증 → `VERIFICATION.md` (회귀 항목 — state 3-namespace, sanitizer)
+- 회고 → `learning.md` § 2 (상태 관리 회귀)

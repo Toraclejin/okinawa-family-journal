@@ -298,3 +298,12 @@
 - 2026-04-27 [N] [O] 항목 추가
   - [N] 별 클릭 시 Today's Picks 즉시 갱신 — `refreshDayRatings` 호출 누락 회귀
   - [O] 지도 chip 번호 vs 추가옵션 + prefix 네임스페이스 분리 — 충돌 방지
+
+## 참조
+
+- 위로 → `CONCEPT.md` § 5 성공 기준 (출발 전 검증 통과 필수)
+- 운영 룰 → `CLAUDE.md`
+- 인덱스 → `DOC-MAP.md` (모든 문서 위계 + 영향 매트릭스)
+- 도메인 → `ROUTE.md` · `MISSIONS.md` · `DESIGN.md` (각 검증 항목이 어느 도메인을 검증하는지)
+- 백로그 → `TODO.md` (P0 = 출발 전 검증 통과 항목)
+- 회고 → `learning.md` (회귀 패턴 누적)

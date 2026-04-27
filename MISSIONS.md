@@ -161,7 +161,10 @@ e.g.  d1-hotel, d2-churaumi, d3-vessel, prep-ready
 
 ## 관련 문서
 
-- `DESIGN.md` § 3-namespace 분리 — chosen / chosenWrites / chosenExtras
-- `ROUTE.md` § afterMission — 동선 mid-stop 위치 결정에 미션 ID 활용
-- `CLAUDE.md` § state 구조 — 전체 localStorage 스키마
-- `VERIFICATION.md` — 회귀 검증 항목 [G] 9개 미션 카운트
+- 인덱스 → `DOC-MAP.md` (모든 문서 위계 + 변경 영향 매트릭스)
+- 위로 → `PRD.md` F-02 (미션 시스템 요구사항)
+- 옆 도메인 → `DESIGN.md` § 3-namespace 분리 — chosen / chosenWrites / chosenExtras
+- 동선 연계 → `ROUTE.md` § afterMission — 동선 mid-stop 위치 결정에 미션 ID 활용
+- 운영 룰 → `CLAUDE.md` § state 구조 — 전체 localStorage 스키마
+- 검증 → `VERIFICATION.md` — 회귀 검증 항목 [G] 9개 미션 카운트
+- 회고 → `learning.md` § 3 미션 시스템

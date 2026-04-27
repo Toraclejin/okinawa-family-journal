@@ -747,9 +747,9 @@
     font-size: 9px !important;
     background: rgba(255,255,255,0.8) !important;
   }
-  /* 옵션 카드 — 선택 순서 번호 배지 (사전 .opt + 추가 .opt-write 모두) */
-  .opt[data-pick-num], .opt-write[data-pick-num] { position: relative; }
-  .opt[data-pick-num]::before, .opt-write[data-pick-num]::before {
+  /* 옵션 카드 + 미션 카드 — 선택 순서 (chip 번호) 배지 */
+  .opt[data-pick-num], .opt-write[data-pick-num], .mission-card[data-pick-num] { position: relative; }
+  .opt[data-pick-num]::before, .opt-write[data-pick-num]::before, .mission-card[data-pick-num]::before {
     content: attr(data-pick-num);
     position: absolute;
     top: -10px;
@@ -3692,6 +3692,78 @@
     dominant-baseline: middle;
   }
 
+  /* === 오키나와 줌인 SVG (일본 지도 밑) — 같은 cream-on-navy 톤 === */
+  .td-okinawa-zoom-wrap {
+    position: relative;
+    width: 200px;
+    max-width: 70%;
+    margin: -4px auto 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  /* 화살표 — 일본 지도 ★ 위치 → 오키나와 줌인 */
+  .td-zoom-arrow {
+    width: 24px;
+    height: 30px;
+    margin-bottom: 4px;
+    opacity: 0.7;
+  }
+  .td-zoom-arrow .arr-line {
+    stroke: var(--amber);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 3 3;
+    fill: none;
+  }
+  .td-zoom-arrow .arr-head {
+    fill: var(--amber);
+  }
+  /* 오키나와 줌 박스 — 임펙트: pulse border + 골드 spotlight glow */
+  .td-okinawa-zoom {
+    width: 100%;
+    height: auto;
+    display: block;
+    border: 1.5px dashed var(--amber);
+    border-radius: 12px;
+    padding: 10px 8px 6px;
+    box-sizing: border-box;
+    background:
+      radial-gradient(ellipse at center, rgba(255, 196, 0, 0.18) 0%, rgba(255, 196, 0, 0.04) 50%, transparent 80%),
+      rgba(0, 31, 102, 0.35);
+    animation: oki-zoom-breathe 3s ease-in-out infinite;
+  }
+  @keyframes oki-zoom-breathe {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(255, 196, 0, 0.0), 0 4px 18px rgba(0, 0, 0, 0.35);
+      border-color: rgba(255, 196, 0, 0.55);
+    }
+    50% {
+      box-shadow: 0 0 0 6px rgba(255, 196, 0, 0.18), 0 4px 22px rgba(255, 196, 0, 0.25);
+      border-color: var(--amber);
+    }
+  }
+  .td-okinawa-zoom .oki-img {
+    /* 같은 cream(#FEFEE9) 톤 — 일본 지도와 동일 + 살짝 골드 글로우 drop-shadow */
+    opacity: 0.95;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4)) drop-shadow(0 0 8px rgba(255, 196, 0, 0.15));
+  }
+  .td-okinawa-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.32em;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-top: 4px;
+    /* breathing 과 동기 — 살짝 밝아지는 효과 */
+    animation: oki-label-breathe 3s ease-in-out infinite;
+  }
+  @keyframes oki-label-breathe {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; text-shadow: 0 0 8px rgba(255, 196, 0, 0.45); }
+  }
+
   .td-conquer-tag {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 10.5px;
@@ -3728,33 +3800,36 @@
   .trip-conquer-card .td-stat {
     text-align: center;
     padding: 16px 8px 14px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1.5px solid rgba(255, 196, 0, 0.45);
+    background: rgba(255, 196, 0, 0.18);
+    border: 1.5px solid var(--amber);
     border-radius: 12px;
     backdrop-filter: blur(2px);
   }
+  /* hero (9/9 COMPLETE!) — 가장 강조 (테두리 두껍게 + 살짝 더 진한 배경) */
   .trip-conquer-card .td-stat.td-stat-hero {
-    background: rgba(255, 196, 0, 0.18);
+    background: rgba(255, 196, 0, 0.22);
     border-color: var(--amber);
+    border-width: 2px;
+    box-shadow: 0 4px 14px rgba(255, 196, 0, 0.25);
   }
   .trip-conquer-card .td-stat-num {
     font-family: 'Archivo Black', sans-serif;
     font-size: 28px;
     line-height: 1;
-    color: #fff;
+    color: var(--amber);
     margin-bottom: 6px;
     letter-spacing: -0.02em;
   }
   .trip-conquer-card .td-stat-hero .td-stat-num {
-    color: var(--amber);
     font-size: 30px;
   }
   .trip-conquer-card .td-stat-lbl {
     font-family: 'Pretendard Variable', Pretendard, sans-serif;
     font-size: 11.5px;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.78);
+    font-weight: 700;
+    color: var(--amber);
     letter-spacing: -0.005em;
+    opacity: 0.9;
   }
   .trip-conquer-card .td-stat-hero .td-stat-lbl strong {
     color: var(--amber);
@@ -5543,36 +5618,6 @@
     <div class="hc-tip"><strong>운전자 메모</strong> · 렌터카 네비는 <strong>전화번호</strong>나 <strong>매피온 코드</strong>로 검색이 가장 정확. 위 <strong>호텔 이름을 누르면</strong> 구글맵이 바로 열림.</div>
   </div>
 
-  <!-- ========== 미션 #2 — Orion 호텔 체크인 ========== -->
-  <div class="mission-card" data-mission="d1-hotel">
-    <span class="mission-tag">Mission · Check-in 15:00</span>
-    <h3 class="mission-title">Hotel Orion Motobu — 도착!</h3>
-    <p class="mission-desc">키 받고 방문 열고 첫 발을 디뎠다면 — 이 여행의 첫 호텔 도장. 비세 후쿠기 길까지 도보 3분.</p>
-    <div class="mission-action-row">
-      <button type="button" class="mission-stamp-btn" aria-label="미션 인증">
-        <span class="ms-icon">✓</span>
-        <span class="ms-label">호텔 도착!</span>
-      </button>
-      <span class="mission-hint">여기를 눌러!</span>
-    </div>
-    <div class="mission-timestamp"></div>
-  </div>
-
-  <!-- ========== 미션 #3 (사진) — 첫 가족 사진 (호텔 도착 후 인증) ========== -->
-  <div class="mission-card photo-mission" data-mission="d1-family-photo" data-photo-mission="mission-d1-family">
-    <span class="mission-tag">Mission · Family Photo</span>
-    <h3 class="mission-title">가족 첫 사진 — 찍었어!</h3>
-    <p class="mission-desc">호텔 체크인 후 첫 단체 사진 한 장. 사진 1장만 올리면 도장 ✓ 자동.</p>
-    <div class="mission-action-row">
-      <button type="button" class="add-photo-btn mission-photo-btn" data-photo-target="mission-d1-family">
-        📷 사진 올리기
-      </button>
-      <span class="mission-hint">여기를 눌러!</span>
-    </div>
-    <div class="photo-grid mission-photo-grid" data-photo-grid="mission-d1-family"></div>
-    <div class="mission-timestamp"></div>
-  </div>
-
   <!-- DAY 1 MOODS -->
   <section class="mood-section">
     <div class="mood-section-head">
@@ -5658,6 +5703,38 @@
       </div>
     </div>
       <button type="button" class="opt-add-btn" data-block="d1-ts0">Add Another Option</button>
+  </div>
+
+  <!-- ========== 미션 #2 — Orion 호텔 체크인 (Blue Seal 들른 후 → 북부 도착 시점) ========== -->
+  <!-- DOM 위치 = afterMission 기준점. Blue Seal options 다음·Settling-In 옵션 앞에 위치해야 -->
+  <!-- computeMidInsertIdx 가 Blue Seal 픽 다음에 mid stop (CHECK-IN) 을 정확히 끼움 -->
+  <div class="mission-card" data-mission="d1-hotel">
+    <span class="mission-tag">Mission · Check-in 15:00</span>
+    <h3 class="mission-title">Hotel Orion Motobu — 도착!</h3>
+    <p class="mission-desc">키 받고 방문 열고 첫 발을 디뎠다면 — 이 여행의 첫 호텔 도장. 비세 후쿠기 길까지 도보 3분.</p>
+    <div class="mission-action-row">
+      <button type="button" class="mission-stamp-btn" aria-label="미션 인증">
+        <span class="ms-icon">✓</span>
+        <span class="ms-label">호텔 도착!</span>
+      </button>
+      <span class="mission-hint">여기를 눌러!</span>
+    </div>
+    <div class="mission-timestamp"></div>
+  </div>
+
+  <!-- ========== 미션 #3 (사진) — 첫 가족 사진 (호텔 도착 직후) ========== -->
+  <div class="mission-card photo-mission" data-mission="d1-family-photo" data-photo-mission="mission-d1-family">
+    <span class="mission-tag">Mission · Family Photo</span>
+    <h3 class="mission-title">가족 첫 사진 — 찍었어!</h3>
+    <p class="mission-desc">호텔 체크인 후 첫 단체 사진 한 장. 사진 1장만 올리면 도장 ✓ 자동.</p>
+    <div class="mission-action-row">
+      <button type="button" class="add-photo-btn mission-photo-btn" data-photo-target="mission-d1-family">
+        📷 사진 올리기
+      </button>
+      <span class="mission-hint">여기를 눌러!</span>
+    </div>
+    <div class="photo-grid mission-photo-grid" data-photo-grid="mission-d1-family"></div>
+    <div class="mission-timestamp"></div>
   </div>
 
   <!-- 오후 3시 - 리조트 체크인 -->
@@ -7722,6 +7799,18 @@
         <text x="95" y="464" class="oki-star">★</text>
       </svg>
 
+      <!-- 줌인 화살표 + 오키나와 본도 줌 — 같은 cream-on-navy 톤 -->
+      <div class="td-okinawa-zoom-wrap">
+        <svg viewBox="0 0 24 30" class="td-zoom-arrow" aria-hidden="true">
+          <path class="arr-line" d="M12 0 L12 24"/>
+          <polygon class="arr-head" points="6,22 12,30 18,22"/>
+        </svg>
+        <svg viewBox="0 0 3000 3035" class="td-okinawa-zoom" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <image class="oki-img" href="okinawa-mainland.svg" x="0" y="0" width="3000" height="3035"/>
+        </svg>
+        <div class="td-okinawa-label">Okinawa · 본도</div>
+      </div>
+
       <div class="td-conquer-tag">TRIP CONQUERED</div>
       <div class="td-conquer-title">오키나와 정복!</div>
       <div class="td-conquer-date">5.10 — 5.13 · 2026</div>
@@ -9687,8 +9776,8 @@
   function assignPickNumbers(dayId) {
     const page = document.querySelector(`.page[data-page="${dayId}"]`);
     if (!page) return;
-    // 기존 번호 모두 제거 (사전 + 추가 카드 모두)
-    page.querySelectorAll('.opt[data-pick-num], .opt-write[data-pick-num]').forEach(el => delete el.dataset.pickNum);
+    // 기존 번호 모두 제거 (사전 + 추가 + 미션 카드 모두)
+    page.querySelectorAll('.opt[data-pick-num], .opt-write[data-pick-num], .mission-card[data-pick-num]').forEach(el => delete el.dataset.pickNum);
 
     const dayHotel = (typeof DAY_HOTEL !== 'undefined') ? DAY_HOTEL[dayId] : null;
     let n = 1; // 지도 시퀀스 (Start=1)
@@ -9699,6 +9788,10 @@
       : -1;
     let pickIdx = 0;
     let midPlaced = false;
+    // midHotel 미션 카드 — 픽 사이에 mid 가 들어갈 때 그 chip 번호를 미션 카드 좌상단에도 배지로
+    const midMissionEl = (dayHotel && dayHotel.midHotel)
+      ? page.querySelector(`.mission-card[data-mission="${dayHotel.midHotel.afterMission}"]`)
+      : null;
 
     // [1] 사전 옵션 (.opt) — 지도 네임스페이스 (chip·지도 마커와 동일 번호)
     page.querySelectorAll('.options').forEach(optsEl => {
@@ -9715,9 +9808,10 @@
         const mq = placeText ? resolveMapQuery(placeText) : null;
         const isDir = typeof mq === 'string' && mq.startsWith('DIR:');
         if (isDir) return;
-        // mid stop 이 이 픽 앞에 들어가야 하면 번호 한 칸 미리 차지
+        // mid stop 이 이 픽 앞에 들어가야 하면 번호 한 칸 미리 차지 + mid 미션 카드에도 같은 번호 부여
         if (midInsertIdx >= 0 && !midPlaced && pickIdx === midInsertIdx) {
-          n += 1; // mid 자리 비우기
+          n += 1; // mid 자리
+          if (midMissionEl) midMissionEl.dataset.pickNum = String(n);
           midPlaced = true;
         }
         n += 1;
@@ -9725,6 +9819,11 @@
         pickIdx += 1;
       });
     });
+    // 모든 픽이 mid 앞에 있는 경우 — 픽 끝나고 mid 삽입
+    if (midInsertIdx >= 0 && !midPlaced && midMissionEl) {
+      n += 1;
+      midMissionEl.dataset.pickNum = String(n);
+    }
 
     // [2] placeholder (.opt-write — extra 아님) chosen → 추가옵션 네임스페이스
     page.querySelectorAll('.options > .opt-write:not(.extra)').forEach(card => {
@@ -11363,22 +11462,22 @@
         const col = i % 2, row = Math.floor(i / 2);
         const x = gridX + col * (cellW + gap);
         const y = gridY + row * (cellH + gap);
-        // box
-        ctx.fillStyle = s.hero ? 'rgba(255,196,0,0.18)' : 'rgba(255,255,255,0.08)';
-        ctx.strokeStyle = s.hero ? '#ffc400' : 'rgba(255,196,0,0.45)';
-        ctx.lineWidth = 2.5;
+        // box — 모두 amber 톤 (hero 만 살짝 더 진하게)
+        ctx.fillStyle = s.hero ? 'rgba(255,196,0,0.22)' : 'rgba(255,196,0,0.16)';
+        ctx.strokeStyle = '#ffc400';
+        ctx.lineWidth = s.hero ? 3 : 2;
         roundRect(ctx, x, y, cellW, cellH, 18);
         ctx.fill();
         ctx.stroke();
-        // num
-        ctx.fillStyle = s.hero ? '#ffc400' : '#ffffff';
-        ctx.font = '900 50px "Archivo Black", sans-serif';
+        // num — 모두 amber
+        ctx.fillStyle = '#ffc400';
+        ctx.font = '900 ' + (s.hero ? '54' : '50') + 'px "Archivo Black", sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(s.num, x + cellW/2, y + 50);
-        // lbl
-        ctx.fillStyle = s.hero ? '#ffc400' : 'rgba(255,255,255,0.78)';
-        ctx.font = (s.hero ? '800' : '600') + ' 22px "Pretendard Variable", Pretendard, sans-serif';
+        // lbl — 모두 amber
+        ctx.fillStyle = '#ffc400';
+        ctx.font = (s.hero ? '800' : '700') + ' 22px "Pretendard Variable", Pretendard, sans-serif';
         ctx.fillText(s.lbl, x + cellW/2, y + 100);
       });
 

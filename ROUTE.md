@@ -172,7 +172,10 @@ getCoords(place, fallbackHotelCoords):
 - [ ] VERIFICATION.md 자동 검증에 새 Day 시나리오 추가
 
 ## 관련 문서
-- `DESIGN.md` § State Model — chosen / chosenWrites / chosenExtras 분리 이유
-- `MISSIONS.md` — afterMission 으로 참조되는 미션 ID 일람
-- `CLAUDE.md` § PLACE_QUERIES 매칭 규칙 — DIR sentinel, lowercase, 다국어 키
-- `VERIFICATION.md` — 회귀 검증 항목 [F] [G]
+- 인덱스 → `DOC-MAP.md` (모든 문서 위계 + 변경 영향 매트릭스)
+- 위로 → `PRD.md` F-03 (동선 시스템 요구사항)
+- 옆 도메인 → `DESIGN.md` § State Model — chosen / chosenWrites / chosenExtras 분리 이유
+- 미션 연계 → `MISSIONS.md` — `afterMission` 으로 참조되는 미션 ID 일람
+- 운영 룰 → `CLAUDE.md` § PLACE_QUERIES 매칭 규칙 — DIR sentinel, lowercase, 다국어 키
+- 검증 → `VERIFICATION.md` — 회귀 검증 항목 [F] [G]
+- 회고 → `learning.md` § 4 동선 mid-hotel
