@@ -658,6 +658,116 @@ Canvas 는 DOM 에서 `textContent` 읽어서 그냥 그림. 그래서 stale 값
 
 ---
 
+## § 9. Hidden Mission — 11살 도파민 설계와 state 영속성 함정
+
+> 가족 본딩 + 교육 + 게임화 = 11살 조카가 좋아하면서도 친구한테 자랑할 수 있는 보너스 미션 6개. 작은 기능이었는데 회귀가 4번 났다.
+
+### 디자인 결정 (왜 6개?, 왜 그린톤?, 왜 별도 페이지?)
+
+**5 vs 7 vs 10 미션 개수 — 6 으로 합의**:
+- 5 = 4일 여행에 1.25개/일 = 너무 빠름, 마지막 날엔 할 게 없음
+- 10 = 너무 부담, 11살한테 "왜 이렇게 많아?" 거부감
+- 7 → 6 = "현지 상점 직접 주문" BOSS 미션 추가, 가족 + 문화 + 학습 + 도전 골고루
+- 1.5개/일 = 매일 하나 발견하는 재미, 마지막 날에도 1~2개 여유
+
+**메인 9 vs 히든 6 톤 분리**:
+- 메인 = 골드 + "TRIP CONQUERED · 오키나와 정복!" + 도-미-솔-도
+- 히든 = 그린 + "FAMILY LEGEND · 패밀리 레전드!" + 미-솔-시-미
+- "Master" 가 학원 톤이라 "Legend" 로 변경 — 11살이 친구한테 자랑할 수 있는 단어
+- 골드와 그린 톤 차이로 "이건 별개 시스템" 자연스러운 인지
+
+**별도 페이지 vs 통합 vs 분산**:
+- 통합 (마무리 페이지에 같이) = 메인 9개 시각 강조 흐림
+- 분산 (각 Day 안에 끼워넣기) = 11살이 미션을 찾으러 다녀야 함
+- 별도 'hidden' 탭 = "한 곳에 모여있어 하나씩 클리어" 명확. 11살이 가장 이해 쉬움
+
+### 트리거 — D1 호텔 도착 ✓ 시 unlock
+
+**왜 d1-hotel 인가**:
+- 너무 일찍 (prep 미션) = 매거진 진입하자마자 보너스, 메인 시스템 익숙해질 시간 없음
+- 너무 늦게 (D3) = 4일 중 절반 지나서야 추가 미션 발견 = 늦음
+- d1-hotel = 호텔 첫 도착 = "여행 시작 직후 풀리는 비밀" 내러티브 자연스러움
+
+### 회귀 4건 (한 미션 안에서)
+
+#### 회귀 1 — 변수명 typo (`id` vs `missionId`)
+- 코드 작성 시 wireMissionCards 안 변수가 `missionId` 인데 `id === 'd1-hotel'` 라고 씀
+- `id` = undefined → 조건 항상 false → unlock 모달 영영 안 뜸
+- **교훈**: 다른 함수 변수명에 의존할 때 자기 함수 안 변수명 다시 확인. linter 가 잡아줘야 할 영역인데 vanilla JS 라 X
+- **fix** (commit 8d3fe20): `missionId === 'd1-hotel'` + 코멘트에 "변수명 주의" 명시
+
+#### 회귀 2 — state.hiddenUnlocked 영속성 함정
+- 한 번 YES 누르면 `state.hiddenUnlocked = true` 영구 저장
+- 다음 d1-hotel 도장 시 `!state.hiddenUnlocked` 가 false → cinematic skip
+- 개발 테스트할 때 "왜 자꾸 안 뜨지?" 하면서 state.hiddenUnlocked 의 영속성을 까먹음
+- **교훈**: localStorage 영속 플래그는 "한 번 true → 영원히 true" 임을 잊지 말 것. 테스트 시 명시적 리셋 절차 필요
+- **fix** (commit c2f6d47): d1-hotel 도장 취소 시 `state.hiddenUnlocked = false` 자동 리셋 + confirm 메시지에 안내
+
+#### 회귀 3 — Hidden 탭 가시성 3단계 미적용
+- CSS 만 바꾸고 JS `updateHiddenUnlockUI()` 안 갱신해서 탭이 항상 안 보임
+- 단계 1/2/3 enum 으로 정리:
+  ```
+  단계 1 (d1-hotel done X)         → display: none
+  단계 2 (d1-hotel done O, !unlock) → 자물쇠 + 반짝
+  단계 3 (hiddenUnlocked O)        → 라벨 + NEW
+  ```
+- **교훈**: 가시성 로직은 CSS + JS 양쪽 동기 필요 — 한 쪽 만지면 다른 쪽 함께 갱신
+- **MISSIONS.md** 에 state machine 표 명시
+
+#### 회귀 4 — Family Master vs 11살 톤
+- 처음 "Family Master" 라 라벨링 → 학원 톤, 11살이 자랑하기 어색
+- 사용자 피드백: "마스터는 좀 유치하다. 친구한테 자랑할 만한 톤"
+- **교훈**: 단어 1개 차이가 전체 느낌 결정. 메인 사용자(11살) 어휘로 검수
+- **fix**: "FAMILY MASTER" → "FAMILY LEGEND" / "패밀리 레전드"
+- 동시에 "🎫 BONUS · For 조카 Only ✺" → "🎮 SECRET LEVEL · 너만 풀었어" (어른 톤 → 게이머 톤)
+
+### 사운드 디자인 — "삐이익" 함정
+
+처음 fireTicketIssued 사운드:
+- sawtooth sweep 200→1200Hz (0.4s) — "삐이익!"
+- + sine chime 도-솔-도
+- + 저음 boom 60→40Hz
+
+사용자 피드백: "소리가 너무 깜짝 놀라게 한다. 띠링 정도면 괜찮겠다."
+
+→ sweep + boom 제거, sine chime 도-미-솔만 (0.3s, 볼륨 ↓)
+
+**교훈**: 11살 알림 사운드 = "기쁨 알림 (띠링)" ≠ "긴급 알림 (삐이익)". 동일 컴포넌트도 톤이 어긋나면 사용자가 회피.
+
+### 도파민 3단계 흐름 (최종 확정)
+
+```
+[click ✓ 호텔 도착!]
+   ↓ 0~1.8s: MISSION COMPLETE (앰버, 일반 미션)
+   ↓ 2.1s:   🎫 TICKET ISSUED cinematic (그린 confetti + 띠링)
+   ↓ 3.8s+:  YES/NO 모달 ("남건우님께서 Hidden Mission을 활성화시키셨습니다")
+```
+
+각 단계가 별개 임팩트 — 한 번에 너무 많은 정보 주지 않고 자연스럽게 단계 상승.
+
+### "위계가 박살났다" 사용자 피드백 후 정리
+
+이 미션 작업 중간에 회귀가 반복되면서 사용자가 강하게 지적: "문서화 똑바로 안할래? 위계가 박살났다는거 아니냐?"
+
+대응 (이번 세션에 정리):
+1. **MISSIONS.md** § Hidden Mission System 신설 — 트리거·flow·state machine·6개 미션 일람·회귀 사례 모두 한 곳
+2. **DESIGN.md** § state.hiddenUnlocked — 영속 플래그 동작·sanitizer·리셋 시점
+3. **VERIFICATION.md** [Q] 신설 — 단계 1/2/3 검증 절차 + 회귀 안전망 테스트
+4. **DOC-MAP.md** 영향 매트릭스 갱신 — Hidden Mission 관련 4행 추가
+5. **learning.md § 9** (이 섹션) — 회고 + 4 회귀 + 톤 결정
+
+각 docs 끝에 "참조" 섹션으로 양방향 link — orphan 점검 통과.
+
+### 다음 시즌 적용 가능 패턴
+
+1. **숨겨진 보상 시스템** — 메인과 별도 트랙으로 운영, 톤·색상·사운드 분리
+2. **트리거 단계** — 너무 일찍/늦지 않게 1/3 ~ 1/4 지점에 unlock
+3. **state 영속 플래그** — 항상 "리셋 트리거" 함께 설계 (실수 복구 + 테스트 반복)
+4. **state machine 표** — enum 으로 명시 (단계 1/2/3) + 전이 조건 문서화
+5. **사운드 톤 검수** — 11살 사용자한테 "기쁨 vs 긴급" 톤 차이 명확히 (UX 검증 항목)
+
+---
+
 ## 마무리 — 한 줄 요약
 
 작고 단순한 걸 작고 단순하게 만드는 기술이, 복잡한 걸 관리하는 기술보다 어려울 때가 많음.

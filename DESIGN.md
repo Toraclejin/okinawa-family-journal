@@ -34,7 +34,7 @@ PAGE_IDS = ['cover', 'prep', 'd1', 'd2', 'd3', 'd4', 'back']
 ```ts
 type State = {
   ratings: { [key: string]: number };         // 0–5, key = opt-dots data-key
-  texts: { [key: string]: string };           // 텍스트 입력
+  texts: { [key: string]: string };           // 텍스트 입력 (traveler-name 포함)
   packing: { [key: string]: boolean };        // 체크박스
   photos: { [target: string]: { id: string, dataUrl: string }[] };  // base64
   chosen: { [slotKey: string]: string[] };    // 사전 정의 옵션 idx (복수)
@@ -42,9 +42,25 @@ type State = {
   chosenExtras: { [extraId: string]: true };  // 동적 추가 ✓
   extras: { [slotKey: string]: string[] };    // 동적 추가 카드 list
   extraOptions: { [extraId: string]: string };// 동적 카드 텍스트 (legacy)
-  missions: { [missionId: string]: { done: true, at?: number } };
+  missions: { [missionId: string]: { done: true, at?: number } };  // 메인 9 + 히든 6 (data-mission-type 으로 분리)
+  hiddenUnlocked?: true;                      // d1-hotel done 후 사용자가 YES → Hidden 탭 unlock 영속 플래그
 };
 ```
+
+### state.hiddenUnlocked — Hidden Mission 영속 unlock 플래그
+
+- **기본값**: undefined (= false 취급)
+- **true 가 되는 시점**:
+  · `d1-hotel` 미션 done 후 unlock modal "🗝 YES" 클릭
+  · OR 마무리 페이지 CTA "🎫 히든 미션 풀기" 클릭
+- **false 로 리셋되는 시점**:
+  · `d1-hotel` 미션 도장 취소 (`mission-undo-btn`) — 회귀 안전망
+  · localStorage 전체 clear
+
+**왜 영속 플래그?**:
+- 한 번 unlock = Hidden 탭 영구 노출 (단계 3)
+- 페이지 새로고침·기기 변경 후에도 유지 (export JSON 에 포함)
+- Sanitizer (`sanitizeImportedState`) 통과: `if (raw.hiddenUnlocked === true) clean.hiddenUnlocked = true`
 
 ### 3-namespace 분리 (선택 상태)
 

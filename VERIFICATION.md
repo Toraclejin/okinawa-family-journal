@@ -302,6 +302,43 @@
   - 회귀 사례: 화면 UI 에 오키나와 줌 SVG 추가했는데 `downloadConquerImage()` 미갱신 → 다운로드 이미지에서 오키나와 부분 누락
   - 룰: trip-conquer-card 시각 변경 시 화면 + canvas 모두 동일 commit 에 갱신 (DESIGN.md § Dual-render Components 참조)
 
+## 수동 검증 [Q] — Hidden Mission 3단계 가시성 + 트리거
+
+### 회귀 사례 (2026-04-28)
+- d1-hotel 도장 클릭 후 cinematic / 모달 안 뜨는 회귀 2회 발생
+  · 첫 번째: `id` 변수명 typo (실제는 `missionId`) — fix 8d3fe20
+  · 두 번째: `state.hiddenUnlocked = true` 영속 → 재테스트 시 cinematic skip — fix c2f6d47 (도장 취소 시 자동 리셋)
+
+### 검증 절차
+
+1. **단계 1 (d1-hotel 미클릭) — 탭 완전 숨김**
+   - 새 export JSON import (또는 localStorage clear) 후 페이지 로드
+   - 상단 네비에 "Hidden" 탭이 **보이지 않아야** 함 (computed display: none)
+   - 마무리 페이지 CTA `#hidden-unlock-cta` 도 hidden=true
+
+2. **단계 2 (d1-hotel ✓ 클릭, !hiddenUnlocked) — 자물쇠 + 반짝**
+   - D1 페이지 → Mission 3 (Hotel Orion Motobu — 도착!) ✓ 클릭
+   - **2.1초**: MISSION COMPLETE 풀스크린 fade out
+   - **즉시 (~2.1s)**: 🎫 TICKET ISSUED cinematic — 그린 confetti + 부드러운 띠링 chime
+   - **~3.8s**: YES/NO 모달 — "남건우님께서 Hidden Mission을 활성화시키셨습니다"
+   - 모달 X (`NO 나중에 풀게`) 클릭 → 마무리 페이지 가면 "🎫 히든 미션 풀기" CTA 노출
+   - 상단 네비에 자물쇠 🔒 아이콘 + 반짝반짝 애니 (라벨 "Hidden" 은 숨김)
+
+3. **단계 3 (hiddenUnlocked = true) — 라벨 + NEW 배지**
+   - 모달에서 YES, 또는 마무리 CTA 클릭
+   - 자물쇠 사라지고 "Hidden NEW" 배지 노출
+   - Hidden 페이지 진입 후엔 NEW 배지 사라짐 (`.seen` 클래스)
+
+4. **회귀 안전망 — 도장 취소로 리셋**
+   - d1-hotel `↶ 도장 취소` 클릭 → confirm 메시지에 "Hidden Mission 잠금도 함께 초기화" 안내
+   - 확인 후: `state.hiddenUnlocked = false` → 단계 1 복귀
+   - 다시 ✓ 도장 → cinematic 재진입 (테스트 반복 가능)
+
+5. **6/6 완료 — FAMILY LEGEND 풀스크린**
+   - 6개 hidden mission 모두 ✓ → 자동 fireFamilyMaster()
+   - 🏆 메달 spin + 미-솔-시-미 멜로디 + "패밀리 레전드!" 풀스크린 1.8s
+   - Hidden 페이지 안 family-master-msg 노출
+
 ## 수동 검증 [P] — Canvas ↔ UI Parity (시각 비교)
 
 ### [P] trip-conquer-card 다운로드 PNG 가 화면과 동일

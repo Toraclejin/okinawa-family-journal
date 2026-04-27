@@ -11573,14 +11573,24 @@
         undoBtn.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
-          if (!confirm('도장을 취소할까요?')) return;
+          // d1-hotel 도장 취소 시 — Hidden Mission 잠금도 함께 초기화 (테스트·실수 복구 동시 보장)
+          // (state.hiddenUnlocked 가 true 였다면 다음 도장 시 cinematic 재발화)
+          const isD1Hotel = (missionId === 'd1-hotel');
+          const confirmMsg = isD1Hotel && state.hiddenUnlocked
+            ? '도장을 취소하면 Hidden Mission 잠금도 함께 초기화됩니다. 진행할까요?'
+            : '도장을 취소할까요?';
+          if (!confirm(confirmMsg)) return;
           if (state.missions && state.missions[missionId]) {
             delete state.missions[missionId];
-            saveState(state);
           }
+          // d1-hotel 취소 시 hiddenUnlocked 리셋 — 다음 도장 시 unlock 흐름 재진입
+          if (isD1Hotel) state.hiddenUnlocked = false;
+          saveState(state);
           card.classList.remove('completed', 'just-completed');
           const ts = card.querySelector('.mission-timestamp');
           if (ts) ts.textContent = '';
+          // 히든 unlock UI 즉시 갱신 (CTA 숨김 + 탭 다시 잠금)
+          if (typeof updateHiddenUnlockUI === 'function') updateHiddenUnlockUI();
         });
         card.appendChild(undoBtn);
       }

@@ -187,6 +187,99 @@ e.g.  d1-hotel, d2-churaumi, d3-vessel, prep-ready
 
 영숫자 + 하이픈만, 64자 이하. `__proto__` / `constructor` / `prototype` 차단됨 (sanitizer).
 
+---
+
+## Hidden Mission System (Bonus 6 — 트리거: d1-hotel 도장)
+
+> **별도 namespace** 로 메인 9개와 완전 분리 운영. 11살 조카 도파민 설계.
+
+### 흐름 (d1-hotel ✓ 클릭 시)
+
+```
+[click ✓ 호텔 도착!]
+     ↓
+[0~1.8s] MISSION COMPLETE 풀스크린 (앰버, 일반 미션 효과)
+     ↓
+[2.1s]   🎫 TICKET ISSUED 풀스크린 cinematic
+         · 30개 그린 confetti 폭발
+         · 부드러운 sine chime 도-미-솔 (놀람 X)
+         · "남건우님, 시크릿 레벨 풀렸다!"
+     ↓
+[3.8s+]  YES/NO 모달
+         · "남건우님께서 Hidden Mission을 활성화시키셨습니다"
+         · 🗝 YES — 지금 풀게  /  NO — 나중에 풀게
+     ↓
+   YES → state.hiddenUnlocked = true → Hidden 탭 단계 3 (라벨+NEW 배지)
+   NO  → 마무리 페이지 CTA "🎫 히든 미션 풀기" 상시 노출 (안전망)
+```
+
+### Hidden 탭 3단계 가시성 (단계 enum)
+
+| 상태 | d1-hotel.done | hiddenUnlocked | 탭 노출 | 클릭 결과 |
+|---|---|---|---|---|
+| 단계 1 | false | (anything) | display:none | N/A |
+| 단계 2 | true | false | 자물쇠 🔒 + 반짝 | unlock 모달 등장 |
+| 단계 3 | true | true | "Hidden" 라벨 + NEW 배지 | Hidden 페이지로 이동 |
+
+**state machine 룰**:
+- 단계 1 → 2: `state.missions['d1-hotel'].done = true` 시점 (자동)
+- 단계 2 → 3: 사용자가 모달에서 YES 또는 마무리 CTA 클릭 (사용자 선택)
+- 단계 3 → 2 → 1: d1-hotel 도장 취소 시 (`isD1Hotel && state.hiddenUnlocked → reset`)
+
+### state 영속성 함정 (회귀 사례 2026-04-28)
+
+**문제**: 개발 테스트 시 한 번 YES 누르면 `state.hiddenUnlocked = true` 영구 저장 → 다음 d1-hotel ✓ 클릭에서 cinematic 재발화 X
+
+**해결 (커밋 c2f6d47 이후)**:
+- d1-hotel 도장 취소(`mission-undo-btn`) 시 `state.hiddenUnlocked = false` 자동 리셋
+- 사용자한테는 confirm 메시지 명시: "도장을 취소하면 Hidden Mission 잠금도 함께 초기화됩니다"
+- 다음 d1-hotel ✓ 시 cinematic 재진입 가능
+
+**왜 이렇게 설계?**:
+- 실수로 도장 누른 사용자 = 도장 취소 + 다시 도장으로 cinematic 재경험
+- 개발 테스트 = 도장 취소만으로 fresh 상태 복귀 (localStorage clear 불필요)
+- 11살 조카 본인 사용 시 = 한 번 클릭하면 영구 unlock — 정상
+
+### 6개 Hidden Mission 일람 (data-mission-type="bonus")
+
+| ID | 카테고리 | 라벨 |
+|---|---|---|
+| `hidden-h1-massage` | 가족 | 아빠 어깨 5분 안마 |
+| `hidden-h2-bag` | 가족 | 엄마 짐 들어주기 |
+| `hidden-h3-shisa` | 오키나와 문화 | 류큐 시사상 1개 발견 + 사진 |
+| `hidden-h4-fish` | 추라우미 학습 | 좋아하는 물고기 그림 + 가족 설명 |
+| `hidden-h5-japanese` | 일본어 인사 | ありがとう / こんにちは / おいしい 3개 사용 |
+| `hidden-h6-order` | BOSS — 도전 | 현지 상점에서 직접 주문 1번 |
+
+### 보상 (메인 9 vs 히든 6 분리)
+
+| | 메인 9개 | 히든 6개 |
+|---|---|---|
+| 색감 | 골드 + 다크 네이비 | 그린 + 다크 네이비 |
+| 풀스크린 라벨 | "TRIP CONQUERED · 오키나와 정복!" | "FAMILY LEGEND · 패밀리 레전드!" |
+| 풀스크린 시간 | 3.2s | 1.8s |
+| 사운드 | 도-미-솔-도 (장조) | 미-솔-시-미 (장조, 다른 톤) |
+| Counter | 9/9 COMPLETE (메인 페이지) | 6/6 FAMILY LEGEND (Hidden 페이지) |
+| 인증 카드 | trip-conquer-card (마무리 페이지) | family-master-msg (Hidden 페이지) |
+| Stamp Grid | 마무리 페이지 stamp-grid (메인만) | 별도 (Hidden 페이지 카드 자체) |
+
+### Mission 3 (d1-hotel) 시각 강조 — `.mission-special` 클래스
+
+다른 미션과 명확히 구분 — Hidden Mission 트리거임을 11살 시선에 강하게 어필:
+- Border: gradient amber → green → amber
+- 좌상단 리본: "🎫 SECRET TRIGGER" (그린, 펄스)
+- 큰 티저 박스: "호텔 도착한 다음 — 예상 못한 일이 생길지도?!?" (그린 fill + 광택 shine)
+- 이중 펄스 애니: shimmer + glow
+
+### 새 Hidden Mission 추가 시 체크리스트
+
+- [ ] `<div class="mission-card hidden-mission" data-mission="hidden-hN-..." data-mission-type="bonus">`
+- [ ] `data-mission-type="bonus"` 빠뜨리면 메인 9 카운터에 들어감 (회귀 위험)
+- [ ] Hidden 페이지 6/6 카운터 갱신 위해 `getHiddenMissions().length` 자동 적용
+- [ ] `mission-tag-hidden` 클래스 (그린 톤)
+- [ ] `MISSIONS.md` 일람표 업데이트
+- [ ] `VERIFICATION.md` [Q] 항목에 케이스 추가
+
 ## 관련 문서
 
 - 인덱스 → `DOC-MAP.md` (모든 문서 위계 + 변경 영향 매트릭스)
@@ -194,5 +287,5 @@ e.g.  d1-hotel, d2-churaumi, d3-vessel, prep-ready
 - 옆 도메인 → `DESIGN.md` § 3-namespace 분리 — chosen / chosenWrites / chosenExtras
 - 동선 연계 → `ROUTE.md` § afterMission — 동선 mid-stop 위치 결정에 미션 ID 활용
 - 운영 룰 → `CLAUDE.md` § state 구조 — 전체 localStorage 스키마
-- 검증 → `VERIFICATION.md` — 회귀 검증 항목 [G] 9개 미션 카운트
-- 회고 → `learning.md` § 3 미션 시스템
+- 검증 → `VERIFICATION.md` — 회귀 검증 항목 [G] 9개 미션 카운트, [Q] Hidden 3단계 가시성
+- 회고 → `learning.md` § 3 미션 시스템 + § 9 Hidden Mission 도파민 설계

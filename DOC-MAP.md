@@ -88,14 +88,18 @@
 
 | 만지는 것 | 같이 봐야 할 것 |
 |---|---|
-| 새 미션 추가 | `MISSIONS.md` § 추가 체크리스트 → `VERIFICATION.md` § [G] → `PRD.md` F-02 → `learning.md` § 미션 |
+| 새 미션 추가 (메인) | `MISSIONS.md` § 추가 체크리스트 → `VERIFICATION.md` § [G] → `PRD.md` F-02 → `learning.md` § 3 |
+| 새 Hidden Mission 추가 | `MISSIONS.md` § Hidden Mission System 일람 + `data-mission-type="bonus"` 필수 → `VERIFICATION.md` § [Q] |
+| Hidden 탭 가시성 로직 변경 | `MISSIONS.md` § 3단계 enum + `updateHiddenUnlockUI()` → `learning.md` § 9 |
+| state.hiddenUnlocked 트리거 변경 | `DESIGN.md` § state.hiddenUnlocked → `MISSIONS.md` § 영속성 함정 → `sanitizeImportedState` |
 | 새 픽/장소 추가 | `CLAUDE.md` § 장소 검증 → `ROUTE.md` § 픽 좌표 fallback → `PLACE_QUERIES`/`PLACE_COORDS` |
 | state 새 필드 | `DESIGN.md` § State Model → `sanitizeImportedState` → `VERIFICATION.md` § [F] |
 | midHotel 위치 변경 | `ROUTE.md` § midHotel + § 3-call-sites → `MISSIONS.md` (afterMission ID 일치) |
+| trip-conquer-card UI 변경 | `MISSIONS.md` § UI↔Canvas Parity Rule → `downloadConquerImage()` canvas 동시 갱신 |
 | 페이지 추가/삭제 | `PAGE_IDS` → `<nav>` → `DESIGN.md` § Page Structure → `PRD.md` F-01 |
 | 디자인 토큰 변경 | `DESIGN.md` § Design Tokens (alias 추적!) |
 | 새 외부 의존 | `PRD.md` NFR (의존 표) → CSP meta → `DESIGN.md` § 보안 |
-| 비번 변경 | `CONCEPT.md` § 여행 사실 → `DESIGN.md` § Auth → `index.html` AUTH_HASH_HEX 갱신 |
+| 비번 / 사용자 이름 변경 | `CONCEPT.md` § 여행 사실 → `DESIGN.md` § Auth → `getTravelerName()` fallback ('남건우') |
 
 ## index.html 내부 영역 매핑 (키워드 검색용)
 
