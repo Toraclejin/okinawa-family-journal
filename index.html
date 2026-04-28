@@ -4123,6 +4123,20 @@
     box-shadow: 0 0 0 1px var(--amber);
   }
   .visited-list .vl-item.empty::before { background: rgba(0, 71, 255, 0.2); border-color: #fff; box-shadow: none; }
+  /* 미션 아이템 — 동그라미 대신 ★ */
+  .visited-list .vl-item.mission::before {
+    content: '★';
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: auto;
+    height: auto;
+    color: var(--amber);
+    font-size: 14px;
+    line-height: 1;
+    top: 9px;
+    left: -22px;
+  }
   .visited-list .vl-item-time {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 12px;
@@ -8790,12 +8804,12 @@
     </div>
   </div>
 
-  <!-- ========== 방문한 곳 리스트 (접기·펼치기) — 모든 미션 완료 시 등장 ========== -->
+  <!-- ========== Place & Action 리스트 (접기·펼치기) — 모든 미션 완료 시 등장 ========== -->
   <details class="visited-list" id="visited-list" hidden>
     <summary class="vl-summary">
       <span class="vl-icon">🗺️</span>
-      <span class="vl-title">방문한 곳</span>
-      <span class="vl-count" data-stat="visited-summary">0곳</span>
+      <span class="vl-title">Place &amp; Action</span>
+      <span class="vl-count" data-stat="visited-summary">0건</span>
       <span class="vl-arrow">▾</span>
     </summary>
     <div class="vl-body">
@@ -12938,8 +12952,10 @@
           let title = '';
           let timeLabel = '';
           let rating = 0; // 0 = 별점 없음, 1~5 = How Excited?
+          let isMission = false; // ★ 미션이면 list 에서 별 아이콘
           let isVisited = false;
           if (el.classList.contains('mission-card')) {
+            isMission = true;
             // standalone 미션 (호텔/비행기/사진) — 별점 없음
             const id = el.dataset.mission;
             if (state.missions && state.missions[id] && state.missions[id].done) {
@@ -12950,6 +12966,8 @@
               timeLabel = (tparts[1] || tparts[0] || '').trim();
             }
           } else if (el.classList.contains('opt')) {
+            // .opt[data-mission] 인 경우 (Churaumi/Kouri/Chatan-sunset) → 미션 취급
+            if (el.dataset.mission) isMission = true;
             // 사전 옵션 — chosen 됐는지 확인 + How Excited 별점 가져오기
             const optionsEl = el.closest('.options');
             if (!optionsEl) return;
@@ -12980,7 +12998,7 @@
             // 중복 검사 (.opt[data-mission] 은 chosen + mission 둘 다라 한 번 더 들어올 수 있음)
             const dupKey = `${dayId}|${title}`;
             if (!items.some(i => i._key === dupKey)) {
-              items.push({ time: timeLabel, title, rating, _key: dupKey });
+              items.push({ time: timeLabel, title, rating, isMission, _key: dupKey });
             }
           }
         });
@@ -13027,9 +13045,9 @@
       setStat('photos', `${photoCount}장`);
       setStat('visited', `${visitedCount}곳`);
 
-      // 방문한 곳 리스트 카운트 (summary 옆)
+      // Place & Action 리스트 카운트 (summary 옆) — 미션 + 옵션 모두 카운트되니 '건'
       const summaryCount = document.querySelector('[data-stat="visited-summary"]');
-      if (summaryCount) summaryCount.textContent = `${visitedCount}곳`;
+      if (summaryCount) summaryCount.textContent = `${visitedCount}건`;
 
       // 방문한 곳 리스트 렌더 (DOM 동적 생성)
       renderVisitedList(visited);
@@ -13065,7 +13083,7 @@
         ul.className = 'vl-items';
         day.items.forEach(it => {
           const li = document.createElement('li');
-          li.className = 'vl-item';
+          li.className = 'vl-item' + (it.isMission ? ' mission' : '');
           if (it.time) {
             const t = document.createElement('span');
             t.className = 'vl-item-time';
@@ -13455,10 +13473,10 @@
       ctx.font = '800 26px "Space Grotesk", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('VISITED PLACES', W/2, 70);
+      ctx.fillText('PLACE & ACTION', W/2, 70);
       ctx.fillStyle = '#ffffff';
       ctx.font = '900 64px "Pretendard Variable", Pretendard, sans-serif';
-      ctx.fillText('내가 다녀온 곳', W/2, 130);
+      ctx.fillText('내가 다녀온 곳·완료', W/2, 130);
 
       // Day groups
       let y = 240;
@@ -13476,9 +13494,17 @@
         y += 52;
         // Items
         day.items.forEach(it => {
-          // Bullet
-          ctx.fillStyle = '#ffc400';
-          ctx.beginPath(); ctx.arc(110, y + itemH/2, 8, 0, 2*Math.PI); ctx.fill();
+          // Bullet — 미션이면 ★, 옵션이면 ● (amber)
+          if (it.isMission) {
+            ctx.fillStyle = '#ffc400';
+            ctx.font = '700 22px "Space Grotesk", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('★', 110, y + itemH/2);
+          } else {
+            ctx.fillStyle = '#ffc400';
+            ctx.beginPath(); ctx.arc(110, y + itemH/2, 8, 0, 2*Math.PI); ctx.fill();
+          }
           // Time (measure width to position title properly — prevents overlap)
           let titleX = 140;
           if (it.time) {
