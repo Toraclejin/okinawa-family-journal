@@ -187,6 +187,8 @@
 | 새 Hidden Mission 추가 | `MISSIONS.md` § Hidden Mission System + `data-mission-type="bonus"` 필수 → `VERIFICATION.md` § [Q] → `learning.md` § 9 |
 | Hidden 탭 가시성 변경 | `MISSIONS.md` § 3단계 enum + `updateHiddenUnlockUI()` → `learning.md` § 9 |
 | state.hiddenUnlocked 트리거 | `DESIGN.md` § state.hiddenUnlocked → `MISSIONS.md` § 영속성 함정 → `sanitizeImportedState` |
+| TICKET PENDING CTA 위치 변경 | `MISSIONS.md` § TICKET PENDING CTA 박스 (단계 2 안전망) → 도장 박스 위 ~2cm + selector(`#hidden-unlock-cta`) 단일 보존 |
+| NO 모달 흐름 변경 | `MISSIONS.md` § NO 모달 → 자동 스크롤 흐름 → `VERIFICATION.md` [Q] 6번 항목 |
 | celebrateMission 분기 | `MISSIONS.md` § 메인/히든 독립 분기 → `VERIFICATION.md` [E] → `learning.md` § 9 |
 | 미션 카운트 위젯 | `MISSIONS.md` § context-aware → `DESIGN.md` (페이지 전환 시 갱신) |
 

@@ -226,6 +226,41 @@ e.g.  d1-hotel, d2-churaumi, d3-vessel, prep-ready
 - 단계 2 → 3: 사용자가 모달에서 YES 또는 마무리 CTA 클릭 (사용자 선택)
 - 단계 3 → 2 → 1: d1-hotel 도장 취소 시 (`isD1Hotel && state.hiddenUnlocked → reset`)
 
+### TICKET PENDING CTA 박스 (단계 2 안전망)
+
+마무리 페이지(`back`) 안에 노출되는 그린 dashed 박스. **도장 박스(stamp-collection) 바로 위 ~2cm (76px) 간격** 으로 위치.
+
+**노출 조건** (`updateHiddenUnlockUI()`):
+- d1-hotel done O **AND** !hiddenUnlocked → CTA 노출 (단계 2)
+- 그 외 단계 (1 / 3) → CTA hidden
+
+**왜 도장 박스 위?**:
+- 사용자가 NO 누른 후 마무리 페이지 진입 시 가장 먼저 보이는 위치
+- 도장 박스보다 위에 있어서 "히든 티켓이 아직 살아있다" 라는 인상 강조
+- ~2cm 간격으로 떠있어서 도장 박스와 시각적 분리 (별도 시스템임을 명확히)
+
+**NO 모달 → 자동 스크롤 흐름** (`#hum-no` 클릭 시):
+```js
+hideHiddenUnlockModal();
+showPage('back');                                    // 마무리 페이지로 이동
+setTimeout(() => {
+  const cta = document.getElementById('hidden-unlock-cta');
+  if (cta && !cta.hidden) {
+    cta.scrollIntoView({behavior: 'smooth', block: 'center'});
+  }
+}, 380);                                             // 페이지 전환 애니 종료 대기
+```
+
+**사용자 시나리오**:
+- d1-hotel ✓ → MISSION COMPLETE → TICKET ISSUED → YES/NO 모달
+- NO 클릭 → 모달 닫힘 → 마무리 페이지 자동 이동 → CTA 박스로 부드럽게 스크롤
+- 사용자: "아 나중에 풀게" 의도였어도 CTA 위치 확인 → 언제든 다시 풀 수 있음
+
+**회귀 방지 룰**:
+- CTA 의 DOM 위치 변경 시 → 단계 2/3 가시성 (`updateHiddenUnlockUI`) 회귀 검증
+- `id="hidden-unlock-cta"` 정확히 1개 (페이지 끝에 잔여 없는지 grep)
+- `selector` 변경 X — id/class 그대로 유지 (selector 끊기면 click 핸들러 + visibility 모두 깨짐)
+
 ### state 영속성 함정 (회귀 사례 2026-04-28)
 
 **문제**: 개발 테스트 시 한 번 YES 누르면 `state.hiddenUnlocked = true` 영구 저장 → 다음 d1-hotel ✓ 클릭에서 cinematic 재발화 X

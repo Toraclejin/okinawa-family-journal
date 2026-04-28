@@ -386,6 +386,14 @@ showPage / loadState / 초기 IIFE 등 init 경로에서 호출되는 함수에 
    - 🏆 메달 spin + 미-솔-시-미 멜로디 + "패밀리 레전드!" 풀스크린 1.8s
    - Hidden 페이지 안 family-master-msg 노출
 
+6. **NO 클릭 → 마무리 페이지 자동 스크롤 (TICKET PENDING CTA)**
+   - YES/NO 모달에서 `NO — 나중에 풀게` 클릭
+   - 모달 닫힘 → 자동으로 마무리 페이지 (`back`) 이동
+   - ~380ms 후 TICKET PENDING CTA 박스로 부드럽게 스크롤 (block: center)
+   - CTA 박스는 도장 박스 (stamp-collection) 위 ~2cm (76px) 간격으로 떠있음
+   - 사용자 검증: NO 누른 후 화면 가운데에 그린 dashed 박스가 자동 등장하는가
+   - 회귀 위험: showPage('back') 또는 scrollIntoView 한 쪽 깨지면 CTA 위치 확인 못 함
+
 ## 수동 검증 [P] — Canvas ↔ UI Parity (시각 비교)
 
 ### [P] trip-conquer-card 다운로드 PNG 가 화면과 동일
