@@ -5080,12 +5080,15 @@
     color: #fff;
     transform: translateY(-1px);
   }
-  /* 미션 weather 플래그 켜져 있을 때 — 작은 🌧 배지 (도장 우측 상단 옆) */
-  .opt[data-mission].chosen[data-weather-done] .opt-badge::after,
-  .mission-card.completed[data-weather-done]::before {
-    content: '🌧';
-    margin-left: 6px;
+  /* 미션 weather 플래그 켜져 있을 때 — 도장 옆 🌧 배지 (시각 구분) */
+  .opt[data-mission][data-weather-done] .opt-badge::after {
+    content: ' 🌧';
+    margin-left: 4px;
     font-size: 14px;
+  }
+  /* 미션 카드 우측 상단에도 🌧 (mission-card 의 경우) */
+  .mission-card[data-weather-done].completed::after {
+    content: '🌧';
   }
 
   /* === 마무리 페이지 히든 unlock CTA — d1-hotel done 후 unlock 안 했을 때 상시 노출 === */
@@ -6276,7 +6279,7 @@
   <div class="fmo-content">
     <div class="fmo-medal">🏆</div>
     <div class="fmo-tag">PRO TRAVELER</div>
-    <div class="fmo-title">프로 트래블러!</div>
+    <div class="fmo-title">오키나와 프로 트래블러!</div>
     <p class="fmo-body">메인 9개 + 시크릿 레벨 6개 = 진짜 잘 했어. 이번 여행 너 덕분에 더 따뜻했어. <strong>친구한테 자랑해도 돼</strong>.</p>
   </div>
 </div>
@@ -8987,11 +8990,19 @@
 
     <!-- 6/6 완료 시 PRO TRAVELER 인증 카드 (다운로드 가능) — 마무리 페이지 trip-conquer-card 와 동일 패턴 -->
     <div class="legend-card" id="legend-card" hidden>
-      <!-- 헤더 — 그린 톤 메달 영역 -->
+      <!-- 헤더 — 오키나와 본도 SVG + 메달 + 라벨 -->
       <div class="lc-header">
+        <!-- 오키나와 본도 (cream on green, 위치 정체성) -->
+        <svg viewBox="0 0 470 530" class="lc-okinawa-svg" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          <image class="lc-oki-img" href="okinawa-mainland.svg" x="0" y="0" width="470" height="530"/>
+          <!-- 골드 ★ 강조 (오키나와 본도 중심) -->
+          <circle class="lc-oki-glow" cx="245" cy="280" r="28"/>
+          <circle class="lc-oki-island" cx="245" cy="280" r="14"/>
+          <text x="245" y="284" class="lc-oki-star">★</text>
+        </svg>
         <div class="lc-medal">🏆</div>
         <div class="lc-tag">PRO TRAVELER</div>
-        <div class="lc-title">프로 트래블러!</div>
+        <div class="lc-title">오키나와 프로 트래블러!</div>
         <div class="lc-date">5.10 — 5.13 · 2026</div>
       </div>
 
@@ -12033,6 +12044,11 @@
       // 저장된 상태 복원
       if (state.missions && state.missions[missionId] && state.missions[missionId].done) {
         opt.classList.add('mission-done');
+        // 날씨 백업으로 클리어된 경우 — 🌧 배지 복원
+        if (state.missions[missionId].weather === 'bad') {
+          opt.dataset.weatherDone = '1';
+          opt.classList.add('weather-bad');
+        }
         const at = state.missions[missionId].at;
         if (at) renderOptMissionTimestamp(opt, at);
       }
@@ -12049,6 +12065,63 @@
     el.textContent = `Completed · ${m}/${day} ${hh}:${mm}`;
   }
   wireOptionMissions();
+
+  // 🌧 날씨 백업 버튼 — 야외 미션 (차탄 선셋 등) 못 봤을 때 그래도 클리어
+  // 클릭 시: state.missions[missionId] = { done: true, at, weather: 'bad' }
+  // 시각 효과: opt.classList.add('chosen', 'mission-done', 'weather-bad') + dataset.weatherDone='1'
+  document.addEventListener('click', (e) => {
+    const wbBtn = e.target.closest('.wb-btn');
+    if (!wbBtn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const wbBox = wbBtn.closest('.weather-backup');
+    const missionId = wbBox?.dataset?.targetMission;
+    if (!missionId || !/^[a-zA-Z0-9_-]{1,32}$/.test(missionId)) return;
+    const opt = document.querySelector(`.opt[data-mission="${missionId}"]`);
+    if (!opt) return;
+    // 이미 done 인 경우 — 그냥 알림 (사용자 실수 방지)
+    if (state.missions && state.missions[missionId] && state.missions[missionId].done) {
+      alert('이미 완료한 미션이야. 도장 취소부터 해야 다시 누를 수 있어.');
+      return;
+    }
+    // 사용자 확인 (실수 클릭 방지 + 11살 이해)
+    if (!confirm('🌧 날씨 때문에 못 봤어?\n\n그래도 미션은 클리어할게.\n인증 카드에 "🌧 비·바람 때문에" 라고 표시될 거야.\n\n진행할까?')) return;
+    // state 저장 (weather: 'bad' 플래그 — sanitizer 통과 룰)
+    const now = Date.now();
+    if (!state.missions) state.missions = {};
+    state.missions[missionId] = { done: true, at: now, weather: 'bad' };
+    // chosen state 도 같이 (.opt-mission 은 chosen + done 동시)
+    const optionsEl = opt.closest('.options');
+    if (optionsEl) {
+      const slotKey = slotKeyOf(optionsEl);
+      const idx = String(opt.dataset.optIdx);
+      if (!state.chosen) state.chosen = {};
+      const arr = Array.isArray(state.chosen[slotKey]) ? state.chosen[slotKey] : [];
+      if (!arr.includes(idx)) arr.push(idx);
+      state.chosen[slotKey] = arr;
+      applyChosen(optionsEl, arr);
+    }
+    saveState(state);
+    // 시각 — chosen + mission-done + weather-bad 클래스
+    opt.classList.add('chosen', 'mission-done', 'just-completed', 'weather-bad');
+    opt.dataset.weatherDone = '1';
+    setTimeout(() => opt.classList.remove('just-completed'), 700);
+    if (typeof renderOptMissionTimestamp === 'function') renderOptMissionTimestamp(opt, now);
+    // 동선·chip 즉시 갱신 + 카운터·stamp grid
+    const dayPage = opt.closest('.page')?.dataset.page;
+    if (dayPage) {
+      if (typeof renderDayRoute === 'function') renderDayRoute(dayPage);
+      if (typeof assignPickNumbers === 'function') assignPickNumbers(dayPage);
+    }
+    if (typeof updateMissionCounter === 'function') updateMissionCounter();
+    if (typeof refreshStampGrid === 'function') refreshStampGrid();
+    // 일반 미션 완료 풀스크린 — TRIP COMPLETE 분기 X (날씨 백업이라 차분하게)
+    if (typeof fireMissionComplete === 'function') {
+      const label = opt.dataset.missionLabel || opt.querySelector('.opt-title')?.textContent?.trim() || '';
+      fireMissionComplete(`🌧 ${label}`);
+    }
+    if (wbBtn.blur) wbBtn.blur();
+  });
 
   // ✓ chosen 버튼 클릭 → 미션 자동 처리
   // (기존 .opt-select 핸들러는 옵션 슬롯 시스템 안에서 처리됨 — capture phase에서 hook)
