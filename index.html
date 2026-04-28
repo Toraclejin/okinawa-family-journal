@@ -8929,7 +8929,7 @@
 
     <!-- ========== Hidden Mission H1 — 아빠 어깨 안마 ========== -->
     <div class="mission-card hidden-mission" data-mission="hidden-h1-massage" data-mission-type="bonus">
-      <span class="mission-tag mission-tag-hidden">Hidden 1 · Family</span>
+      <span class="mission-tag mission-tag-hidden">Hidden Mission 1 · Family</span>
       <h3 class="mission-title">아빠 어깨 5분 안마</h3>
       <p class="mission-desc">호텔 객실에서, 온천 다녀온 뒤에, 또는 운전 끝난 뒤 아무 때나. 5분 안마 → 도장. 11살 조카만의 비밀 미션.</p>
       <div class="mission-action-row">
@@ -8944,7 +8944,7 @@
 
     <!-- ========== Hidden Mission H2 — 엄마 짐 들기 ========== -->
     <div class="mission-card hidden-mission" data-mission="hidden-h2-bag" data-mission-type="bonus">
-      <span class="mission-tag mission-tag-hidden">Hidden 2 · Family</span>
+      <span class="mission-tag mission-tag-hidden">Hidden Mission 2 · Family</span>
       <h3 class="mission-title">엄마 짐 들어주기</h3>
       <p class="mission-desc">Don Quijote, AEON, 마트 어디든. 비행기 탈 때, 호텔 체크인할 때도 OK. 엄마 짐 1번 들어주면 도장.</p>
       <div class="mission-action-row">
@@ -8959,7 +8959,7 @@
 
     <!-- ========== Hidden Mission H3 — 류큐 시사상 헌터 ========== -->
     <div class="mission-card hidden-mission photo-mission" data-mission="hidden-h3-shisa" data-mission-type="bonus" data-photo-mission="hidden-shisa">
-      <span class="mission-tag mission-tag-hidden">Hidden 3 · 오키나와 문화</span>
+      <span class="mission-tag mission-tag-hidden">Hidden Mission 3 · 오키나와 문화</span>
       <h3 class="mission-title">류큐 시사(獅子) 1개 발견 + 사진</h3>
       <p class="mission-desc">오키나와 어디나 사자상(시사) 가 있음. 호텔 입구, 식당 앞, 거리 — 1개 찾아 사진 찍기. <strong>시사는 액운 막아주는 류큐 왕국 부적</strong>이야.</p>
       <div class="mission-action-row">
@@ -8974,7 +8974,7 @@
 
     <!-- ========== Hidden Mission H4 — 추라우미 좋아하는 물고기 그림 ========== -->
     <div class="mission-card hidden-mission" data-mission="hidden-h4-fish" data-mission-type="bonus">
-      <span class="mission-tag mission-tag-hidden">Hidden 4 · 추라우미</span>
+      <span class="mission-tag mission-tag-hidden">Hidden Mission 4 · 추라우미</span>
       <h3 class="mission-title">좋아하는 물고기 — 그림 그리고 가족에게 설명</h3>
       <p class="mission-desc">추라우미에서 본 물고기 중 가장 좋아하는 1마리. <strong>이름 + 간단한 그림</strong>을 메모장이나 종이에 그려서 가족한테 1분 설명. 다 끝나면 도장.</p>
       <div class="hidden-write">
@@ -8993,7 +8993,7 @@
 
     <!-- ========== Hidden Mission H5 — 일본어 인사 챌린지 ========== -->
     <div class="mission-card hidden-mission" data-mission="hidden-h5-japanese" data-mission-type="bonus">
-      <span class="mission-tag mission-tag-hidden">Hidden 5 · 일본어 인사</span>
+      <span class="mission-tag mission-tag-hidden">Hidden Mission 5 · 일본어 인사</span>
       <h3 class="mission-title">일본어 단어 — 가족 앞에서 3개 사용</h3>
       <p class="mission-desc">3개 단어를 가족 앞에서 1번씩이라도 말하면 끝. 다음 미션의 워밍업.</p>
       <ul class="hidden-features">
@@ -9013,7 +9013,7 @@
 
     <!-- ========== Hidden Mission H6 — 현지 상점에서 직접 주문 (BOSS) ========== -->
     <div class="mission-card hidden-mission" data-mission="hidden-h6-order" data-mission-type="bonus">
-      <span class="mission-tag mission-tag-hidden">Hidden 6 · BOSS 미션</span>
+      <span class="mission-tag mission-tag-hidden">Hidden Mission 6 · BOSS 미션</span>
       <h3 class="mission-title">현지 상점에서 직접 주문 1번</h3>
       <p class="mission-desc">식당·편의점·아이스크림 가게 어디든. <strong>가족 도움 없이 혼자</strong> 점원한테 영어 또는 일본어로 주문 1번. 어렵게 느껴지면 H5 단어 활용 OK.</p>
       <ul class="hidden-features">
@@ -12425,25 +12425,47 @@
   //  • 마무리 페이지 stamp-grid: .stamp-num-badge 주입 (좌상단 작은 원, 1~9)
   //  단일 source of truth = getAllMissions() 순서
   // ==========================================
+  // 메인/히든 인덱스 분리 (이전 회귀: 'Mission 10 · Hidden 1 · Family' 같이 메인 카운트와 합쳐 보임)
+  // - 메인 미션 (m.isBonus = false): 'Mission 1' ~ 'Mission 9' (메인 인덱스 1~9)
+  // - 히든 미션 (m.isBonus = true): 'Hidden Mission 1' ~ 'Hidden Mission 6' (별도 인덱스, prefix 다름)
+  // - Stamp grid: 메인 9 만 인덱스 부여 (히든은 grid 에 없음)
   function assignMissionNumbers() {
     const missions = (typeof getAllMissions === 'function') ? getAllMissions() : [];
-    missions.forEach((m, i) => {
-      const num = i + 1;
+    let mainIdx = 0;
+    let hiddenIdx = 0;
+    missions.forEach(m => {
+      let num, prefix;
+      if (m.isBonus) {
+        hiddenIdx += 1;
+        num = hiddenIdx;
+        prefix = 'Hidden Mission';
+      } else {
+        mainIdx += 1;
+        num = mainIdx;
+        prefix = 'Mission';
+      }
       m.el.dataset.missionNum = String(num);
       if (m.kind === 'standalone') {
         const tag = m.el.querySelector('.mission-tag');
         if (!tag) return;
-        // 원본 텍스트 캐시 (assignMissionNumbers 가 여러 번 호출돼도 중복 prefix 방지)
+        // 원본 텍스트 캐시 (재호출 시 중복 prefix 방지)
         if (!tag.dataset.origText) tag.dataset.origText = tag.textContent.trim();
         const orig = tag.dataset.origText;
-        // "Mission · Departure" → "Mission 2 · Departure"
-        // "Mission · Pre-Trip" → "Mission 1 · Pre-Trip"
-        const updated = /^Mission(\s|·)/i.test(orig)
-          ? orig.replace(/^Mission(?!\s\d)/i, `Mission ${num}`)
-          : `Mission ${num} · ${orig}`;
+        let updated;
+        if (m.isBonus) {
+          // 히든 — 'Hidden Mission N · X' 또는 legacy 'Hidden N · X' 둘 다 'Hidden Mission N · X' 로 통일
+          updated = /^Hidden(\s+Mission)?\s+\d+/i.test(orig)
+            ? orig.replace(/^Hidden(\s+Mission)?\s+\d+/i, `Hidden Mission ${num}`)
+            : `Hidden Mission ${num} · ${orig}`;
+        } else {
+          // 메인 — 'Mission · X' → 'Mission N · X', 'Mission N · X' → N 재할당
+          updated = /^Mission(\s|·)/i.test(orig)
+            ? orig.replace(/^Mission(?!\s\d)/i, `Mission ${num}`)
+            : `Mission ${num} · ${orig}`;
+        }
         tag.textContent = updated;
       } else if (m.kind === 'opt') {
-        // .opt[data-mission] 에 mission-num-pill 주입 (없으면)
+        // .opt[data-mission] 에 mission-num-pill 주입 (없으면) — 현재 메인 한정 (히든은 모두 standalone)
         let pill = m.el.querySelector(':scope > .mission-num-pill');
         if (!pill) {
           pill = document.createElement('span');
@@ -12454,15 +12476,16 @@
           else m.el.insertBefore(pill, m.el.firstChild);
         }
         const label = m.el.dataset.missionLabel || (m.el.querySelector('.opt-title')?.textContent?.trim() || '');
-        pill.textContent = `Mission ${num}${label ? ' · ' + label : ''}`;
+        pill.textContent = `${prefix} ${num}${label ? ' · ' + label : ''}`;
       }
     });
-    // Stamp grid items — 좌상단 번호 badge
+    // Stamp grid items — 메인 미션만 인덱스 (1~9). 히든은 grid 에 등장 X.
+    const mainList = missions.filter(m => !m.isBonus);
     document.querySelectorAll('.stamp-item').forEach(item => {
       const id = item.dataset.mission;
       if (!id) return;
-      const idx = missions.findIndex(mm => mm.id === id);
-      if (idx < 0) return;
+      const idx = mainList.findIndex(mm => mm.id === id);
+      if (idx < 0) return; // 히든 미션은 stamp grid 에 없음 (defensive)
       let badge = item.querySelector('.stamp-num-badge');
       if (!badge) {
         badge = document.createElement('span');
