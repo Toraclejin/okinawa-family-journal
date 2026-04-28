@@ -5697,7 +5697,7 @@
 
   /* 6/6 완료 시 메시지 */
   .family-master-msg {
-    margin: 24px 0 0;
+    margin: 8px 0 0;
     padding: 28px 24px 24px;
     background: linear-gradient(180deg, #ebf9f3 0%, #fff 100%);
     border: 1.5px solid #16a085;
@@ -5733,8 +5733,17 @@
     font-family: 'Pretendard Variable', Pretendard, sans-serif;
     font-size: 14px;
     color: var(--blue-ink);
-    line-height: 1.55;
+    line-height: 1.6;
     margin: 0;
+    word-break: keep-all; /* 한국어 어절 단위 줄바꿈 — '여행에서 제 몫을 한' 같은 구절 안 끊기게 */
+  }
+  /* 핵심 멘트 highlighter 효과 — deep green 텍스트 + amber 마커 밑줄띠 (자연스러운 강조) */
+  .family-master-msg .fm-body strong {
+    color: #0e6b56;
+    font-weight: 800;
+    background: linear-gradient(180deg, transparent 62%, rgba(255, 196, 0, 0.55) 62%, rgba(255, 196, 0, 0.55) 92%, transparent 92%);
+    padding: 0 3px;
+    border-radius: 2px;
   }
 
   /* === Hidden Mission 탭 — 3 단계 가시성 ===
@@ -9063,7 +9072,7 @@
     <div class="family-master-msg" id="family-master-msg" hidden>
       <div class="fm-eyebrow">🏆 PRO TRAVELER</div>
       <h3 class="fm-headline">시크릿 미션 6개 다 클리어 — 프로 트래블러 인증!</h3>
-      <p class="fm-body">일본에서 혼자 점원한테 주문하고, 가족 짐 들어주고, 류큐 시사 찾아내고, 추라우미 물고기 그림으로 설명한 너 — <strong>여행에서 제 몫을 한 사람</strong>이라는 뜻이야. 친구한테 자랑해도 돼.</p>
+      <p class="fm-body">일본에서 혼자 점원한테 주문하고, 가족 짐 들어주고,<br>류큐 시사 찾아내고, 추라우미 물고기 그림으로 설명한 너 —<br><strong>여행에서 제 몫을 한 사람</strong>이라는 뜻이야.<br>친구한테 자랑해도 돼.</p>
     </div>
   </section>
 </div><!-- /page hidden -->
