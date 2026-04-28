@@ -6275,8 +6275,8 @@
 <div class="family-master-overlay" id="family-master-overlay" aria-hidden="true">
   <div class="fmo-content">
     <div class="fmo-medal">🏆</div>
-    <div class="fmo-tag">FAMILY LEGEND</div>
-    <div class="fmo-title">패밀리 레전드!</div>
+    <div class="fmo-tag">PRO TRAVELER</div>
+    <div class="fmo-title">프로 트래블러!</div>
     <p class="fmo-body">메인 9개 + 시크릿 레벨 6개 = 진짜 잘 했어. 이번 여행 너 덕분에 더 따뜻했어. <strong>친구한테 자랑해도 돼</strong>.</p>
   </div>
 </div>
@@ -8872,7 +8872,7 @@
         <span class="hc-num" id="hidden-counter-num">0</span>
         <span class="hc-divider">/</span>
         <span class="hc-total">6</span>
-        <span class="hc-lbl">FAMILY LEGEND</span>
+        <span class="hc-lbl">PRO TRAVELER</span>
       </div>
     </div>
 
@@ -8985,17 +8985,17 @@
       <div class="mission-timestamp"></div>
     </div>
 
-    <!-- 6/6 완료 시 패밀리 레전드 인증 카드 (다운로드 가능) — 마무리 페이지 trip-conquer-card 와 동일 패턴 -->
+    <!-- 6/6 완료 시 PRO TRAVELER 인증 카드 (다운로드 가능) — 마무리 페이지 trip-conquer-card 와 동일 패턴 -->
     <div class="legend-card" id="legend-card" hidden>
       <!-- 헤더 — 그린 톤 메달 영역 -->
       <div class="lc-header">
         <div class="lc-medal">🏆</div>
-        <div class="lc-tag">FAMILY LEGEND</div>
-        <div class="lc-title">패밀리 레전드!</div>
+        <div class="lc-tag">PRO TRAVELER</div>
+        <div class="lc-title">프로 트래블러!</div>
         <div class="lc-date">5.10 — 5.13 · 2026</div>
       </div>
 
-      <!-- 통계 grid 4칸 (그린 톤) -->
+      <!-- 통계 grid 4칸 (그린 톤, 11살 친구한테 자랑할 톤) -->
       <div class="lc-stats">
         <div class="lc-stat lc-stat-hero">
           <div class="lc-stat-num" data-stat="legend-frac">0/0</div>
@@ -9003,15 +9003,15 @@
         </div>
         <div class="lc-stat">
           <div class="lc-stat-num" data-stat="legend-massage">—</div>
-          <div class="lc-stat-lbl">아빠 안마 / 엄마 짐</div>
+          <div class="lc-stat-lbl">팀 케어 (Team Crew)</div>
         </div>
         <div class="lc-stat">
           <div class="lc-stat-num" data-stat="legend-culture">—</div>
-          <div class="lc-stat-lbl">시사 · 물고기</div>
+          <div class="lc-stat-lbl">발견 모드 (Discovery)</div>
         </div>
         <div class="lc-stat">
           <div class="lc-stat-num" data-stat="legend-language">—</div>
-          <div class="lc-stat-lbl">일본어 · 주문</div>
+          <div class="lc-stat-lbl">솔로 클리어 (Solo Run)</div>
         </div>
       </div>
 
@@ -9026,9 +9026,9 @@
 
     <!-- 6/6 완료 시 메시지 (인증 카드 밑) -->
     <div class="family-master-msg" id="family-master-msg" hidden>
-      <div class="fm-eyebrow">🏆 FAMILY LEGEND</div>
-      <h3 class="fm-headline">진짜 잘 했어 — 시크릿 레벨 6번 다 클리어.</h3>
-      <p class="fm-body">메인 미션 9개랑 다른 6개. 이건 <strong>가족이랑 같이 만든 진짜 레전드</strong>라 더 의미 있어. 친구한테 자랑해도 돼 — 다음 여행에서도 또 해보자.</p>
+      <div class="fm-eyebrow">🏆 PRO TRAVELER</div>
+      <h3 class="fm-headline">시크릿 미션 6개 다 클리어 — 프로 트래블러 인증!</h3>
+      <p class="fm-body">일본에서 혼자 점원한테 주문하고, 가족 짐 들어주고, 류큐 시사 찾아내고, 추라우미 물고기 그림으로 설명한 너 — <strong>여행에서 제 몫을 한 사람</strong>이라는 뜻이야. 친구한테 자랑해도 돼.</p>
     </div>
   </section>
 </div><!-- /page hidden -->
@@ -12728,29 +12728,29 @@
       ctx.textBaseline = 'middle';
       ctx.fillText('🏆', W/2, 220);
 
-      // [2] FAMILY LEGEND tag
+      // [2] PRO TRAVELER tag
       ctx.fillStyle = '#ffc400';
       ctx.font = '800 32px "Space Grotesk", sans-serif';
-      ctx.fillText('FAMILY LEGEND', W/2, 380);
+      ctx.fillText('PRO TRAVELER', W/2, 380);
 
-      // [3] 패밀리 레전드!
+      // [3] 프로 트래블러!
       ctx.fillStyle = '#ffffff';
       ctx.font = '900 86px "Pretendard Variable", Pretendard, sans-serif';
-      ctx.fillText('패밀리 레전드!', W/2, 480);
+      ctx.fillText('프로 트래블러!', W/2, 480);
 
       // [4] 날짜
       ctx.fillStyle = 'rgba(255,255,255,0.85)';
       ctx.font = '600 28px "Space Grotesk", sans-serif';
       ctx.fillText('5.10 — 5.13 · 2026', W/2, 540);
 
-      // [5] 통계 grid 4칸
+      // [5] 통계 grid 4칸 — 11살 친구한테 자랑할 톤 (성취 카테고리)
       const card = document.getElementById('legend-card');
       const get = key => card?.querySelector(`[data-stat="${key}"]`)?.textContent || '—';
       const stats = [
         { num: get('legend-frac'), lbl: 'SECRET COMPLETE!', hero: true },
-        { num: get('legend-massage'), lbl: '아빠 안마 / 엄마 짐', hero: false },
-        { num: get('legend-culture'), lbl: '시사 · 물고기', hero: false },
-        { num: get('legend-language'), lbl: '일본어 · 주문', hero: false },
+        { num: get('legend-massage'), lbl: 'Team Crew · 팀 케어', hero: false },
+        { num: get('legend-culture'), lbl: 'Discovery · 발견', hero: false },
+        { num: get('legend-language'), lbl: 'Solo Run · 솔로', hero: false },
       ];
       const gridX = 110, gridY = 640, cellW = 420, cellH = 130, gap = 20;
       stats.forEach((s, i) => {
@@ -12781,7 +12781,7 @@
       ctx.font = '500 22px "Pretendard Variable", Pretendard, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'alphabetic';
-      ctx.fillText('Family Journal · Vol. I · Okinawa · Secret Mission', W/2, 1180);
+      ctx.fillText('Family Journal · Vol. I · Okinawa · Pro Traveler', W/2, 1180);
 
       // 다운로드
       canvas.toBlob((blob) => {
@@ -12789,7 +12789,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'okinawa-family-legend.png';
+        a.download = 'okinawa-pro-traveler.png';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
