@@ -162,12 +162,31 @@ type State = {
 
 `localStorage` 기반 정적 HTML의 유일한 실질 공격 경로는 **악성 JSON Import**. 4-line defense:
 
-1. **`sanitizeImportedState()`** — 화이트리스트 복원, `__proto__/constructor/prototype` 차단, 각 값 타입·길이·포맷 검증
+1. **`sanitizeImportedState(raw, loss?)`** — 화이트리스트 복원, `__proto__/constructor/prototype` 차단, 각 값 타입·길이·포맷 검증
+   - 두 번째 인자 `loss` (옵션) 객체 전달 시 거부된 사진 카운트 반환 (`{ photosOversize, photosBadFormat }`)
+   - 이전 silent skip → 호출자가 사용자에게 명시적 alert 가능
 2. **`DATA_IMG` 정규식** — 사진 dataUrl `^data:image/(jpeg|png|webp|gif);base64,...$` 만, 5MB 상한
 3. **사진 DOM은 createElement** — `innerHTML` 절대 X, `img.src = dataUrl` 만
 4. **extraId 가드** — `^[a-z0-9]{1,64}$` 만 (localStorage 직접 변조 대비)
 
 **5번 (CSP meta tag)** — `<head>` 의 `Content-Security-Policy` 로 default-src self, frame/object 금지. style/script 인라인 필수라 `unsafe-inline` 허용 (의도적).
+
+### Export / Import UX (사용자 손실 알림 + 다중 백업 권장)
+
+**Export confirm** (다운로드 직전):
+- 통계 표시: 사진 N장 / 별점 N개 / 미션 N/9 (Hidden 풀린 경우 시크릿 N/6 추가)
+- 파일 크기 표시
+- 다중 백업 권장 (카톡 / 메일 / 클라우드 — 최소 2곳)
+- 사용자가 [취소] 누르면 다운로드 안 함
+
+**Import alert** (사진 손실 시 명시적 알림):
+- `loss.photosOversize` (5MB 초과 → 거부) 카운트
+- `loss.photosBadFormat` (잘못된 dataUrl / 잘못된 ID) 카운트
+- 0 이면 일반 "복원 완료" alert
+- > 0 이면 "사진 N장 못 가져왔어요. 사진첩에서 다시 추가해 주세요" 명시
+- silent skip 회피 — 사용자가 손실 인지 가능
+
+**왜 중요한가**: iOS Safari localStorage 5MB 한계. 가족 매거진에 사진 20+ 장 모이면 일부 손실 위험. 또 다른 기기에서 import 시 원본 사이즈 사진 (5MB+) 거부 가능. 사용자 알림 없으면 "내 사진 어디갔지?" 사고.
 
 ## 자주 하는 작업 → 영향 받는 파일 매트릭스
 

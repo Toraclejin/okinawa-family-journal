@@ -220,8 +220,17 @@
 - [ ] cover/prep/d4에서 MAP 클릭 → D1으로 이동 후 동선 카드로 점프
 
 ### M7. Import/Export + Print
-- [ ] ↓ 내보내기 → JSON 다운로드 (`okinawa-journal-{이름}-{날짜}.json`)
+- [ ] ↓ 내보내기 클릭 → confirm 다이얼로그 등장
+  - [ ] 통계 표시: 사진 N장 / 별점 N개 / 미션 N/9 (Hidden 풀린 경우 시크릿 N/6 추가) / 파일 크기 X MB
+  - [ ] 다중 백업 권장 멘트 (카톡 / 메일 / 클라우드) 표시
+  - [ ] [취소] 클릭 → 다운로드 안 됨 / [다운로드] 클릭 → JSON 저장
+- [ ] JSON 파일명 `okinawa-journal-{이름}-{날짜}.json`
 - [ ] ↑ 가져오기 → 정상 JSON 복원 / 악성 JSON 차단
+- [ ] **사진 손실 알림** (Import 시):
+  - [ ] 정상 사진만 → "복원 완료!" alert
+  - [ ] 5MB 초과 사진 포함 → "사진 N장 파일 크기 너무 큼" 명시
+  - [ ] 잘못된 dataUrl 포함 → "사진 N장 파일 형식 문제" 명시
+  - [ ] silent skip 0건 (모든 손실은 사용자에게 표시)
 - [ ] ⎙ 인쇄 → PDF 미리보기 페이지 순서 cover→prep→d1→d2→d3→d4→back
 - [ ] PDF에 호텔 카드·동선 chip·옵션 본문 모두 펼쳐져 출력
 

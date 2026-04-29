@@ -9402,7 +9402,36 @@
       state: state
     };
 
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    // 백업 통계 — 사용자에게 "뭐가 들어있나" 명시 + 다중 백업 권장
+    // 메인/히든 미션 분리 카운트 (컨셉상 별도 트랙)
+    const photoCount = Object.values(state.photos || {}).reduce((s, arr) => s + (Array.isArray(arr) ? arr.length : 0), 0);
+    const ratingCount = Object.keys(state.ratings || {}).length;
+    const mainList = (typeof getMainMissions === 'function') ? getMainMissions() : [];
+    const hiddenList = (typeof getHiddenMissions === 'function') ? getHiddenMissions() : [];
+    const mainDone = mainList.filter(m => state.missions && state.missions[m.id] && state.missions[m.id].done).length;
+    const hiddenDone = hiddenList.filter(m => state.missions && state.missions[m.id] && state.missions[m.id].done).length;
+    const jsonStr = JSON.stringify(data, null, 2);
+    const sizeMB = (jsonStr.length / 1000 / 1000).toFixed(1);
+
+    let missionLine = `  • 미션: ${mainDone}/${mainList.length || 9} 완료`;
+    if (state.hiddenUnlocked) missionLine += `\n  • 시크릿 미션: ${hiddenDone}/${hiddenList.length || 6} 완료`;
+
+    const summary =
+      `백업 다운로드 (${filename})\n\n` +
+      `📦 내용\n` +
+      `  • 사진: ${photoCount}장\n` +
+      `  • 별점: ${ratingCount}개\n` +
+      missionLine + `\n` +
+      `  • 파일 크기: ${sizeMB} MB\n\n` +
+      `📍 여러 곳에 백업해두세요 (한 곳만 두면 잃으면 끝):\n` +
+      `  ① 카톡 (본인한테 전송)\n` +
+      `  ② 메일 첨부\n` +
+      `  ③ 클라우드 (드라이브 / iCloud)\n\n` +
+      `최소 2곳 이상 보관 권장.\n\n다운로드 진행할까요?`;
+
+    if (!confirm(summary)) return;
+
+    const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -9439,9 +9468,14 @@
     return typeof k === 'string' && SAFE_KEY.test(k) && k !== '__proto__' && k !== 'constructor' && k !== 'prototype';
   }
 
-  function sanitizeImportedState(raw) {
+  // sanitizeImportedState(raw, loss = null)
+  // loss = { photos: 0, photosOversize: 0, photosBadFormat: 0, missions: 0, ... }
+  //   호출자가 객체 전달하면 거부된 항목 카운트해서 채워줌. null 이면 무시 (기존 호환).
+  // 회귀 방지: 두 번째 인자 옵션 — 모든 기존 호출 (1 인자) 그대로 작동.
+  function sanitizeImportedState(raw, loss) {
     if (!isPlainObject(raw)) return null;
     const clean = Object.create(null);
+    const _loss = loss && typeof loss === 'object' ? loss : null;
 
     // ratings: { key: number 0..5 }
     if (isPlainObject(raw.ratings)) {
@@ -9473,6 +9507,7 @@
     }
 
     // photos: { targetId: [{id, dataUrl}] } — dataUrl은 data:image/* 만 허용
+    // loss 객체 전달 시 거부 사유별 카운트 (사용자 alert 용 — silent skip 회피)
     if (isPlainObject(raw.photos)) {
       clean.photos = Object.create(null);
       for (const k of Object.keys(raw.photos)) {
@@ -9481,10 +9516,10 @@
         if (!Array.isArray(arr)) continue;
         const safeArr = [];
         for (const p of arr) {
-          if (!isPlainObject(p)) continue;
-          if (typeof p.id !== 'string' || !SAFE_ID.test(p.id)) continue;
-          if (typeof p.dataUrl !== 'string' || !DATA_IMG.test(p.dataUrl)) continue;
-          if (p.dataUrl.length > 5_000_000) continue; // 5MB 상한
+          if (!isPlainObject(p)) { if (_loss) _loss.photosBadFormat = (_loss.photosBadFormat || 0) + 1; continue; }
+          if (typeof p.id !== 'string' || !SAFE_ID.test(p.id)) { if (_loss) _loss.photosBadFormat = (_loss.photosBadFormat || 0) + 1; continue; }
+          if (typeof p.dataUrl !== 'string' || !DATA_IMG.test(p.dataUrl)) { if (_loss) _loss.photosBadFormat = (_loss.photosBadFormat || 0) + 1; continue; }
+          if (p.dataUrl.length > 5_000_000) { if (_loss) _loss.photosOversize = (_loss.photosOversize || 0) + 1; continue; } // 5MB 상한
           safeArr.push({ id: p.id, dataUrl: p.dataUrl });
         }
         clean.photos[k] = safeArr;
@@ -9580,13 +9615,28 @@
           alert('올바르지 않은 파일입니다. Okinawa Journal에서 내보낸 JSON 파일만 가능합니다.');
           return;
         }
-        const clean = sanitizeImportedState(data.state);
+        // 사진 손실 카운트 — silent skip 방지 (사용자에게 명시적 알림)
+        const loss = { photosOversize: 0, photosBadFormat: 0 };
+        const clean = sanitizeImportedState(data.state, loss);
         if (!clean) {
           alert('파일 내용에 문제가 있어 불러올 수 없습니다.');
           return;
         }
         localStorage.setItem(STORAGE_KEY, JSON.stringify(clean));
-        alert('복원 완료! 페이지를 새로 고침합니다.');
+
+        // 사진 손실이 있었으면 명시적 알림 (silent skip → loud alert)
+        const oversize = loss.photosOversize || 0;
+        const badFormat = loss.photosBadFormat || 0;
+        const totalLost = oversize + badFormat;
+        if (totalLost > 0) {
+          let msg = `복원 완료. 단, 사진 ${totalLost}장은 못 가져왔어요:\n`;
+          if (oversize > 0) msg += `\n• ${oversize}장: 파일 크기가 너무 커서 (5MB 초과)`;
+          if (badFormat > 0) msg += `\n• ${badFormat}장: 파일 형식 문제`;
+          msg += `\n\n원본 사진은 사진첩에 있을테니 다시 추가해 주세요.\n페이지를 새로 고침합니다.`;
+          alert(msg);
+        } else {
+          alert('복원 완료! 페이지를 새로 고침합니다.');
+        }
         location.reload();
       } catch(err) {
         alert('파일을 읽을 수 없습니다: ' + err.message);
