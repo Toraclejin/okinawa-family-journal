@@ -6242,6 +6242,166 @@
     }
   }
 
+  /* ============================================================
+     Trip Tip 페이지 — 3 탭 시스템 (ADVENTURE / OPERATIONS / LANGUAGE)
+     - 사용자: 조카 (모험) / 부모 (운영) / 둘 다 (일본어)
+     - 탭 클릭 → activeForm tab 만 .active, 나머지 hidden
+     - 박스 간격은 --box-gap-* 토큰 사용 (일관성)
+  ============================================================ */
+  .tip-tabs {
+    display: flex;
+    gap: 6px;
+    margin: 0 0 var(--box-gap-md);
+    padding: 4px;
+    background: rgba(0, 71, 255, 0.06);
+    border-radius: 14px;
+  }
+  .tip-tab-btn {
+    flex: 1;
+    padding: 12px 10px;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--blue-deep);
+    transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    line-height: 1.3;
+  }
+  .tip-tab-btn .tt-emoji { font-size: 16px; margin-right: 4px; }
+  .tip-tab-btn .tt-sub {
+    display: block;
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--blue-deep);
+    opacity: 0.65;
+    margin-top: 2px;
+    letter-spacing: 0;
+  }
+  .tip-tab-btn.active {
+    background: var(--blue);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 71, 255, 0.25);
+  }
+  .tip-tab-btn.active .tt-sub { color: #fff; opacity: 0.85; }
+  @media (hover: hover) {
+    .tip-tab-btn:not(.active):hover {
+      background: rgba(0, 71, 255, 0.1);
+    }
+  }
+  .tip-panel { display: none; }
+  .tip-panel.active { display: block; }
+
+  /* Trip Tip 안 카테고리 카드 (각 항목 박스) */
+  .tt-card {
+    margin: 0 0 var(--box-gap-tight);
+    padding: 18px 20px;
+    background: linear-gradient(180deg, #fafbff 0%, #fff 100%);
+    border: 1px solid rgba(0, 71, 255, 0.12);
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0, 71, 255, 0.04);
+  }
+  .tt-card-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 8px;
+  }
+  .tt-card-icon { font-size: 22px; line-height: 1; }
+  .tt-card-title {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--blue-ink);
+    margin: 0;
+  }
+  .tt-card-body {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 13.5px;
+    color: var(--blue-deep);
+    line-height: 1.6;
+    margin: 0;
+    word-break: keep-all;
+  }
+  .tt-card-body strong { color: var(--blue-ink); font-weight: 700; }
+  .tt-card-body ul {
+    margin: 6px 0 0;
+    padding-left: 18px;
+  }
+  .tt-card-body ul li {
+    margin: 3px 0;
+    line-height: 1.55;
+  }
+  .tt-card.tt-emergency {
+    background: linear-gradient(180deg, #fff5f5 0%, #fff 100%);
+    border-color: #ffd6d6;
+  }
+
+  /* 일본어 phrase 표 */
+  .tt-lang-section {
+    margin: 0 0 var(--box-gap-tight);
+  }
+  .tt-lang-section h4 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--blue);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+  }
+  .tt-lang-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .tt-lang-item {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    padding: 10px 12px;
+    background: #fff;
+    border-left: 3px solid var(--amber);
+    border-radius: 0 8px 8px 0;
+  }
+  .tt-lang-jp {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--blue-ink);
+  }
+  .tt-lang-ko {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--blue);
+    letter-spacing: -0.01em;
+  }
+  .tt-lang-meaning {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 12.5px;
+    color: var(--blue-deep);
+    opacity: 0.78;
+  }
+  @media (max-width: 600px) {
+    .tip-tab-btn { font-size: 11px; padding: 10px 6px; }
+    .tip-tab-btn .tt-emoji { font-size: 14px; }
+    .tip-tab-btn .tt-sub { font-size: 10px; }
+    .tt-card { padding: 16px 16px; }
+    .tt-card-title { font-size: 15px; }
+    .tt-card-body { font-size: 13px; }
+    .tt-lang-jp { font-size: 13px; }
+  }
+
 </style>
 </head>
 <body>
@@ -6399,6 +6559,7 @@
   <div class="page-nav-inner">
     <button type="button" class="page-nav-btn" data-nav="cover">표지</button>
     <button type="button" class="page-nav-btn" data-nav="prep">여행 전</button>
+    <button type="button" class="page-nav-btn" data-nav="tip">Trip Tip</button>
     <button type="button" class="page-nav-btn" data-nav="d1">Day 1</button>
     <button type="button" class="page-nav-btn" data-nav="d2">Day 2</button>
     <button type="button" class="page-nav-btn" data-nav="d3">Day 3</button>
@@ -8758,6 +8919,360 @@
 
 </div><!-- /page prep -->
 
+<!-- ========== TRIP TIP 페이지 (prep 다음, d1 앞) — 3 탭: ADVENTURE / OPERATIONS / LANGUAGE ========== -->
+<div class="page" data-page="tip">
+<section style="padding: 28px 22px;">
+
+  <h2 style="font-family: 'Archivo Black', sans-serif; font-size: 32px; color: var(--blue); margin: 0 0 6px; letter-spacing: -0.01em;">TRIP TIP</h2>
+  <p style="font-family: 'Pretendard Variable', Pretendard, sans-serif; font-size: 14px; color: var(--blue-deep); margin: 0 0 var(--box-gap-md); opacity: 0.85; line-height: 1.55;">
+    오키나와 여행에서 알면 좋은 정보들. <strong>3 개 탭</strong>에서 골라 봐 — 너의 모험 가이드, 어른의 여행 운영, 일본어.
+  </p>
+
+  <!-- 탭 헤더 -->
+  <div class="tip-tabs" role="tablist">
+    <button type="button" class="tip-tab-btn active" data-tab="adventure" role="tab" aria-selected="true">
+      <span class="tt-emoji">🎮</span>ADVENTURE
+      <span class="tt-sub">내 모험 가이드</span>
+    </button>
+    <button type="button" class="tip-tab-btn" data-tab="operations" role="tab" aria-selected="false">
+      <span class="tt-emoji">🚗</span>OPERATIONS
+      <span class="tt-sub">여행 운영</span>
+    </button>
+    <button type="button" class="tip-tab-btn" data-tab="language" role="tab" aria-selected="false">
+      <span class="tt-emoji">🗣</span>LANGUAGE
+      <span class="tt-sub">생활 일본어</span>
+    </button>
+  </div>
+
+  <!-- 탭 1: ADVENTURE — 내 모험 가이드 (조카 시점 8 카테고리) -->
+  <div class="tip-panel active" data-panel="adventure" role="tabpanel">
+
+    <div class="tt-card">
+      <div class="tt-card-head"><span class="tt-card-icon">🐋</span><h3 class="tt-card-title">추라우미 200% 즐기기</h3></div>
+      <p class="tt-card-body">
+        세계 3대 수족관. 꼭 봐야 할 5 가지:
+        <ul>
+          <li><strong>고래상어</strong> — 메인 수조의 거대한 친구. 길이 8m+</li>
+          <li><strong>매너티</strong> — 따로 온순한 바다 코끼리. 인기 만화 캐릭터</li>
+          <li><strong>산호 정원</strong> — 입구 근처 형형색색 산호초</li>
+          <li><strong>가오리 터치풀</strong> — 만질 수 있는 곳! "사왓떼모 이이데스카?"</li>
+          <li><strong>돌고래쇼 (오션블루)</strong> — 야외 무료 쇼, 시간표 확인</li>
+        </ul>
+      </p>
+    </div>
+
+    <div class="tt-card">
+      <div class="tt-card-head"><span class="tt-card-icon">🦁</span><h3 class="tt-card-title">시사 헌터</h3></div>
+      <p class="tt-card-body">
+        오키나와 어디나 시사가 있어. 호텔 입구·식당 앞·상점 입구·지붕 위 — 1개 찾아 사진 찍기.
+        <ul>
+          <li><strong>입 벌린 시사 (수컷)</strong> — 액운 막아줌</li>
+          <li><strong>입 다문 시사 (암컷)</strong> — 행운 가둠</li>
+          <li>둘 다 짝으로 있으면 진짜 류큐 부적</li>
+        </ul>
+        Hidden Mission 3 의 미션 — 사진 1 장이면 도장!
+      </p>
+    </div>
+
+    <div class="tt-card">
+      <div class="tt-card-head"><span class="tt-card-icon">🎰</span><h3 class="tt-card-title">자판기 도전</h3></div>
+      <p class="tt-card-body">
+        일본은 자판기 천국. 100엔·500엔 동전 넣고 버튼 → 받기. 너만의 도전:
+        <ul>
+          <li>음료수 자판기 — 따뜻한 커피 (빨간 라벨), 차가운 음료 (파란 라벨)</li>
+          <li>아이스크림 자판기</li>
+          <li>라면 자판기 (있는 곳 가뭄)</li>
+          <li>우산 자판기 (역 근처) — 비 올 때!</li>
+          <li>오뎅·핫도그 자판기</li>
+        </ul>
+      </p>
+    </div>
+
+    <div class="tt-card">
+      <div class="tt-card-head"><span class="tt-card-icon">💴</span><h3 class="tt-card-title">일본 돈 알기</h3></div>
+      <p class="tt-card-body">
+        <strong>동전 6 종</strong>:
+        <ul>
+          <li><strong>1엔</strong> — 알루미늄, 가벼움 (물에 뜸!)</li>
+          <li><strong>5엔</strong> — 황동, 가운데 구멍, 행운 동전 (소원 빌 때)</li>
+          <li><strong>10엔</strong> — 동, 갈색</li>
+          <li><strong>50엔</strong> — 은, 가운데 구멍</li>
+          <li><strong>100엔</strong> — 은, 가장 많이 씀</li>
+          <li><strong>500엔</strong> — 금색, 가장 큰 동전</li>
+        </ul>
+        <strong>지폐</strong>: 1000엔 (파랑) / 5000엔 (보라) / 10000엔 (갈색).
+        <strong>환산 팁</strong>: 한국 돈 ÷ 9 ≈ 일본 돈 (1000엔 ≈ 9000원).
+      </p>
+    </div>
+
+    <div class="tt-card">
+      <div class="tt-card-head"><span class="tt-card-icon">🍙</span><h3 class="tt-card-title">편의점 탐험</h3></div>
+      <p class="tt-card-body">
+        <strong>패밀리마트 / 로손 / 세븐일레븐</strong> — 한국에 없는 5 가지:
+        <ul>
+          <li><strong>오니기리</strong> — 포장지 색깔별 맛 (참치마요, 명란, 매실)</li>
+          <li><strong>일본 푸딩</strong> — 진한 커스터드 (무인양품 푸딩 추천)</li>
+          <li><strong>모찌 아이스</strong> — 떡 안에 아이스크림</li>
+          <li><strong>일본 카레빵</strong> — 겉 바삭, 속 카레</li>
+          <li><strong>포카리 자판기</strong> — 한국 포카리보다 살짝 다른 맛</li>
+        </ul>
+      </p>
+    </div>
+
+    <div class="tt-card">
+      <div class="tt-card-head"><span class="tt-card-icon">🍦</span><h3 class="tt-card-title">블루씰 비밀 메뉴</h3></div>
+      <p class="tt-card-body">
+        오키나와 토종 아이스크림. 한국엔 없는 맛:
+        <ul>
+          <li><strong>베니이모 (자색고구마)</strong> — 보라색, 달콤</li>
+          <li><strong>시콰사</strong> — 오키나와 라임, 새콤</li>
+          <li><strong>솔트쿠키</strong> — 짭짤+달콤</li>
+          <li><strong>우베</strong> — 얌 (보라색 뿌리)</li>
+          <li><strong>사탕수수</strong> — 오키나와 단맛</li>
+        </ul>
+        <strong>추천</strong>: 더블 콘 — 다른 맛 2 개 한 컵에!
+      </p>
+    </div>
+
+    <div class="tt-card">
+      <div class="tt-card-head"><span class="tt-card-icon">🛁</span><h3 class="tt-card-title">온천·풀 매너</h3></div>
+      <p class="tt-card-body">
+        <strong>온천 (온센)</strong>:
+        <ul>
+          <li>옷 다 벗고 들어가 (수영복 X)</li>
+          <li>들어가기 전에 몸 씻고</li>
+          <li>수건은 머리 위 또는 욕탕 밖에 (물에 담그면 X)</li>
+          <li>떠들지 않기, 사진 X</li>
+        </ul>
+        <strong>호텔 풀</strong>: 수영복 OK, 자유롭게.
+      </p>
+    </div>
+
+    <div class="tt-card">
+      <div class="tt-card-head"><span class="tt-card-icon">🎌</span><h3 class="tt-card-title">일본 매너 5</h3></div>
+      <p class="tt-card-body">
+        <ul>
+          <li><strong>신발 벗는 곳</strong> — 식당·신사·집. 양말 깨끗하게!</li>
+          <li><strong>줄 잘 서기</strong> — 새치기 X. 일본인 줄 사랑</li>
+          <li><strong>음식 흘리지 않기</strong> — 라멘은 후루룩 OK</li>
+          <li><strong>카페·식당 조용</strong> — 한국말 크게 X</li>
+          <li><strong>사진 찍기 전 "스미마셍"</strong> — 가게·점원 사진 찍기 전 한 마디</li>
+        </ul>
+      </p>
+    </div>
+
+  </div><!-- /panel adventure -->
+
+  <!-- 탭 2: OPERATIONS — 여행 운영 가이드 (부모, 10 카테고리) -->
+  <div class="tip-panel" data-panel="operations" role="tabpanel">
+
+    <div class="tt-card">
+      <div class="tt-card-head"><span class="tt-card-icon">🚗</span><h3 class="tt-card-title">렌터카</h3></div>
+      <p class="tt-card-body">
+        <strong>좌측통행</strong>. 한국 면허 + <strong>국제면허 (일본어 번역본)</strong> 필수. 한국 면허만으론 픽업 안 됨.<br/>
+        주유: 셀프 주유소 가능. <strong>"만탕 (満タン)"</strong> = 가득. 직원 주유는 살짝 비쌈.<br/>
+        <strong>매피온 (Mapion) 코드</strong> 가 전화번호보다 정확 — 호텔/식당 미리 메모.
+      </p>
+    </div>
+
+    <div class="tt-card">
+      <div class="tt-card-head"><span class="tt-card-icon">💳</span><h3 class="tt-card-title">결제</h3></div>
+      <p class="tt-card-body">
+        북부·소도시는 <strong>현금 위주</strong>. 도시 체인은 카드 OK.<br/>
+        <strong>JCB</strong> 가 Visa·Master 보다 일본 매장에서 잘 받음.<br/>
+        <strong>PayPay·LINE Pay</strong> 일부 매장 (외국인 발급 가능).
+      </p>
+    </div>
+
+    <div class="tt-card">
+      <div class="tt-card-head"><span class="tt-card-icon">📶</span><h3 class="tt-card-title">통신</h3></div>
+      <p class="tt-card-body">
+        <strong>eSIM 추천</strong> (트래블심·Ubigi 등). 공항 도착 즉시 활성화.<br/>
+        호텔 와이파이 강도 변동 — 백업 통신 수단 필수.
+      </p>
+    </div>
+
+    <div class="tt-card">
+      <div class="tt-card-head"><span class="tt-card-icon">🌧</span><h3 class="tt-card-title">5월 날씨</h3></div>
+      <p class="tt-card-body">
+        평균 <strong>22~27°C</strong>. <strong>우기 진입</strong> — 작은 우산 필수.<br/>
+        자외선 강함 — <strong>SPF 50+</strong> 선크림. 모자.<br/>
+        밤은 19~22°C — 얇은 긴팔.
+      </p>
+    </div>
+
+    <div class="tt-card">
+      <div class="tt-card-head"><span class="tt-card-icon">🍱</span><h3 class="tt-card-title">식사</h3></div>
+      <p class="tt-card-body">
+        영업시간 <strong>엄격</strong> — 라스트오더 1 시간 전.<br/>
+        <strong>점심 휴게 (14~17 시) 휴무 가게 많음</strong>.<br/>
+        인기 식당 (기시모토 등) <strong>예약 필수</strong>.
+      </p>
+    </div>
+
+    <div class="tt-card">
+      <div class="tt-card-head"><span class="tt-card-icon">🏖</span><h3 class="tt-card-title">비치/풀</h3></div>
+      <p class="tt-card-body">
+        5월 수온 <strong>23~24°C</strong> — 수영 가능 (살짝 차가움).<br/>
+        호텔 풀 OK. 자외선 + <strong>래시가드</strong> 강추.
+      </p>
+    </div>
+
+    <div class="tt-card">
+      <div class="tt-card-head"><span class="tt-card-icon">🎌</span><h3 class="tt-card-title">매너</h3></div>
+      <p class="tt-card-body">
+        신발 벗는 식당·신사·온천. <strong>팁 X</strong> (오히려 무례).<br/>
+        대중교통 조용. 줄 잘 서기.
+      </p>
+    </div>
+
+    <div class="tt-card tt-emergency">
+      <div class="tt-card-head"><span class="tt-card-icon">🚨</span><h3 class="tt-card-title">비상 연락처</h3></div>
+      <p class="tt-card-body">
+        <ul>
+          <li><strong>119</strong> — 구급 / 소방</li>
+          <li><strong>110</strong> — 경찰</li>
+          <li><strong>주오키나와 한국 영사관</strong> — <a href="tel:0988660011" style="color:var(--blue);">098-866-0011</a></li>
+          <li><strong>외교부 영사 콜센터</strong> — +82-2-3210-0404 (24h)</li>
+        </ul>
+      </p>
+    </div>
+
+    <div class="tt-card">
+      <div class="tt-card-head"><span class="tt-card-icon">💱</span><h3 class="tt-card-title">환전 / ATM</h3></div>
+      <p class="tt-card-body">
+        공항보다 시내 환전소 유리.<br/>
+        <strong>트래블월렛 카드</strong> — 수수료 0, ATM 으로 엔 바로 인출.<br/>
+        <strong>세븐은행 ATM</strong> (편의점 안) — 외국 카드 OK.
+      </p>
+    </div>
+
+    <div class="tt-card">
+      <div class="tt-card-head"><span class="tt-card-icon">🔌</span><h3 class="tt-card-title">전기 / 콘센트</h3></div>
+      <p class="tt-card-body">
+        일본 <strong>110V, A타입</strong> 콘센트 (한국 220V C타입과 다름).<br/>
+        한국 전자기기 → <strong>A타입 어댑터</strong> 필수. 다이소·돈키호테에서 구입 가능.
+      </p>
+    </div>
+
+  </div><!-- /panel operations -->
+
+  <!-- 탭 3: LANGUAGE — 생활 일본어 (조카·부모 공통, 9 카테고리) -->
+  <div class="tip-panel" data-panel="language" role="tabpanel">
+
+    <div class="tt-lang-section">
+      <h4>① 인사 / 감사</h4>
+      <ul class="tt-lang-list">
+        <li class="tt-lang-item"><span class="tt-lang-jp">こんにちは</span><span class="tt-lang-ko">코니치와</span><span class="tt-lang-meaning">안녕하세요</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">ありがとうございます</span><span class="tt-lang-ko">아리가또 고자이마스</span><span class="tt-lang-meaning">감사합니다</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">すみません</span><span class="tt-lang-ko">스미마셍</span><span class="tt-lang-meaning">죄송합니다 / 저기요</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">はい / いいえ</span><span class="tt-lang-ko">하이 / 이이에</span><span class="tt-lang-meaning">네 / 아니요</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">さようなら</span><span class="tt-lang-ko">사요나라</span><span class="tt-lang-meaning">안녕히 가세요</span></li>
+      </ul>
+    </div>
+
+    <div class="tt-lang-section">
+      <h4>② 식당</h4>
+      <ul class="tt-lang-list">
+        <li class="tt-lang-item"><span class="tt-lang-jp">メニューをください</span><span class="tt-lang-ko">메뉴오 쿠다사이</span><span class="tt-lang-meaning">메뉴 주세요</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">これをください</span><span class="tt-lang-ko">코레오 쿠다사이</span><span class="tt-lang-meaning">이거 주세요</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">お会計お願いします</span><span class="tt-lang-ko">오카이케이 오네가이시마스</span><span class="tt-lang-meaning">계산해 주세요</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">おすすめは何ですか</span><span class="tt-lang-ko">오스스메와 난데스카</span><span class="tt-lang-meaning">추천 메뉴는?</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">一人です / 二人です</span><span class="tt-lang-ko">히토리데스 / 후타리데스</span><span class="tt-lang-meaning">한 명 / 두 명입니다</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">英語のメニューはありますか</span><span class="tt-lang-ko">에이고노 메뉴와 아리마스카</span><span class="tt-lang-meaning">영어 메뉴 있어요?</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">いただきます</span><span class="tt-lang-ko">이타다키마스</span><span class="tt-lang-meaning">잘 먹겠습니다</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">ごちそうさまでした</span><span class="tt-lang-ko">고치소사마데시타</span><span class="tt-lang-meaning">잘 먹었습니다</span></li>
+      </ul>
+    </div>
+
+    <div class="tt-lang-section">
+      <h4>③ 쇼핑</h4>
+      <ul class="tt-lang-list">
+        <li class="tt-lang-item"><span class="tt-lang-jp">いくらですか</span><span class="tt-lang-ko">이쿠라데스카</span><span class="tt-lang-meaning">얼마예요?</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">試着してもいいですか</span><span class="tt-lang-ko">시쟈쿠시테모 이이데스카</span><span class="tt-lang-meaning">입어봐도 돼요?</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">袋ください</span><span class="tt-lang-ko">후쿠로 쿠다사이</span><span class="tt-lang-meaning">봉투 주세요</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">他の色はありますか</span><span class="tt-lang-ko">호카노 이로와 아리마스카</span><span class="tt-lang-meaning">다른 색 있어요?</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">免税できますか</span><span class="tt-lang-ko">멘제이 데키마스카</span><span class="tt-lang-meaning">면세 되나요?</span></li>
+      </ul>
+    </div>
+
+    <div class="tt-lang-section">
+      <h4>④ 교통 / 길</h4>
+      <ul class="tt-lang-list">
+        <li class="tt-lang-item"><span class="tt-lang-jp">トイレはどこですか</span><span class="tt-lang-ko">토이레와 도코데스카</span><span class="tt-lang-meaning">화장실 어디예요?</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">駅までどれくらいですか</span><span class="tt-lang-ko">에키마데 도레쿠라이 데스카</span><span class="tt-lang-meaning">역까지 얼마나 걸려요?</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">タクシーを呼んでください</span><span class="tt-lang-ko">타쿠시오 욘데 쿠다사이</span><span class="tt-lang-meaning">택시 불러주세요</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">道に迷いました</span><span class="tt-lang-ko">미치니 마요이마시타</span><span class="tt-lang-meaning">길을 잃었어요</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">ここはどこですか</span><span class="tt-lang-ko">코코와 도코데스카</span><span class="tt-lang-meaning">여기 어디예요?</span></li>
+      </ul>
+    </div>
+
+    <div class="tt-lang-section">
+      <h4>⑤ 비상 / 도움</h4>
+      <ul class="tt-lang-list">
+        <li class="tt-lang-item"><span class="tt-lang-jp">助けてください</span><span class="tt-lang-ko">타스케테 쿠다사이</span><span class="tt-lang-meaning">도와주세요</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">韓国語できますか</span><span class="tt-lang-ko">칸코쿠고 데키마스카</span><span class="tt-lang-meaning">한국어 할 줄 아세요?</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">英語できますか</span><span class="tt-lang-ko">에이고 데키마스카</span><span class="tt-lang-meaning">영어 할 줄 아세요?</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">わかりません</span><span class="tt-lang-ko">와카리마셍</span><span class="tt-lang-meaning">잘 모르겠어요</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">もう一度お願いします</span><span class="tt-lang-ko">모이치도 오네가이시마스</span><span class="tt-lang-meaning">다시 한 번 부탁해요</span></li>
+      </ul>
+    </div>
+
+    <div class="tt-lang-section">
+      <h4>⑥ 숫자 / 시간</h4>
+      <ul class="tt-lang-list">
+        <li class="tt-lang-item"><span class="tt-lang-jp">1·2·3·4·5</span><span class="tt-lang-ko">이치 · 니 · 산 · 욘(시) · 고</span><span class="tt-lang-meaning">1~5</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">6·7·8·9·10</span><span class="tt-lang-ko">로쿠 · 나나(시치) · 하치 · 큐 · 쥬</span><span class="tt-lang-meaning">6~10</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">百 / 千 / 万</span><span class="tt-lang-ko">햐쿠 / 센 / 만</span><span class="tt-lang-meaning">100 / 1,000 / 10,000</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">今日 / 明日 / 昨日</span><span class="tt-lang-ko">쿄오 / 아시타 / 키노오</span><span class="tt-lang-meaning">오늘 / 내일 / 어제</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">今 / 後で</span><span class="tt-lang-ko">이마 / 아토데</span><span class="tt-lang-meaning">지금 / 나중에</span></li>
+      </ul>
+    </div>
+
+    <div class="tt-lang-section">
+      <h4>⑦ 명소·체험 (수족관·관광지)</h4>
+      <ul class="tt-lang-list">
+        <li class="tt-lang-item"><span class="tt-lang-jp">写真撮ってください</span><span class="tt-lang-ko">샤신 톳떼 쿠다사이</span><span class="tt-lang-meaning">사진 찍어주세요</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">一緒に写真撮ってもいいですか</span><span class="tt-lang-ko">잇쇼니 샤신 톳떼모 이이데스카</span><span class="tt-lang-meaning">같이 사진 찍을까요?</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">すごい! / かっこいい!</span><span class="tt-lang-ko">스고이 / 카콧이이</span><span class="tt-lang-meaning">진짜 멋지다!</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">これは何ですか</span><span class="tt-lang-ko">코레와 난데스카</span><span class="tt-lang-meaning">이거 뭐예요?</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">触ってもいいですか</span><span class="tt-lang-ko">사왓떼모 이이데스카</span><span class="tt-lang-meaning">만져도 돼요?</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">餌をあげてもいいですか</span><span class="tt-lang-ko">에사오 아게테모 이이데스카</span><span class="tt-lang-meaning">먹이 줘도 돼요?</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">入場料はいくらですか</span><span class="tt-lang-ko">뉴조료와 이쿠라데스카</span><span class="tt-lang-meaning">입장료 얼마예요?</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">出口はどこですか</span><span class="tt-lang-ko">데구치와 도코데스카</span><span class="tt-lang-meaning">출구 어디예요?</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">何時までですか</span><span class="tt-lang-ko">난지마데 데스카</span><span class="tt-lang-meaning">몇 시까지예요?</span></li>
+      </ul>
+    </div>
+
+    <div class="tt-lang-section">
+      <h4>⑧ 편의점·자판기</h4>
+      <ul class="tt-lang-list">
+        <li class="tt-lang-item"><span class="tt-lang-jp">レシートください / いりません</span><span class="tt-lang-ko">레시이토 쿠다사이 / 이리마셍</span><span class="tt-lang-meaning">영수증 주세요 / 필요없어요</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">袋小さいのください</span><span class="tt-lang-ko">후쿠로 치이사이노 쿠다사이</span><span class="tt-lang-meaning">봉투 작은거 주세요</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">温かい / 冷たい</span><span class="tt-lang-ko">아따따카이 / 츠메따이</span><span class="tt-lang-meaning">따뜻한 / 차가운</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">これはどう食べますか</span><span class="tt-lang-ko">코레와 도오 타베마스카</span><span class="tt-lang-meaning">이건 어떻게 먹어요?</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">温めますか</span><span class="tt-lang-ko">아따따메마스카</span><span class="tt-lang-meaning">데워드릴까요? (점원이 묻는 말 — 답: はい / いいえ)</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">ストロー / お箸</span><span class="tt-lang-ko">스토로 / 오하시</span><span class="tt-lang-meaning">빨대 / 젓가락</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">お手洗いを借りてもいいですか</span><span class="tt-lang-ko">오테아라이오 카리테모 이이데스카</span><span class="tt-lang-meaning">화장실 써도 돼요?</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">トイレありますか</span><span class="tt-lang-ko">토이레 아리마스카</span><span class="tt-lang-meaning">화장실 있어요?</span></li>
+      </ul>
+    </div>
+
+    <div class="tt-lang-section">
+      <h4>⑨ 친구·호기심</h4>
+      <ul class="tt-lang-list">
+        <li class="tt-lang-item"><span class="tt-lang-jp">やあ! / こんにちは!</span><span class="tt-lang-ko">야아 / 코니치와</span><span class="tt-lang-meaning">안녕! (캐주얼)</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">どこから来ましたか</span><span class="tt-lang-ko">도코카라 키마시타카</span><span class="tt-lang-meaning">어디서 왔어요?</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">韓国から来ました</span><span class="tt-lang-ko">칸코쿠카라 키마시타</span><span class="tt-lang-meaning">한국에서 왔어요</span></li>
+        <li class="tt-lang-item"><span class="tt-lang-jp">日本大好き</span><span class="tt-lang-ko">니혼 다이스키</span><span class="tt-lang-meaning">일본 좋아요</span></li>
+      </ul>
+    </div>
+
+  </div><!-- /panel language -->
+
+</section>
+</div><!-- /page tip -->
+
 <div class="page" data-page="back">
 <!-- ========== BACK COVER ========== -->
 <section class="back">
@@ -10276,6 +10791,7 @@
   const PAGES = [
     { id: 'cover', label: '표지', short: '표지' },
     { id: 'prep',  label: '여행 전', short: '여행 전' },
+    { id: 'tip',   label: 'Trip Tip', short: 'Tip' },
     { id: 'd1',    label: 'Day 1 · Arrival', short: 'Day 1' },
     { id: 'd2',    label: 'Day 2 · Whale Shark', short: 'Day 2' },
     { id: 'd3',    label: 'Day 3 · Chatan', short: 'Day 3' },
@@ -12058,6 +12574,28 @@
   }
 
   wireMissionCards();
+
+  // ==========================================
+  //  Trip Tip 탭 토글 (ADVENTURE / OPERATIONS / LANGUAGE)
+  //  - 클릭한 탭 .active, 나머지 .active 제거
+  //  - 같은 data-tab 의 panel 도 active 토글
+  //  - aria-selected 동기 (a11y)
+  // ==========================================
+  document.querySelectorAll('.tip-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+      if (!target) return;
+      // 모든 탭 버튼 active 해제 + aria
+      document.querySelectorAll('.tip-tab-btn').forEach(b => {
+        b.classList.toggle('active', b === btn);
+        b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+      });
+      // 패널 토글
+      document.querySelectorAll('.tip-panel').forEach(p => {
+        p.classList.toggle('active', p.dataset.panel === target);
+      });
+    });
+  });
 
   // ==========================================
   //  옵션 카드(.opt[data-mission]) 미션 통합 (A안)
