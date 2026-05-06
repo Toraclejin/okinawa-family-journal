@@ -13425,10 +13425,12 @@
     }
     if (typeof updateMissionCounter === 'function') updateMissionCounter();
     if (typeof refreshStampGrid === 'function') refreshStampGrid();
-    // 일반 미션 완료 풀스크린 — TRIP COMPLETE 분기 X (날씨 백업이라 차분하게)
-    if (typeof fireMissionComplete === 'function') {
+    // celebrateMission 호출 — 메인 10/10 마지막 미션이면 fireTripComplete 자동 분기
+    // (이전엔 fireMissionComplete 만 호출해 'TRIP COMPLETE' 풀스크린 누락 회귀)
+    // celebrateMission(title, missionId) 가 내부에서 fireMissionComplete + allDone 검사
+    if (typeof celebrateMission === 'function') {
       const label = opt.dataset.missionLabel || opt.querySelector('.opt-title')?.textContent?.trim() || '';
-      fireMissionComplete(`🌧 ${label}`);
+      celebrateMission(`🌧 ${label}`, missionId);
     }
     if (wbBtn.blur) wbBtn.blur();
   });
