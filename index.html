@@ -1332,6 +1332,66 @@
     border-color: rgba(167, 230, 192, 0.4);
   }
 
+  /* FOOD GUIDE 카탈로그 식당별 가격 인라인 칩 */
+  .fg-price {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 1px 8px;
+    background: #fff8e1;
+    color: #6d5500;
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 999px;
+    border: 1px solid var(--amber);
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .fg-price::before {
+    content: '💴 ';
+    font-size: 10px;
+  }
+
+  /* 1인당 대략 가격대 — 식당 옵션 카드에만 부여 (앰버 알약, 비올때 태그와 시각 분리) */
+  .opt-price {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin: 4px 0 8px;
+    padding: 4px 11px;
+    background: #fff8e1;
+    color: #6d5500;
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    border-radius: 999px;
+    border: 1px solid var(--amber);
+    white-space: nowrap;
+  }
+  .opt-price::before {
+    content: '💴';
+    font-size: 13px;
+    line-height: 1;
+  }
+  .opt.highlight .opt-price {
+    background: rgba(255, 248, 225, 0.18);
+    color: #ffeba3;
+    border-color: rgba(255, 235, 163, 0.4);
+  }
+  /* 비올때 태그 + 가격 chip 같은 줄 — 가독성 위해 줄바꿈 허용 */
+  .opt-tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 6px 0 8px;
+    align-items: center;
+  }
+  .opt-tag-row .opt-rain-tag,
+  .opt-tag-row .opt-price {
+    margin: 0;
+  }
+
   .opt-features {
     list-style: none;
     margin-bottom: 20px;
@@ -6357,6 +6417,20 @@
       transform: translateY(-1px);
     }
   }
+  /* Hidden Mission 카드 안 — 그린 톤 (Hidden 시각 통일) */
+  .mission-card.hidden-mission .mission-link-btn {
+    background: rgba(22, 160, 133, 0.08);
+    border-color: #16a085;
+    color: #0e6b56;
+    margin-top: 4px;
+  }
+  @media (hover: hover) {
+    .mission-card.hidden-mission .mission-link-btn:hover {
+      background: #16a085;
+      color: #fff;
+      border-color: #16a085;
+    }
+  }
 
   /* ============================================================
      OPERATIONS 탭 sub-nav — 12 카드 빠르게 점프하는 pill 메뉴
@@ -7091,6 +7165,7 @@
       <div class="opt-title">Blue Seal <em>Ice Cream</em></div>
       <div class="opt-place">Blue Seal 마키미나토 본점 · 우라소에</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥600/인</div>
       <div class="opt-body">
         오키나와 대표 아이스크림. 1948년 미군이 오키나와 주둔병 사기 올리려고 만든 데서 시작, 지금은 국민 디저트. **우라소에시 마키미나토 5-5-6**이 본점 (Route 58 위, 거대한 콘 모양 네온간판). **영업 10:00~22:00** (LO 21:30). 공항에서 북부 가는 길에 잠깐 들러 아이스크림 한 컵. 길게 머물지 말고 30~40분 안에 출발해야 모토부 체크인 맞춤.
       </div>
@@ -7355,6 +7430,7 @@
       <div class="opt-title">Kaihoumaru <em>해산물 이자카야</em></div>
       <div class="opt-place">海人料理 海邦丸 · ハナサキマルシェ · 차로 8~10분</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥3,500/인</div>
       <div class="opt-body">
         ⭐ <strong>Day 1 첫날 베스트</strong>. 도착 후 가벼운 Welcome dinner. <strong>신선 해산물 이자카야</strong>, 하나사키 마르셰 안. 17:30~22:00 (디너 LO 21:00), 연중무휴. 시그니처는 <strong>우미부도 해산물 덮밥</strong> + 마구로·타이 회정식. 아이들이 좋아할 새우튀김·가라아게도 있음. 호텔 차로 8~10분, 첫날 도착 직후 부담 없이 들르기 좋은 거리.
       </div>
@@ -7377,6 +7453,7 @@
       <div class="opt-title">Sirius <em>인터내셔널 뷔페</em></div>
       <div class="opt-place">Orion Motobu Resort · Ocean Wing 1F</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥6,500/인</div>
       <div class="opt-body">
         호텔 메인 올데이 다이닝. 인터내셔널 뷔페로 오키나와 로컬 + 양식 + 중식 다양. **디너 17:00~21:00 (LO 20:30)**. 성인 ¥6,500 / 초등생 ¥3,250 / 유아 ¥1,600. 이에섬 바다 뷰 테라스석 인기. ⚠️ **2026년 1/5~4/30 리뉴얼 공사 예정**이라 5/10 오픈 직후일 수 있음 — 가격·시간·메뉴 **현장 재확인 권장**.
       </div>
@@ -7399,6 +7476,7 @@
       <span class="opt-badge coral"><span class="dot"></span>Option 3 · 테라스 BBQ</span>
       <div class="opt-title">Capella <em>BBQ</em></div>
       <div class="opt-place">Orion Motobu Resort · Ocean Wing 1F 테라스</div>
+      <div class="opt-price">~¥6,000/인부터</div>
       <div class="opt-body">
         **시즌 BBQ 레스토랑**. 17:00~22:00 (마지막 입장 20:30, LO 21:30). 약 ¥6,000/인부터. 아구돼지, 이시가키규, 모토부 해산물 등 오키나와 식재료 직화 구이. **테라스 석 = 일몰 직후 하늘 아래에서 먹는 그림**. 예약 권장.
       </div>
@@ -7421,6 +7499,7 @@
       <div class="opt-title">Kari <em>우치나 이자카야</em></div>
       <div class="opt-place">Orion Motobu Resort · Ocean Wing 1F</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥3,000/인</div>
       <div class="opt-body">
         호텔 내 **오키나와 이자카야**. 17:00~23:00 (90분제, LO 22:00). 소접시 ¥800~1,000. 챔푸루, 라후테, 아구돼지 꼬치, 우미부도, 오리온 생맥주. **호텔 안에서 가장 늦게까지 열려있음** — 저녁 늦게 체크인·도착 지연 시 안전망.
       </div>
@@ -7443,6 +7522,7 @@
       <div class="opt-title">야키니쿠 <em>모토부 목장</em></div>
       <div class="opt-place">焼肉もとぶ牧場 もとぶ店 · 본부 오하마 881-1 · 차로 12~15분</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥6,000~10,000/인</div>
       <div class="opt-body">
         북부 야키니쿠 명소. <strong>모토부규 직영</strong> — 지역 브랜드 소고기를 직접 키워 공급. 11:00~15:00 / 17:00~22:00. <strong>예약 강력 권장</strong> (전화 0980-51-6777 또는 TableCheck·구루나비 온라인). 호텔 차로 12~15분, 저녁 전용으로 외출할 가치 있음. <strong>Day 2 베스트로도 등장</strong> — 첫날·둘째날 중 골라서 한 번 가기 추천.
       </div>
@@ -7465,6 +7545,7 @@
       <div class="opt-title">Chinuman <em>오키나와 이자카야</em></div>
       <div class="opt-place">沖縄料理 ちぬまん · 美ら海水族館前店 · 차로 5분</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥2,500/인</div>
       <div class="opt-body">
         추라우미 수족관 바로 앞 오키나와 체인 이자카야. 16:00~23:00, 연중무휴. 소키소바·챔푸루·우미부도·타코라이스 등 로컬 메뉴 다양. 가격대 부담 없고 아이 메뉴 있음. 저녁 시간 늦어도 여는 집.
       </div>
@@ -7739,6 +7820,7 @@
       <div class="opt-title">세계 최대급 <em>수족관</em></div>
       <div class="opt-place">Churaumi Aquarium · Motobu · 호텔 도보 7분</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥2,000/인</div>
       <div class="opt-body">
         **호텔에서 도보 7분**. 조식 먹고 8시 반 개관 직전 도착하면 고래상어 앞 자리 독차지. 10시 이후엔 단체 관광버스가 몰려서 큰 수조 앞이 겹겹이 쌓임 — 아침 1시간이 황금시간. **운영 08:30~18:30** (입장 마감 17:30). **성인 ¥2,180 / 고교생 ¥1,440 / 초·중 ¥710 / 미취학 무료**. 2시간 30분~3시간 관람 권장. 8.8m짜리 고래상어 2마리를 세계 최초로 번식 성공시킨 곳. ⚠️ "After 4pm 할인"은 2023년 3월 종료.
       </div>
@@ -7809,6 +7891,7 @@
       <div class="opt-title">The <em>Inoh</em></div>
       <div class="opt-place">추라우미 수족관 4F · 오션 뷔페</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥3,500/인</div>
       <div class="opt-body">
         수족관 **4층 뷔페 레스토랑**. 동중국해·이에섬 파노라마 뷰가 진짜 장점. **수족관 입장권 없이도 직접 접근 가능**. 오키나와 로컬 요리 뷔페(챔푸루, 오키나와 소바, 아구돼지, 해산물) + 양식, 점심 약 2,500엔/인. **주의 — 맛 리뷰는 좋지 않음**: "현지 로컬 분식 수준", "가격 대비 실망" 평이 많음. **뷰만 보러 가는 용도**로 추천, 맛 기대하고 가면 후회할 수 있음. 허기 적당한 상태에서 바다 보면서 가볍게 먹는 용도면 OK.
       </div>
@@ -7831,6 +7914,7 @@
       <div class="opt-title">Kishimoto <em>Shokudo</em></div>
       <div class="opt-place">きしもと食堂 八重岳店 · 본부 이노하 350-1 · 차로 8분</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥1,200/인</div>
       <div class="opt-body">
         **1905년 창업** 오키나와 소바의 전설. 가다랑어 육수에 직접 뽑은 면발, 부드럽게 조린 돼지고기 고명. 메뉴는 **오키나와 소바 (대·소)** 단 하나. 관광객 + 현지인 모두 줄 서는 곳. 본점(渡久地 Toguchi 항구)은 좁고 대기 김, **八重岳 야에다케 분점(본부 이노하 350-1)은 주차 넓고 여유**. 11:00~17:30, 수요일 정기휴무(D2는 월요일 OK). 재료 소진 시 조기 마감이라 점심 전 도착 필수.
       </div>
@@ -7852,6 +7936,7 @@
       <div class="opt-title">Miyazato <em>Soba</em></div>
       <div class="opt-place">미야자토 소바 · 나고시 · 차로 15분</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥1,200/인</div>
       <div class="opt-body">
         북부 오키나와에서 가장 인기 있는 소바집 중 하나. 레트로 다다미 방 + 테이블석, 단체·가족 모이기 좋음. 삼중 갈비(소키) 올린 **소키 소바**가 간판 메뉴. 육수 진하고 면 두꺼움. 점심시간(12~13시) 웨이팅 있음.
       </div>
@@ -7873,6 +7958,7 @@
       <span class="opt-badge amber"><span class="dot"></span>Option 5 · 비세 오션뷰</span>
       <div class="opt-title">Cafe Cahaya <em>Bulan</em></div>
       <div class="opt-place">카페 카하야 불란 · 본부 비세 · 차로 10분</div>
+      <div class="opt-price">~¥1,800/인</div>
       <div class="opt-body">
         **비세(備瀬) 해변가** 숨은 카페. 이에섬과 동중국해가 정면에 펼쳐짐 — 오키나와 북부에서 **일몰 1순위** 카페. 비세 후쿠기 방풍림 가로수 길 따라가야 나옴 (좁은 길). 아시아풍 메뉴(베트남식 아시안 소바, 계절 식재료 활용). 점심·가벼운 디저트 둘 다 OK. 월·화 휴무일 가능성 있음 — 방문 전 확인.
       </div>
@@ -7895,6 +7981,7 @@
       <div class="opt-title">Yachimun Kissa <em>Shisaen</em></div>
       <div class="opt-place">야치문 킷사 시사엔 · 본부 이즈미 1439 · 차로 12분</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥1,500/인</div>
       <div class="opt-body">
         오키나와 전통 도자기(**야치문**)로 꾸민 **붉은 기와 찻집**. 할머니 집 같은 따뜻한 분위기, 도자기 장인의 작업실을 개조. 흑당 젠자이, 히라야치(오키나와식 오코노미야키), 친빈(오키나와 크레페) — 현지 간식 메뉴. 영업 11:00~19:00, **월·화 휴무**. 방문 전 꼭 확인.
       </div>
@@ -7917,6 +8004,7 @@
       <div class="opt-title">Captain <em>Kangaroo</em></div>
       <div class="opt-place">キャプテンカンガルー · 본부 사키모토부 930-1 · 호텔 차로 5분</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥2,000/인</div>
       <div class="opt-body">
         북부 오키나와 대표 수제 햄버거. 통칭 **"캡칸 (Cap-Kan)"**. 도로 건너 바로 바다, 유리창 너머 오션뷰. 명물은 **Sparky Burger** — 두툼한 패티 + 바삭한 양파튀김. 11:00~17:00 (LO 16:30) 매일. 인기 시간대 줄 1시간 가능 — 점심 일찍 가는 것 강추.
       </div>
@@ -8074,6 +8162,7 @@
       <div class="opt-title">야키니쿠 <em>모토부 목장</em></div>
       <div class="opt-place">焼肉もとぶ牧場 もとぶ店 · 본부 오하마 881-1 · 차로 12~15분</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥6,000~10,000/인</div>
       <div class="opt-body">
         ⭐ <strong>북부 야키니쿠 베스트</strong>. <strong>모토부규 직영</strong> — 지역 브랜드 소고기를 직접 키워 공급. 11:00~15:00 / 17:00~22:00 연중무휴. <strong>예약 강력 권장</strong> (전화 0980-51-6777). 차로 12~15분. D1에 이미 다녀왔으면 다른 옵션, 안 갔으면 여기가 Day 2 하이라이트.
       </div>
@@ -8095,6 +8184,7 @@
       <span class="opt-badge coral"><span class="dot"></span>Option 2 · 호텔 BBQ</span>
       <div class="opt-title">Capella <em>BBQ</em></div>
       <div class="opt-place">Orion Motobu Resort · Ocean Wing 1F 테라스</div>
+      <div class="opt-price">~¥6,000/인부터</div>
       <div class="opt-body">
         시즌 BBQ 레스토랑, 17:00~22:00 (마지막 입장 20:30). ¥6,000~/인. 오키나와 식재료 직화 구이. **테라스 석에서 하늘 아래 저녁** — 일몰 직후 예약 추천. 외출 안 하는 편한 옵션.
       </div>
@@ -8117,6 +8207,7 @@
       <div class="opt-title">Kaihoumaru <em>해산물</em></div>
       <div class="opt-place">海人料理 海邦丸 · ハナサキマルシェ · 차로 8~10분</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥3,500/인</div>
       <div class="opt-body">
         신선 해산물 이자카야. 17:30~22:00 (LO 21:00) 연중무휴. **우미부도 해산물 덮밥** + 마구로·타이 회정식. 아이 메뉴도 있음. 본부 지역에서 저녁까지 여는 해산물집.
       </div>
@@ -8139,6 +8230,7 @@
       <div class="opt-title">Sirius <em>인터내셔널 뷔페</em></div>
       <div class="opt-place">Orion Motobu Resort · Ocean Wing 1F</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥6,500/인</div>
       <div class="opt-body">
         호텔 올데이 다이닝 뷔페. **17:00~21:00 (LO 20:30)**. 성인 ¥6,500. 어제 안 가봤으면 오늘, 가봤으면 다른 옵션. 어린이 가격 별도, 유아는 ¥1,600. ⚠️ 2026년 1/5~4/30 리뉴얼 공사 기간이라 5월 재개 직후 가격·메뉴 변동 가능 — 현장 재확인 권장.
       </div>
@@ -8161,6 +8253,7 @@
       <div class="opt-title">Kari <em>우치나 이자카야</em></div>
       <div class="opt-place">Orion Motobu Resort · Ocean Wing 1F</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥3,000/인</div>
       <div class="opt-body">
         호텔 내 오키나와 이자카야, 17:00~23:00 (90분제). 수족관 오래 머물다 늦어지면 안전망. 챔푸루·라후테·우미부도·오리온 생맥주.
       </div>
@@ -8183,6 +8276,7 @@
       <div class="opt-title">食事処 <em>千 (Sen)</em></div>
       <div class="opt-place">食事処千 · 본부 410 · 호텔 차로 5~10분</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥1,800/인</div>
       <div class="opt-body">
         북부 모토부의 현지인 단골 가정식 식당. 작고 따뜻한 분위기, 메뉴는 일본 가정식 + 오키나와 정식. 영업시간·정기휴무는 출발 전 D-7 재확인 권장 (소규모 식당이라 변동 가능). 모토부 호텔 가까이 있어 외출 부담 적음.
       </div>
@@ -8525,6 +8619,7 @@
       <div class="opt-title">조식 뷔페 후 <em>짐 정리</em></div>
       <div class="opt-place">Sirius · 조식 06:30~10:00</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥3,800/인</div>
       <div class="opt-body">
         Sirius 조식 뷔페 (06:30~10:00) 천천히 먹고 객실 복귀, 짐 여유 있게 정리. 피곤한 날은 이 옵션이 Day 3 시작. 11:00 체크아웃 직전까지.
       </div>
@@ -8612,6 +8707,7 @@
       <div class="opt-title">Orion <em>Happy Park</em></div>
       <div class="opt-place">オリオンハッピーパーク · 나고 · 차로 25~30분</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥1,000/인</div>
       <div class="opt-body">
         **오리온 맥주 공장 견학**. 9:00~18:00, 투어 9:20~16:40 접수 (60분: 공장 35분 + 시음 25분). **무료**, 예약 권장 (050-3626-2161). 모토부 → 나고 → 차탄 루트 자연스럽게 이어짐. 드라이버·미성년자는 논알코올 시음. 체크아웃 후 12시 투어, 13시 출발, 14시 30분 차탄 체크인.
       </div>
@@ -8673,6 +8769,7 @@
       <span class="opt-badge"><span class="dot"></span>Option 1</span>
       <div class="opt-title">Transit <em>Cafe</em></div>
       <div class="opt-place">Sunabe 해안 · 호텔 차로 5~10분</div>
+      <div class="opt-price">~¥2,500/인</div>
       <div class="opt-body">
         차탄 스나베(砂辺) 해변 방파제 위 2층 카페. **아메리칸 빌리지 아님** — 남쪽 5분 거리. 동중국해 정면 테라스가 트레이드마크, 일몰 명소. 점심·저녁 메뉴 다양, 홈메이드 케이크·스무디·칵테일. 예약 강력 추천 (피크 시 대기 김).
       </div>
@@ -8694,6 +8791,7 @@
       <span class="opt-badge coral"><span class="dot"></span>Option 2</span>
       <div class="opt-title">Zhyvago <em>Coffee</em></div>
       <div class="opt-place">Distortion Seaside 1F · 미하마 9-46 · 호텔 도보 3분</div>
+      <div class="opt-price">~¥1,200/인</div>
       <div class="opt-body">
         아메리칸 빌리지 해변 보드워크 위 West Coast 스타일 로스터리 카페. 직접 로스팅한 원두, **콜드브루·티라미수 에스프레소 셰이크**가 시그니처. 인더스트리얼 무드의 테라스에서 해변 뷰. 호텔에서 도보 3분. 보드워크 끝자락(Depot Island 뒤)에 작은 2호점도 있음.
       </div>
@@ -8716,6 +8814,7 @@
       <div class="opt-title">돈카츠타로 <em>차탄점</em></div>
       <div class="opt-place">とんかつ太郎 北谷店 · 美浜 2-1-12 · 호텔 차로 3분</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥1,800/인</div>
       <div class="opt-body">
         오키나와 산 최상급 돼지고기 돈카츠 전문점. 매일 11:30~22:00 (LO 21:30) 무휴. 명물은 **25cm 점보 새우 정식** + 두툼 돈카츠. **밥·미소시루·양배추·오신코 무료 리필**. 국도 58호선 옆, 차탄 미하마 도착 직후 점심·저녁 모두 OK. 주차장 있음.
       </div>
@@ -8738,6 +8837,7 @@
       <div class="opt-title">Seaside Cafe <em>Hanon</em></div>
       <div class="opt-place">Hanon · Oak Fashion Bldg 2F · 美浜 9-39 · Depot Island</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥2,000/인</div>
       <div class="opt-body">
         American Village 안 **오키나와 No.1 수플레 팬케이크** 카페. 동중국해 오션뷰 테라스. 평일 11:00~19:00 (LO 18:00) / 주말·공휴일 09:00~20:00. **월요일 정기휴무** (월=공휴일이면 화요일 휴무). D3 (5/12 화) 영업 가능성 높음. Mihama 공영주차장 이용.
       </div>
@@ -8903,6 +9003,7 @@
       <div class="opt-title">Kurasushi <em>Rycom</em></div>
       <div class="opt-place">Kurasushi · Aeon Mall Rycom 2F · Village A동</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥1,800/인</div>
       <div class="opt-body">
         일본식 풀스택 자동화 초밥 체인. 기본 접시 **한 접시 117엔**. 터치패널로 주문하면 신칸센 모양 레일을 타고 초밥이 자리까지 배달. 빈 접시를 테이블 투입구에 넣으면 **5개마다 뽑기 게임** (빗쿠라폰/가챠폰) — 이겨야 캡슐 장난감 나옴. 대략 5번 중 1번 꼴로 당첨. 아이들이 가장 좋아하는 구간.
       </div>
@@ -8927,6 +9028,7 @@
       <div class="opt-title">Sushiro <em>스시로</em></div>
       <div class="opt-place">차탄점 · 미하마 3-22-5 · 호텔 차로 5분</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥1,800/인</div>
       <div class="opt-body">
         Kura 대기가 너무 길면 차선책. 일본 회전초밥 매출 1위 브랜드. 기본 접시 120엔부터. **차탄점**은 호텔(미하마 9)과 같은 미하마 동네지만 3블록 건너편이라 도보 15분 / 차로 5분. 나하 국제거리 지점·Tenku 지점도 있지만 차탄점이 제일 가깝고, Rycom몰 안에는 없음. Kura와 달리 가챠 게임은 없지만 초밥 메뉴 종류가 더 많음.
       </div>
@@ -8950,6 +9052,7 @@
       <div class="opt-title">Masuo <em>Restaurant</em></div>
       <div class="opt-place">Masuo · ats chatan 1F · 美浜 9-17 · 호텔 도보 3분</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥4,000/인</div>
       <div class="opt-body">
         American Village 안 **A5 흑모와규 햄버그 전문점** (스테이크 X, 햄버그). 11:30~22:00 매일 무휴. **A5 와규 햄버그 런치 ¥980** 가성비. 소고기 본연의 맛, 일본식 햄버그 (살짝 굽고 데미글라스 소스). 호텔 (Vessel) 같은 미하마 9 블록이라 도보로 OK.
       </div>
@@ -8972,6 +9075,7 @@
       <div class="opt-title">Steakhouse <em>88 차탄점</em></div>
       <div class="opt-place">ステーキハウス88 · ats chatan 2F · 美浜 9-17 · 호텔 도보 3분</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥5,500/인</div>
       <div class="opt-body">
         오키나와 대표 스테이크 체인 88. **차탄 American Village 점**은 1960년대 미국 다이너 + 카바레 분위기. 11:00~23:00 매일 무휴. **20+ 스테이크 메뉴** + 이시가키 와규 고급 라인. Masuo 와 같은 빌딩 (1F·2F 분리). 가족 식사 + 늦은 저녁 OK.
       </div>
@@ -9020,6 +9124,7 @@
       <div class="opt-title">Round1 <em>Stadium</em></div>
       <div class="opt-place">Aeon Mall Rycom 4F · 회전초밥 바로 위</div>
       <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥1,500/인</div>
       <div class="opt-body">
         Kurasushi 먹고 바로 위층으로 올라가면 되는 동선. 볼링·탁구·당구·다트·스포챠(실내 체육관, 농구·배드민턴 등) 다 있는 종합 오락실. 아이·어른 모두 액티브하게 놀 수 있고, 엄마는 간단한 볼링 참여 OK. 실내라 날씨 영향 없음. **흡연 가능 구역이 있을 수 있으니 예약 시 비흡연 구역 지정 권장**. 2~3시간 자유이용 스포챠 추천.
       </div>
@@ -9431,7 +9536,7 @@
       </p>
     </div>
 
-    <div class="tt-card shisa-card">
+    <div class="tt-card shisa-card" id="shisa-guide">
       <div class="tt-card-head"><span class="tt-card-icon">🦁</span><h3 class="tt-card-title">시사 헌터 — 류큐 사자상 가이드</h3></div>
       <p class="tt-card-body">
         오키나와 어디서나 만날 수 있는 <strong>시사 (シーサー)</strong>. 액운을 막고 행운을 부르는 류큐 왕국 부적이야.
@@ -10402,10 +10507,10 @@
       <div class="tt-card-head"><span class="tt-card-icon">🍜</span><h3 class="tt-card-title">소바·면</h3></div>
       <p class="tt-card-body">
         <ul>
-          <li><strong>삿짱소바</strong> — 오키나와 소바 명물. 면 굵음, 돼지뼈 국물</li>
-          <li><strong>마키시 소바</strong> (国際거리) — 현지인 추천 소바집</li>
-          <li><strong>스나가와 세이멘조</strong> — 면 직접 뽑는 곳, 라멘</li>
-          <li><strong>마제멘 마호로바</strong> — 비빔라멘 (마제멘) 전문</li>
+          <li><strong>삿짱소바</strong> — 오키나와 소바 명물. 면 굵음, 돼지뼈 국물 <span class="fg-price">~¥1,000/인</span></li>
+          <li><strong>마키시 소바</strong> (国際거리) — 현지인 추천 소바집 <span class="fg-price">~¥1,000/인</span></li>
+          <li><strong>스나가와 세이멘조</strong> — 면 직접 뽑는 곳, 라멘 <span class="fg-price">~¥1,000/인</span></li>
+          <li><strong>마제멘 마호로바</strong> — 비빔라멘 (마제멘) 전문 <span class="fg-price">~¥1,200/인</span></li>
         </ul>
       </p>
     </div>
@@ -10414,10 +10519,10 @@
       <div class="tt-card-head"><span class="tt-card-icon">🥩</span><h3 class="tt-card-title">스테이크 (체인)</h3></div>
       <p class="tt-card-body">
         <ul>
-          <li><strong>잭스 스테이크하우스</strong> (Jack's, 나하) — 1953년 창업, 오키나와 1세대 스테이크하우스</li>
-          <li><strong>얏빠리 스테이크 (やっぱりステーキ)</strong> — 용암구이 스테이크 체인. 차탄·나하·국제거리</li>
-          <li><strong>Steakman</strong> — 북부 스테이크 명물</li>
-          <li><strong>와후테이</strong> — 장어덮밥 전문 (현지인 추천)</li>
+          <li><strong>잭스 스테이크하우스</strong> (Jack's, 나하) — 1953년 창업, 오키나와 1세대 스테이크하우스 <span class="fg-price">~¥3,000/인</span></li>
+          <li><strong>얏빠리 스테이크 (やっぱりステーキ)</strong> — 용암구이 스테이크 체인. 차탄·나하·국제거리 <span class="fg-price">~¥2,500/인</span></li>
+          <li><strong>Steakman</strong> — 북부 스테이크 명물 <span class="fg-price">~¥4,500/인</span></li>
+          <li><strong>와후테이</strong> — 장어덮밥 전문 (현지인 추천) <span class="fg-price">~¥3,000/인</span></li>
         </ul>
       </p>
     </div>
@@ -10426,9 +10531,9 @@
       <div class="tt-card-head"><span class="tt-card-icon">🍣</span><h3 class="tt-card-title">스시·와쇼쿠</h3></div>
       <p class="tt-card-body">
         <ul>
-          <li><strong>和食・すし 新三</strong> — 정통 와쇼쿠 + 스시</li>
-          <li><strong>구루메 스시</strong> — 회전초밥 외 인기 메뉴</li>
-          <li><strong>うなぎ 浪鰻 (장어낭만)</strong> — 나하 정통 장어 맛집</li>
+          <li><strong>和食・すし 新三</strong> — 정통 와쇼쿠 + 스시 <span class="fg-price">~¥4,000/인</span></li>
+          <li><strong>구루메 스시</strong> — 회전초밥 외 인기 메뉴 <span class="fg-price">~¥2,500/인</span></li>
+          <li><strong>うなぎ 浪鰻 (장어낭만)</strong> — 나하 정통 장어 맛집 <span class="fg-price">~¥4,000/인</span></li>
         </ul>
       </p>
     </div>
@@ -10437,7 +10542,7 @@
       <div class="tt-card-head"><span class="tt-card-icon">🍗</span><h3 class="tt-card-title">야키니쿠·튀김·고기</h3></div>
       <p class="tt-card-body">
         <ul>
-          <li><strong>야끼니꾸 플심</strong> — 사용자 추천 야키니쿠</li>
+          <li><strong>야끼니꾸 플심</strong> — 사용자 추천 야키니쿠 <span class="fg-price">~¥5,000/인</span></li>
         </ul>
       </p>
     </div>
@@ -10446,8 +10551,8 @@
       <div class="tt-card-head"><span class="tt-card-icon">🐟</span><h3 class="tt-card-title">시장·해산물</h3></div>
       <p class="tt-card-body">
         <ul>
-          <li><strong>토마리 이유마치 (泊いゆまち)</strong> 수산시장 — 那覇市港町1-1-18 / 06:00~18:00 / <strong>7~9시 도착 권장</strong> (이후 물량 소진)</li>
-          <li><strong>산에이 마트</strong> — 해산물 포장 가능</li>
+          <li><strong>토마리 이유마치 (泊いゆまち)</strong> 수산시장 — 那覇市港町1-1-18 / 06:00~18:00 / <strong>7~9시 도착 권장</strong> (이후 물량 소진) <span class="fg-price">~¥2,000/인</span></li>
+          <li><strong>산에이 마트</strong> — 해산물 포장 가능 <span class="fg-price">~¥1,500/인</span></li>
         </ul>
       </p>
     </div>
@@ -10456,9 +10561,9 @@
       <div class="tt-card-head"><span class="tt-card-icon">🍔</span><h3 class="tt-card-title">버거·미국식·타코</h3></div>
       <p class="tt-card-body">
         <ul>
-          <li><strong>A&amp;W 버거</strong> — 오키나와 명물 (일본 외 매장 거의 X)</li>
-          <li><strong>MK 카페</strong> — 고등어 햄버거 (특이 메뉴)</li>
-          <li><strong>잠바루 타코</strong> — 오키나와식 타코</li>
+          <li><strong>A&amp;W 버거</strong> — 오키나와 명물 (일본 외 매장 거의 X) <span class="fg-price">~¥1,200/인</span></li>
+          <li><strong>MK 카페</strong> — 고등어 햄버거 (특이 메뉴) <span class="fg-price">~¥1,500/인</span></li>
+          <li><strong>잠바루 타코</strong> — 오키나와식 타코 <span class="fg-price">~¥1,000/인</span></li>
         </ul>
       </p>
     </div>
@@ -10467,11 +10572,11 @@
       <div class="tt-card-head"><span class="tt-card-icon">🍰</span><h3 class="tt-card-title">디저트·카페</h3></div>
       <p class="tt-card-body">
         <ul>
-          <li><strong>Sucre (シュクレ)</strong> — 크레페 맛집 (파르코시티)</li>
-          <li><strong>Ocha Yume</strong> — 쉬폰케이크 (국제거리)</li>
-          <li><strong>파인애플파크 빙수</strong> — 나고 파인애플 빙수</li>
+          <li><strong>Sucre (シュクレ)</strong> — 크레페 맛집 (파르코시티) <span class="fg-price">~¥800/인</span></li>
+          <li><strong>Ocha Yume</strong> — 쉬폰케이크 (국제거리) <span class="fg-price">~¥800/인</span></li>
+          <li><strong>파인애플파크 빙수</strong> — 나고 파인애플 빙수 <span class="fg-price">~¥600/인</span></li>
           <li><strong>아카톤보</strong> — 디저트</li>
-          <li><strong>후치 쿠모치</strong> — 떡 가게</li>
+          <li><strong>후치 쿠모치</strong> — 떡 가게 <span class="fg-price">~¥500/인</span></li>
           <li><strong>사타안다기·소금쿠키·바다포도</strong> — 오키나와 대표 간식 (이온·돈키호테 등에서 구매)</li>
         </ul>
       </p>
@@ -10481,13 +10586,13 @@
       <div class="tt-card-head"><span class="tt-card-icon">🍶</span><h3 class="tt-card-title">이자카야·술집</h3></div>
       <p class="tt-card-body">
         <ul>
-          <li><strong>이자카야 마사라</strong> — 사용자 추천 이자카야</li>
-          <li><strong>Ryuen Sakaba</strong> — 사카바 (로컬 술집)</li>
-          <li><strong>琉球ダイニング 家守家</strong> — 류큐 다이닝 (전통 음식)</li>
-          <li><strong>Okinawa Bar Haisai</strong> (국제거리) — 캐주얼 바</li>
-          <li><strong>토리키조쿠 (鳥貴族)</strong> — 일본 야키토리 체인 (전 메뉴 균일가)</li>
-          <li><strong>串焼 當り屋 (아타리야)</strong> (国제거리) — 꼬치구이 전문. 玉城アパート 103</li>
-          <li><strong>Nansei</strong> — 사용자 추천</li>
+          <li><strong>이자카야 마사라</strong> — 사용자 추천 이자카야 <span class="fg-price">~¥3,500/인</span></li>
+          <li><strong>Ryuen Sakaba</strong> — 사카바 (로컬 술집) <span class="fg-price">~¥3,000/인</span></li>
+          <li><strong>琉球ダイニング 家守家</strong> — 류큐 다이닝 (전통 음식) <span class="fg-price">~¥3,500/인</span></li>
+          <li><strong>Okinawa Bar Haisai</strong> (국제거리) — 캐주얼 바 <span class="fg-price">~¥2,500/인</span></li>
+          <li><strong>토리키조쿠 (鳥貴族)</strong> — 일본 야키토리 체인 (전 메뉴 균일가) <span class="fg-price">~¥2,500/인</span></li>
+          <li><strong>串焼 當り屋 (아타리야)</strong> (国제거리) — 꼬치구이 전문. 玉城アパート 103 <span class="fg-price">~¥2,500/인</span></li>
+          <li><strong>Nansei</strong> — 사용자 추천 <span class="fg-price">~¥3,500/인</span></li>
         </ul>
       </p>
     </div>
@@ -10496,8 +10601,8 @@
       <div class="tt-card-head"><span class="tt-card-icon">🍱</span><h3 class="tt-card-title">기타 식당</h3></div>
       <p class="tt-card-body">
         <ul>
-          <li><strong>시라사 식당</strong> — 가정식</li>
-          <li><strong>오바노야</strong> — 사용자 추천</li>
+          <li><strong>시라사 식당</strong> — 가정식 <span class="fg-price">~¥1,500/인</span></li>
+          <li><strong>오바노야</strong> — 사용자 추천 <span class="fg-price">~¥1,800/인</span></li>
           <li><strong>아카톤보</strong> — 사용자 추천</li>
         </ul>
       </p>
@@ -10733,6 +10838,9 @@
       <span class="mission-tag mission-tag-hidden">Hidden Mission 3 · 오키나와 문화</span>
       <h3 class="mission-title">류큐 시사(獅子) 1개 발견 + 사진</h3>
       <p class="mission-desc">오키나와 어디나 사자상(시사) 가 있음. 호텔 입구, 식당 앞, 거리 — 1개 찾아 사진 찍기. <strong>시사는 액운 막아주는 류큐 왕국 부적</strong>이야.</p>
+      <button type="button" class="mission-link-btn shisa-guide-link" data-jump-to="tip:adventure" data-jump-anchor="#shisa-guide">
+        📚 시사 구분법 보러 가기 →
+      </button>
       <div class="mission-action-row">
         <button type="button" class="add-photo-btn mission-photo-btn" data-photo-target="hidden-shisa">
           📷 시사 사진 올리기
@@ -13858,29 +13966,52 @@
     if (!btn) return;
     e.preventDefault();
     const spec = btn.dataset.jumpTo;
+    const anchorOverride = btn.dataset.jumpAnchor; // 새 attribute — 탭/페이지 활성화 후 추가 anchor 점프
     if (!spec) return;
     const [pageId, target] = spec.split(':');
     if (typeof showPage === 'function') showPage(pageId);
     setTimeout(() => {
-      if (!target) { window.scrollTo({top: 0, behavior: 'smooth'}); return; }
-      // [1] Trip Tip 탭 이름이면 탭 토글
-      const tipTab = document.querySelector(`.tip-tab-btn[data-tab="${target}"]`);
-      if (tipTab) {
-        activateTipTab(target);
-        tipTab.scrollIntoView({block: 'start', behavior: 'smooth'});
-        return;
+      if (!target) {
+        if (!anchorOverride) window.scrollTo({top: 0, behavior: 'smooth'});
+      } else {
+        // [1] Trip Tip 탭 이름이면 탭 토글
+        const tipTab = document.querySelector(`.tip-tab-btn[data-tab="${target}"]`);
+        if (tipTab) {
+          activateTipTab(target);
+          // anchorOverride 있으면 탭 자체로의 scroll 은 skip — 아래에서 anchor 로 직접 이동
+          if (!anchorOverride) tipTab.scrollIntoView({block: 'start', behavior: 'smooth'});
+        } else {
+          // [2] mission ID 면 카드로 스크롤
+          const mission = document.querySelector(`[data-mission="${target}"]`);
+          if (mission) {
+            mission.scrollIntoView({block: 'center', behavior: 'smooth'});
+          } else {
+            // [3] 임의 selector
+            try {
+              const el = document.querySelector(target);
+              if (el) el.scrollIntoView({block: 'center', behavior: 'smooth'});
+            } catch(_) {}
+          }
+        }
       }
-      // [2] mission ID 면 카드로 스크롤
-      const mission = document.querySelector(`[data-mission="${target}"]`);
-      if (mission) {
-        mission.scrollIntoView({block: 'center', behavior: 'smooth'});
-        return;
+      // [4] anchorOverride — 위 처리 후 추가 scroll (탭 활성화 직후 카드로 점프)
+      if (anchorOverride) {
+        setTimeout(() => {
+          try {
+            const el = document.querySelector(anchorOverride);
+            if (el) {
+              const headerOffset = 80;
+              const top = el.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+              window.scrollTo({top, behavior: 'smooth'});
+              // 1.5s 강조 펄스 (op-flash 재활용)
+              el.classList.remove('op-flash');
+              void el.offsetWidth;
+              el.classList.add('op-flash');
+              setTimeout(() => el.classList.remove('op-flash'), 1600);
+            }
+          } catch(_) {}
+        }, 220);
       }
-      // [3] 임의 selector
-      try {
-        const el = document.querySelector(target);
-        if (el) el.scrollIntoView({block: 'center', behavior: 'smooth'});
-      } catch(_) {}
     }, 380); // showPage 전환 애니 종료 대기
   }, false);
 
