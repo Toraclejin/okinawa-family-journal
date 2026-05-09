@@ -1114,13 +1114,22 @@
   }
 
   .time-slot-head .time-tag {
-    font-family: 'Fraunces', serif;
+    font-family: 'Fraunces', 'Pretendard Variable', Pretendard, serif;
     font-style: italic;
     font-weight: 400;
     font-size: clamp(48px, 6vw, 80px);
     line-height: 0.9;
     color: var(--blue);
     letter-spacing: -0.03em;
+  }
+  /* 한글 time-tag (예: "오전", "오후") — italic serif 어색하니 sans + 살짝 작게 */
+  .time-slot-head .time-tag:lang(ko),
+  .time-slot-head .time-tag.korean {
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-style: normal;
+    font-weight: 800;
+    font-size: clamp(36px, 4.5vw, 56px);
+    letter-spacing: -0.02em;
   }
 
   .time-slot-head .time-title {
@@ -7806,23 +7815,23 @@
 
   <div class="time-slot">
     <div class="time-slot-head">
-      <div class="time-tag">08:20</div>
+      <div class="time-tag">오전</div>
       <div class="time-title">
-        <div class="time-lbl">Inside · 오늘의 메인 이벤트</div>
-        <div class="time-name">Churaumi <em>Aquarium</em></div>
+        <div class="time-lbl">Morning · 둘째 날 오전</div>
+        <div class="time-name">조식 + <em>추라우미</em></div>
       </div>
     </div>
   </div>
 
-  <div class="options single">
-    <div class="opt highlight" data-mission="d2-churaumi" data-mission-label="고래상어 — 만났어!">
-      <span class="opt-badge amber"><span class="dot"></span>Today's Main ✦</span>
-      <div class="opt-title">세계 최대급 <em>수족관</em></div>
+  <div class="options">
+    <div class="opt featured" data-mission="d2-churaumi" data-mission-label="고래상어 — 만났어!">
+      <span class="opt-badge amber"><span class="dot"></span>Option 1 · 메인 이벤트</span>
+      <div class="opt-title">Churaumi <em>세계 최대급 수족관</em></div>
       <div class="opt-place">Churaumi Aquarium · Motobu · 호텔 도보 7분</div>
       <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-price">~¥2,000/인</div>
       <div class="opt-body">
-        **호텔에서 도보 7분**. 조식 먹고 8시 반 개관 직전 도착하면 고래상어 앞 자리 독차지. 10시 이후엔 단체 관광버스가 몰려서 큰 수조 앞이 겹겹이 쌓임 — 아침 1시간이 황금시간. **운영 08:30~18:30** (입장 마감 17:30). **성인 ¥2,180 / 고교생 ¥1,440 / 초·중 ¥710 / 미취학 무료**. 2시간 30분~3시간 관람 권장. 8.8m짜리 고래상어 2마리를 세계 최초로 번식 성공시킨 곳. ⚠️ "After 4pm 할인"은 2023년 3월 종료.
+        ⭐ <strong>Day 2 베스트</strong>. 호텔에서 <strong>도보 7분</strong>. 조식 먹고 <strong>8시 반 개관 직전 도착</strong>하면 고래상어 앞 자리 독차지. 10시 이후엔 단체 관광버스가 몰려서 큰 수조 앞이 겹겹이 쌓임 — 아침 1시간이 황금시간. <strong>운영 08:30~18:30</strong> (입장 마감 17:30). <strong>성인 ¥2,180 / 고교생 ¥1,440 / 초·중 ¥710 / 미취학 무료</strong>. 2시간 30분~3시간 관람 권장. 8.8m짜리 고래상어 2마리를 세계 최초로 번식 성공시킨 곳. ⚠️ "After 4pm 할인"은 2023년 3월 종료.
       </div>
       <ul class="opt-features">
         <li><strong>Kuroshio Sea Tank</strong>35m × 27m × 10m 수조 · 750만 리터</li>
@@ -7838,6 +7847,74 @@
         </div>
       </div>
     </div>
+
+    <div class="opt">
+      <span class="opt-badge"><span class="dot"></span>Option 2 · 호텔 조식</span>
+      <div class="opt-title">Sirius <em>조식 뷔페</em></div>
+      <div class="opt-place">Orion Motobu Resort · Ocean Wing 1F</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">~¥3,800/인</div>
+      <div class="opt-body">
+        호텔 메인 다이닝 <strong>인터내셔널 조식 뷔페</strong>. 06:30~10:00 (LO 09:30). 오키나와 로컬 (오키나와 소바·챔푸루·라후테) + 양식 + 일식. <strong>추라우미 개관 (08:30) 직전</strong> 가볍게 먹고 출발 — 7~8시 사이 추천. 객실 패키지에 포함된 경우 별도 결제 X. ⚠️ 2026/1~4월 리뉴얼 후 5월 재개 직후라 메뉴 일부 변경 가능.
+      </div>
+      <div class="opt-menu">
+        <span class="pick">오키나와 소바</span>
+        <span class="pick">챔푸루</span>
+        <span class="pick">잠수함 모찌</span>
+        <span>크루아상</span>
+        <span>오믈렛</span>
+      </div>
+      <div class="opt-rating">
+        <span class="r-lbl">How excited?</span>
+        <div class="opt-dots" data-key="d2-breakfast-sirius">
+          <span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="opt">
+      <span class="opt-badge coral"><span class="dot"></span>Option 3 · 산책</span>
+      <div class="opt-title">비제 후쿠기 <em>가로수길 산책</em></div>
+      <div class="opt-place">備瀬のフクギ並木 · 호텔 도보 5분 · 30~60분 산책</div>
+      <div class="opt-price">무료</div>
+      <div class="opt-body">
+        <strong>250년 된 후쿠기 (福木) 방풍림</strong>, 류큐 왕국 시대부터 마을을 태풍·바닷바람으로부터 지키던 가로수. 좁은 골목길 + 옛 류큐 가옥 분위기. 호텔에서 <strong>도보 5분</strong>, 추라우미 가는 길에 살짝 들르기 좋음. <strong>물소수레 (水牛車)</strong>는 토·일만 운영 (5/10 일요일 가능, 5/11 월요일 X). 30분~1시간 산책, 어른 페이스 권장.
+      </div>
+      <ul class="opt-features">
+        <li><strong>거리</strong>호텔 도보 5분 (300m)</li>
+        <li><strong>코스</strong>마을 골목길 약 1km, 천천히 30~60분</li>
+        <li><strong>물소수레</strong>토·일만 (¥1,500/30분)</li>
+      </ul>
+      <div class="opt-rating">
+        <span class="r-lbl">How excited?</span>
+        <div class="opt-dots" data-key="d2-fukugi-walk">
+          <span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="opt">
+      <span class="opt-badge"><span class="dot"></span>Option 4 · 호텔 풀</span>
+      <div class="opt-title">Orion <em>실내·야외 풀</em></div>
+      <div class="opt-place">Orion Motobu Resort · 실내 풀 / 야외 풀</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-price">투숙객 무료</div>
+      <div class="opt-body">
+        추라우미 가기 전 <strong>호텔 풀에서 30분 수영</strong>. 야외 풀은 5월 시즌 오픈 (수온 따뜻), 실내 풀은 연중. 객실 → 풀 → 샤워 → 추라우미 동선 가능. 06:30~22:00 (실내) / 09:00~18:00 (야외). 수건·튜브 무료 대여. <strong>추라우미 도보 7분</strong>이라 시간 여유 있음.
+      </div>
+      <ul class="opt-features">
+        <li><strong>실내 풀</strong>연중 06:30~22:00</li>
+        <li><strong>야외 풀</strong>5월~10월 09:00~18:00</li>
+        <li><strong>수건·튜브</strong>무료 대여</li>
+      </ul>
+      <div class="opt-rating">
+        <span class="r-lbl">How excited?</span>
+        <div class="opt-dots" data-key="d2-morning-pool">
+          <span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span>
+        </div>
+      </div>
+    </div>
+
       <div class="opt-write">
       <span class="opt-badge"><span class="dot"></span>+ My Option</span>
       <div class="wo-label">뭐 하고 싶어?</div>
