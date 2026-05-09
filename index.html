@@ -1303,6 +1303,35 @@
     }
   }
 
+  /* 비올 때 추천 장소 태그 — opt-place (위치) 하단 작은 그린 알약 라벨
+     실내 활동·우천 시 대안으로 권장되는 옵션에만 부여 (모든 옵션이 아님) */
+  .opt-rain-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin: 6px 0 8px;
+    padding: 4px 11px;
+    background: #d4f4dd;
+    color: #0e6b56;
+    font-family: 'Pretendard Variable', Pretendard, sans-serif;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    border-radius: 999px;
+    border: 1px solid #16a085;
+    white-space: nowrap;
+  }
+  .opt-rain-tag::before {
+    content: '☔';
+    font-size: 13px;
+    line-height: 1;
+  }
+  .opt.highlight .opt-rain-tag {
+    background: rgba(212, 244, 221, 0.18);
+    color: #a7e6c0;
+    border-color: rgba(167, 230, 192, 0.4);
+  }
+
   .opt-features {
     list-style: none;
     margin-bottom: 20px;
@@ -1414,19 +1443,18 @@
   .opt.highlight .opt-place { color: rgba(255,255,255,0.6); border-bottom-color: rgba(255,255,255,0.2); }
 
   /* .opt.featured — 베스트 추천 강조 (앰버 톤 배경 + 두꺼운 테두리, 일반 카드와 차별)
-     모토부 목장 같은 사용자 명시 추천 식당에 사용. 다른 옵션과 시각 차별. */
+     모토부 목장 같은 사용자 명시 추천 식당에 사용. 다른 옵션과 시각 차별.
+     BEST 배지는 opt-title (제목) 위에 배치 — 라벨 (opt-badge) 와 겹치지 않게 */
   .opt.featured {
     background: linear-gradient(180deg, #fffbe8 0%, #fff 60%);
     border: 2px solid var(--amber);
     box-shadow: 0 6px 20px rgba(255, 196, 0, 0.18);
-    position: relative;
   }
-  .opt.featured::before {
+  .opt.featured .opt-title::before {
     content: '⭐ BEST';
-    position: absolute;
-    top: -10px;
-    right: 16px;
-    padding: 3px 10px;
+    display: inline-block;
+    margin: 0 0 8px;
+    padding: 4px 10px;
     background: var(--amber);
     color: var(--blue-ink);
     font-family: 'Space Grotesk', sans-serif;
@@ -1435,7 +1463,8 @@
     letter-spacing: 0.16em;
     border-radius: 999px;
     box-shadow: 0 2px 8px rgba(255, 196, 0, 0.3);
-    z-index: 2;
+    vertical-align: middle;
+    margin-right: 8px;
   }
 
   /* opt-place 맵 핀 아이콘 (클릭 힌트) */
@@ -6330,13 +6359,14 @@
   }
 
   /* ============================================================
-     Trip Tip 페이지 — 3 탭 시스템 (ADVENTURE / OPERATIONS / LANGUAGE)
+     Trip Tip 페이지 — 4 탭 시스템 (ADVENTURE / OPERATIONS / LANGUAGE / FOOD GUIDE)
      - 사용자: 조카 (모험) / 부모 (운영) / 둘 다 (일본어)
      - 탭 클릭 → activeForm tab 만 .active, 나머지 hidden
      - 박스 간격은 --box-gap-* 토큰 사용 (일관성)
   ============================================================ */
   .tip-tabs {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 6px;
     margin: 0 0 var(--box-gap-md);
     padding: 4px;
@@ -6344,7 +6374,7 @@
     border-radius: 14px;
   }
   .tip-tab-btn {
-    flex: 1;
+    width: 100%;
     padding: 12px 10px;
     background: transparent;
     border: none;
@@ -6905,6 +6935,7 @@
       <span class="opt-badge amber"><span class="dot"></span>Option 1 · Only</span>
       <div class="opt-title">Blue Seal <em>Ice Cream</em></div>
       <div class="opt-place">Blue Seal 마키미나토 본점 · 우라소에</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         오키나와 대표 아이스크림. 1948년 미군이 오키나와 주둔병 사기 올리려고 만든 데서 시작, 지금은 국민 디저트. **우라소에시 마키미나토 5-5-6**이 본점 (Route 58 위, 거대한 콘 모양 네온간판). **영업 10:00~22:00** (LO 21:30). 공항에서 북부 가는 길에 잠깐 들러 아이스크림 한 컵. 길게 머물지 말고 30~40분 안에 출발해야 모토부 체크인 맞춤.
       </div>
@@ -7015,6 +7046,7 @@
       <span class="opt-badge coral"><span class="dot"></span>Option 2 · 객실 쉬기</span>
       <div class="opt-title">짐 풀고 <em>쉬기</em></div>
       <div class="opt-place">Orion Motobu Resort · 객실</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         비행기 + 1시간 40분 드라이브 후 첫 체크인. 캐리어 풀고 샤워하고 잠깐 누워서 컨디션 회복. 이따 저녁·일몰 산책이 있으니 지금 무리할 필요 없음. 창밖 이에섬·동중국해 뷰 보면서 한숨 돌리는 시간.
       </div>
@@ -7035,6 +7067,7 @@
       <span class="opt-badge amber"><span class="dot"></span>Option 3 · 호텔 수영장</span>
       <div class="opt-title">호텔 <em>수영장</em></div>
       <div class="opt-place">Orion Motobu Resort · 실내 풀 / 야외 풀</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         실내 풀은 연중 운영, 야외 풀은 **5월 1~31일 08:30~19:00 오픈** 상태. 어린이 풀 포함. 투숙객 무료. **인피니티 풀은 Club Wing 전용**이니 예약 확인 필요. Ocean Wing 투숙이면 야외 풀·실내 풀·에메랄드 비치가 메인 물놀이처.
       </div>
@@ -7162,10 +7195,33 @@
     </div>
   </div>
   <div class="options">
+    <div class="opt featured">
+      <span class="opt-badge amber"><span class="dot"></span>Option 1 · 모토부규</span>
+      <div class="opt-title">야키니쿠 <em>모토부 목장</em></div>
+      <div class="opt-place">焼肉もとぶ牧場 もとぶ店 · 본부 오하마 881-1 · 차로 12~15분</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
+      <div class="opt-body">
+        ⭐ <strong>북부 야키니쿠 베스트</strong>. <strong>모토부규 직영</strong> — 지역 브랜드 소고기를 직접 키워 공급. 11:00~15:00 / 17:00~22:00. <strong>예약 강력 권장</strong> (전화 0980-51-6777 또는 TableCheck·구루나비 온라인). 호텔 차로 12~15분, 저녁 전용으로 외출할 가치 있음. 가족 식사 분위기.
+      </div>
+      <div class="opt-menu">
+        <span class="pick">모토부규 로스</span>
+        <span class="pick">갈비</span>
+        <span class="pick">카루비</span>
+        <span>냉면</span>
+      </div>
+      <div class="opt-rating">
+        <span class="r-lbl">How excited?</span>
+        <div class="opt-dots" data-key="d1-motobu-beef">
+          <span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span>
+        </div>
+      </div>
+    </div>
+
     <div class="opt">
-      <span class="opt-badge"><span class="dot"></span>Option 1 · 호텔 뷔페</span>
+      <span class="opt-badge"><span class="dot"></span>Option 2 · 호텔 뷔페</span>
       <div class="opt-title">Sirius <em>인터내셔널 뷔페</em></div>
       <div class="opt-place">Orion Motobu Resort · Ocean Wing 1F</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         호텔 메인 올데이 다이닝. 인터내셔널 뷔페로 오키나와 로컬 + 양식 + 중식 다양. **디너 17:00~21:00 (LO 20:30)**. 성인 ¥6,500 / 초등생 ¥3,250 / 유아 ¥1,600. 이에섬 바다 뷰 테라스석 인기. ⚠️ **2026년 1/5~4/30 리뉴얼 공사 예정**이라 5/10 오픈 직후일 수 있음 — 가격·시간·메뉴 **현장 재확인 권장**.
       </div>
@@ -7185,7 +7241,7 @@
     </div>
 
     <div class="opt">
-      <span class="opt-badge coral"><span class="dot"></span>Option 2 · 테라스 BBQ</span>
+      <span class="opt-badge coral"><span class="dot"></span>Option 3 · 테라스 BBQ</span>
       <div class="opt-title">Capella <em>BBQ</em></div>
       <div class="opt-place">Orion Motobu Resort · Ocean Wing 1F 테라스</div>
       <div class="opt-body">
@@ -7206,9 +7262,10 @@
     </div>
 
     <div class="opt">
-      <span class="opt-badge amber"><span class="dot"></span>Option 3 · 늦게까지</span>
+      <span class="opt-badge amber"><span class="dot"></span>Option 4 · 늦게까지</span>
       <div class="opt-title">Kari <em>우치나 이자카야</em></div>
       <div class="opt-place">Orion Motobu Resort · Ocean Wing 1F</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         호텔 내 **오키나와 이자카야**. 17:00~23:00 (90분제, LO 22:00). 소접시 ¥800~1,000. 챔푸루, 라후테, 아구돼지 꼬치, 우미부도, 오리온 생맥주. **호텔 안에서 가장 늦게까지 열려있음** — 저녁 늦게 체크인·도착 지연 시 안전망.
       </div>
@@ -7226,31 +7283,11 @@
       </div>
     </div>
 
-    <div class="opt featured">
-      <span class="opt-badge amber"><span class="dot"></span>Option 4 · ⭐ BEST 모토부규</span>
-      <div class="opt-title">야키니쿠 <em>모토부 목장</em></div>
-      <div class="opt-place">焼肉もとぶ牧場 もとぶ店 · 본부 오하마 881-1 · 차로 12~15분</div>
-      <div class="opt-body">
-        ⭐ <strong>북부 야키니쿠 베스트</strong>. <strong>모토부규 직영</strong> — 지역 브랜드 소고기를 직접 키워 공급. 11:00~15:00 / 17:00~22:00. <strong>예약 강력 권장</strong> (전화 0980-51-6777 또는 TableCheck·구루나비 온라인). 호텔 차로 12~15분, 저녁 전용으로 외출할 가치 있음. 가족 식사 분위기.
-      </div>
-      <div class="opt-menu">
-        <span class="pick">모토부규 로스</span>
-        <span class="pick">갈비</span>
-        <span class="pick">카루비</span>
-        <span>냉면</span>
-      </div>
-      <div class="opt-rating">
-        <span class="r-lbl">How excited?</span>
-        <div class="opt-dots" data-key="d1-motobu-beef">
-          <span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span>
-        </div>
-      </div>
-    </div>
-
     <div class="opt">
       <span class="opt-badge coral"><span class="dot"></span>Option 5 · 해산물 이자카야</span>
       <div class="opt-title">Kaihoumaru <em>해산물</em></div>
       <div class="opt-place">海人料理 海邦丸 · ハナサキマルシェ · 차로 8~10분</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         **신선 해산물 이자카야**, 하나사키 마르셰 안. 11:00~15:00 / 17:30~22:00 (디너 LO 21:00), 연중무휴. 시그니처는 **우미부도 해산물 덮밥** + 마구로·타이 회정식. 아이들이 좋아할 새우튀김·가라아게도 있음. 본부 지역에서 저녁까지 여는 해산물집 중 하나.
       </div>
@@ -7272,6 +7309,7 @@
       <span class="opt-badge amber"><span class="dot"></span>Option 6 · 수족관 앞</span>
       <div class="opt-title">Chinuman <em>오키나와 이자카야</em></div>
       <div class="opt-place">沖縄料理 ちぬまん · 美ら海水族館前店 · 차로 5분</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         추라우미 수족관 바로 앞 오키나와 체인 이자카야. 16:00~23:00, 연중무휴. 소키소바·챔푸루·우미부도·타코라이스 등 로컬 메뉴 다양. 가격대 부담 없고 아이 메뉴 있음. 저녁 시간 늦어도 여는 집.
       </div>
@@ -7318,6 +7356,7 @@
       <span class="opt-badge"><span class="dot"></span>Option 1 · 하루 마무리</span>
       <div class="opt-title">美ら海の湯 <em>온천</em></div>
       <div class="opt-place">Orion Motobu 대욕장 · 15:00~23:00</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         호텔 **천연 온천** 「Churaumi-no-yu 美ら海の湯」. 지하 1,500m에서 끌어올린 천연 온천수, 실내탕·노천탕·사우나. **15:00~23:00** (접수 22:30 마감). 이에섬 방향 노천탕이 시그니처. **Club Wing 투숙객은 무료, Ocean Wing은 성인 ¥1,650 / 초등생 ¥750 / 미취학 무료**. 비행·드라이브·일몰 산책 피로 한 번에 풀기.
       </div>
@@ -7338,6 +7377,7 @@
       <span class="opt-badge coral"><span class="dot"></span>Option 2 · 야식·간식</span>
       <div class="opt-title">편의점 <em>야식</em></div>
       <div class="opt-place">Lawson 海洋博公園前店 · 호텔 도보 3분 · 24h</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         호텔에서 **도보 3분(약 200m)** 24시간 로손. 본부 지역엔 24시 운영하는 상점이 이것 정도 — 야식 문화 자체가 빈약해서 편의점이 사실상 밤 주전부리처. **오키나와 한정 스낵 풍부** — 사타안다기, 베니이모 타르트, 시콰사 음료, 오리온 맥주 미니캔. 객실 돌아와서 풀어놓고 TV 보며 야식.
       </div>
@@ -7378,6 +7418,7 @@
       <span class="opt-badge"><span class="dot"></span>Option 4 · 방에서 쉬기</span>
       <div class="opt-title">객실 <em>휴식</em></div>
       <div class="opt-place">Orion Motobu Resort · 객실</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         첫날이라 내일 추라우미도 있고 일찍 자는 것도 답. 캐리어 정리하고, TV 켜고, 편의점에서 사 온 야식 펼치고 대충 쉬기. 내일 수족관 아침 8시 반 개관 직전에 가려면 지금부터 컨디션 관리.
       </div>
@@ -7542,6 +7583,7 @@
       <span class="opt-badge amber"><span class="dot"></span>Today's Main ✦</span>
       <div class="opt-title">세계 최대급 <em>수족관</em></div>
       <div class="opt-place">Churaumi Aquarium · Motobu · 호텔 도보 7분</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         **호텔에서 도보 7분**. 조식 먹고 8시 반 개관 직전 도착하면 고래상어 앞 자리 독차지. 10시 이후엔 단체 관광버스가 몰려서 큰 수조 앞이 겹겹이 쌓임 — 아침 1시간이 황금시간. **운영 08:30~18:30** (입장 마감 17:30). **성인 ¥2,180 / 고교생 ¥1,440 / 초·중 ¥710 / 미취학 무료**. 2시간 30분~3시간 관람 권장. 8.8m짜리 고래상어 2마리를 세계 최초로 번식 성공시킨 곳. ⚠️ "After 4pm 할인"은 2023년 3월 종료.
       </div>
@@ -7589,6 +7631,7 @@
       <span class="opt-badge"><span class="dot"></span>Option 1 · 내부</span>
       <div class="opt-title">Ocean Blue <em>Cafe</em></div>
       <div class="opt-place">추라우미 1F · Kuroshio Sea 탱크 바로 옆</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         수족관 1층, 쿠로시오 대수조 바로 옆 카페. **창가 유료석(9석 한정)**은 1인 1,000엔 · 50분 단위, 당일 현장 접수만. 고래상어가 바로 눈앞으로 지나감. 일반 좌석은 무료, 카레라이스·파스타·햄버거 등 평범한 메뉴지만 자리 자체가 경험. 유료석은 인기라 오전에 미리 가서 줄 서야 함.
       </div>
@@ -7610,6 +7653,7 @@
       <span class="opt-badge amber"><span class="dot"></span>Option 2 · 오션뷰 뷔페</span>
       <div class="opt-title">The <em>Inoh</em></div>
       <div class="opt-place">추라우미 수족관 4F · 오션 뷔페</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         수족관 **4층 뷔페 레스토랑**. 동중국해·이에섬 파노라마 뷰가 진짜 장점. **수족관 입장권 없이도 직접 접근 가능**. 오키나와 로컬 요리 뷔페(챔푸루, 오키나와 소바, 아구돼지, 해산물) + 양식, 점심 약 2,500엔/인. **주의 — 맛 리뷰는 좋지 않음**: "현지 로컬 분식 수준", "가격 대비 실망" 평이 많음. **뷰만 보러 가는 용도**로 추천, 맛 기대하고 가면 후회할 수 있음. 허기 적당한 상태에서 바다 보면서 가볍게 먹는 용도면 OK.
       </div>
@@ -7631,6 +7675,7 @@
       <span class="opt-badge coral"><span class="dot"></span>Option 3 · 소바 레전드</span>
       <div class="opt-title">Kishimoto <em>Shokudo</em></div>
       <div class="opt-place">きしもと食堂 八重岳店 · 본부 이노하 350-1 · 차로 8분</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         **1905년 창업** 오키나와 소바의 전설. 가다랑어 육수에 직접 뽑은 면발, 부드럽게 조린 돼지고기 고명. 메뉴는 **오키나와 소바 (대·소)** 단 하나. 관광객 + 현지인 모두 줄 서는 곳. 본점(渡久地 Toguchi 항구)은 좁고 대기 김, **八重岳 야에다케 분점(본부 이노하 350-1)은 주차 넓고 여유**. 11:00~17:30, 수요일 정기휴무(D2는 월요일 OK). 재료 소진 시 조기 마감이라 점심 전 도착 필수.
       </div>
@@ -7651,6 +7696,7 @@
       <span class="opt-badge"><span class="dot"></span>Option 4 · 현지 소바</span>
       <div class="opt-title">Miyazato <em>Soba</em></div>
       <div class="opt-place">미야자토 소바 · 나고시 · 차로 15분</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         북부 오키나와에서 가장 인기 있는 소바집 중 하나. 레트로 다다미 방 + 테이블석, 단체·가족 모이기 좋음. 삼중 갈비(소키) 올린 **소키 소바**가 간판 메뉴. 육수 진하고 면 두꺼움. 점심시간(12~13시) 웨이팅 있음.
       </div>
@@ -7693,6 +7739,7 @@
       <span class="opt-badge coral"><span class="dot"></span>Option 6 · 전통 찻집</span>
       <div class="opt-title">Yachimun Kissa <em>Shisaen</em></div>
       <div class="opt-place">야치문 킷사 시사엔 · 본부 이즈미 1439 · 차로 12분</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         오키나와 전통 도자기(**야치문**)로 꾸민 **붉은 기와 찻집**. 할머니 집 같은 따뜻한 분위기, 도자기 장인의 작업실을 개조. 흑당 젠자이, 히라야치(오키나와식 오코노미야키), 친빈(오키나와 크레페) — 현지 간식 메뉴. 영업 11:00~19:00, **월·화 휴무**. 방문 전 꼭 확인.
       </div>
@@ -7714,6 +7761,7 @@
       <span class="opt-badge amber"><span class="dot"></span>Option 7 · 북부 두툼버거</span>
       <div class="opt-title">Captain <em>Kangaroo</em></div>
       <div class="opt-place">キャプテンカンガルー · 본부 사키모토부 930-1 · 호텔 차로 5분</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         북부 오키나와 대표 수제 햄버거. 통칭 **"캡칸 (Cap-Kan)"**. 도로 건너 바로 바다, 유리창 너머 오션뷰. 명물은 **Sparky Burger** — 두툼한 패티 + 바삭한 양파튀김. 11:00~17:00 (LO 16:30) 매일. 인기 시간대 줄 1시간 가능 — 점심 일찍 가는 것 강추.
       </div>
@@ -7824,6 +7872,7 @@
       <span class="opt-badge"><span class="dot"></span>Option 4</span>
       <div class="opt-title">바로 <em>호텔 복귀</em></div>
       <div class="opt-place">Orion Motobu Resort · 대욕장 · 풀</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         수족관에서 이미 많이 걸었으면 바로 호텔로. 美ら海の湯에서 다리 쭉 펴기, 실내 풀 한 바퀴, 객실 발코니에서 이에섬 바다 보며 낮잠. 저녁까지 쉬었다가 천천히 움직이는 것도 Day 2 정석.
       </div>
@@ -7866,9 +7915,10 @@
   </div>
   <div class="options">
     <div class="opt featured">
-      <span class="opt-badge amber"><span class="dot"></span>Option 1 · ⭐ BEST 모토부규</span>
+      <span class="opt-badge amber"><span class="dot"></span>Option 1 · 모토부규</span>
       <div class="opt-title">야키니쿠 <em>모토부 목장</em></div>
       <div class="opt-place">焼肉もとぶ牧場 もとぶ店 · 본부 오하마 881-1 · 차로 12~15분</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         ⭐ <strong>북부 야키니쿠 베스트</strong>. <strong>모토부규 직영</strong> — 지역 브랜드 소고기를 직접 키워 공급. 11:00~15:00 / 17:00~22:00 연중무휴. <strong>예약 강력 권장</strong> (전화 0980-51-6777). 차로 12~15분. D1에 이미 다녀왔으면 다른 옵션, 안 갔으면 여기가 Day 2 하이라이트.
       </div>
@@ -7911,6 +7961,7 @@
       <span class="opt-badge amber"><span class="dot"></span>Option 3 · 해산물</span>
       <div class="opt-title">Kaihoumaru <em>해산물</em></div>
       <div class="opt-place">海人料理 海邦丸 · ハナサキマルシェ · 차로 8~10분</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         신선 해산물 이자카야. 17:30~22:00 (LO 21:00) 연중무휴. **우미부도 해산물 덮밥** + 마구로·타이 회정식. 아이 메뉴도 있음. 본부 지역에서 저녁까지 여는 해산물집.
       </div>
@@ -7932,6 +7983,7 @@
       <span class="opt-badge"><span class="dot"></span>Option 4 · 호텔 뷔페</span>
       <div class="opt-title">Sirius <em>인터내셔널 뷔페</em></div>
       <div class="opt-place">Orion Motobu Resort · Ocean Wing 1F</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         호텔 올데이 다이닝 뷔페. **17:00~21:00 (LO 20:30)**. 성인 ¥6,500. 어제 안 가봤으면 오늘, 가봤으면 다른 옵션. 어린이 가격 별도, 유아는 ¥1,600. ⚠️ 2026년 1/5~4/30 리뉴얼 공사 기간이라 5월 재개 직후 가격·메뉴 변동 가능 — 현장 재확인 권장.
       </div>
@@ -7953,6 +8005,7 @@
       <span class="opt-badge coral"><span class="dot"></span>Option 5 · 늦게까지</span>
       <div class="opt-title">Kari <em>우치나 이자카야</em></div>
       <div class="opt-place">Orion Motobu Resort · Ocean Wing 1F</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         호텔 내 오키나와 이자카야, 17:00~23:00 (90분제). 수족관 오래 머물다 늦어지면 안전망. 챔푸루·라후테·우미부도·오리온 생맥주.
       </div>
@@ -7974,6 +8027,7 @@
       <span class="opt-badge amber"><span class="dot"></span>Option 6 · 북부 가정식</span>
       <div class="opt-title">食事処 <em>千 (Sen)</em></div>
       <div class="opt-place">食事処千 · 본부 410 · 호텔 차로 5~10분</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         북부 모토부의 현지인 단골 가정식 식당. 작고 따뜻한 분위기, 메뉴는 일본 가정식 + 오키나와 정식. 영업시간·정기휴무는 출발 전 D-7 재확인 권장 (소규모 식당이라 변동 가능). 모토부 호텔 가까이 있어 외출 부담 적음.
       </div>
@@ -8020,6 +8074,7 @@
       <span class="opt-badge"><span class="dot"></span>Option 1 · 피로 회복</span>
       <div class="opt-title">美ら海の湯 <em>온천</em></div>
       <div class="opt-place">Orion Motobu 대욕장 · 15:00~23:00</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         수족관 3시간 걷고 + 코우리·나키진 다녀왔으면 다리 풀기 최적. 지하 1,500m 천연 온천수, 실내탕·노천탕·사우나. **15:00~23:00** (접수 22:30). Club Wing 무료 / Ocean Wing ¥1,650. Day 2 저녁 정석 옵션.
       </div>
@@ -8040,6 +8095,7 @@
       <span class="opt-badge coral"><span class="dot"></span>Option 2 · 야식</span>
       <div class="opt-title">편의점 <em>야식</em></div>
       <div class="opt-place">Lawson 海洋博公園前店 · 호텔 도보 3분 · 24h</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         본부 지역 24시 상점은 이 로손이 사실상 전부. 도보 3분(200m). **오키나와 한정 스낵** — 사타안다기, 베니이모 타르트, 시콰사 음료, 오리온 맥주 미니캔. 객실 돌아와서 풀어놓고 TV 보며 Day 2 마무리.
       </div>
@@ -8082,6 +8138,7 @@
       <span class="opt-badge"><span class="dot"></span>Option 4 · 일찍 자기</span>
       <div class="opt-title">객실 <em>휴식</em></div>
       <div class="opt-place">Orion Motobu Resort · 객실</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         추라우미 3시간 + 오후 드라이브면 체력 한계. 내일은 **이동일**(Motobu 체크아웃 → 차탄 이동 1시간 30분 드라이브)이라 미리 짐 정리. 캐리어 70% 싸두고 샤워하고 눕기. 진짜 Day 2 정석은 일찍 자기.
       </div>
@@ -8291,6 +8348,7 @@
       <span class="opt-badge amber"><span class="dot"></span>Option 3 · 아침 온천</span>
       <div class="opt-title">美ら海の湯 <em>아침 온천</em></div>
       <div class="opt-place">Orion Motobu 대욕장 · 06:00~10:00</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         **아침 시간대 운영 06:00~10:00**. 이에섬 방향 노천탕에서 아침 햇살 맞으며 마지막 온천. 오후 드라이브 전 피로 미리 푸는 게 전략. Club Wing 무료 / Ocean Wing ¥1,650.
       </div>
@@ -8311,6 +8369,7 @@
       <span class="opt-badge"><span class="dot"></span>Option 4 · 천천히</span>
       <div class="opt-title">조식 뷔페 후 <em>짐 정리</em></div>
       <div class="opt-place">Sirius · 조식 06:30~10:00</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         Sirius 조식 뷔페 (06:30~10:00) 천천히 먹고 객실 복귀, 짐 여유 있게 정리. 피곤한 날은 이 옵션이 Day 3 시작. 11:00 체크아웃 직전까지.
       </div>
@@ -8356,6 +8415,7 @@
       <span class="opt-badge"><span class="dot"></span>Option 1 · 최단 루트</span>
       <div class="opt-title">Okinawa <em>Expressway</em></div>
       <div class="opt-place">許田 IC → 沖縄南 IC · 약 60~70분</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         **고속도로 최단 루트**. 모토부에서 국도 449 → 58 → 쿄다(許田) IC 진입 → 오키나와 고속도로 → 오키나와 남 IC 또는 키타나카구스쿠 IC로 나와 차탄 진입. **총 약 60~70분** (통행료 약 ¥1,070). 13시쯤 차탄 도착 가능. 가족 컨디션 안 좋거나 빨리 체크인하고 싶을 때.
       </div>
@@ -8396,6 +8456,7 @@
       <span class="opt-badge amber"><span class="dot"></span>Option 3 · 맥주 견학</span>
       <div class="opt-title">Orion <em>Happy Park</em></div>
       <div class="opt-place">オリオンハッピーパーク · 나고 · 차로 25~30분</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         **오리온 맥주 공장 견학**. 9:00~18:00, 투어 9:20~16:40 접수 (60분: 공장 35분 + 시음 25분). **무료**, 예약 권장 (050-3626-2161). 모토부 → 나고 → 차탄 루트 자연스럽게 이어짐. 드라이버·미성년자는 논알코올 시음. 체크아웃 후 12시 투어, 13시 출발, 14시 30분 차탄 체크인.
       </div>
@@ -8499,6 +8560,7 @@
       <span class="opt-badge amber"><span class="dot"></span>Option 3 · 차탄 돈카츠</span>
       <div class="opt-title">돈카츠타로 <em>차탄점</em></div>
       <div class="opt-place">とんかつ太郎 北谷店 · 美浜 2-1-12 · 호텔 차로 3분</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         오키나와 산 최상급 돼지고기 돈카츠 전문점. 매일 11:30~22:00 (LO 21:30) 무휴. 명물은 **25cm 점보 새우 정식** + 두툼 돈카츠. **밥·미소시루·양배추·오신코 무료 리필**. 국도 58호선 옆, 차탄 미하마 도착 직후 점심·저녁 모두 OK. 주차장 있음.
       </div>
@@ -8520,6 +8582,7 @@
       <span class="opt-badge"><span class="dot"></span>Option 4 · 수플레 팬케이크</span>
       <div class="opt-title">Seaside Cafe <em>Hanon</em></div>
       <div class="opt-place">Hanon · Oak Fashion Bldg 2F · 美浜 9-39 · Depot Island</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         American Village 안 **오키나와 No.1 수플레 팬케이크** 카페. 동중국해 오션뷰 테라스. 평일 11:00~19:00 (LO 18:00) / 주말·공휴일 09:00~20:00. **월요일 정기휴무** (월=공휴일이면 화요일 휴무). D3 (5/12 화) 영업 가능성 높음. Mihama 공영주차장 이용.
       </div>
@@ -8567,6 +8630,7 @@
       <span class="opt-badge"><span class="dot"></span>Option 1 · 쇼핑몰</span>
       <div class="opt-title">Aeon Mall <em>Rycom</em></div>
       <div class="opt-place">Aeon Okinawa Rycom · 차탄에서 차로 약 15분</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         오키나와 최대 쇼핑몰. Vessel에서 차로 약 15분. 1층 포켓몬센터, 2층 Kurasushi, 4층 Round1 게임센터. **저녁 Kurasushi 예약 걸어두고 쇼핑하는 동선** 추천. 키즈 구역·푸드코트·면세 서비스.
       </div>
@@ -8626,6 +8690,7 @@
       <span class="opt-badge coral"><span class="dot"></span>Option 4 · 호텔 쉬기</span>
       <div class="opt-title">Vessel 복귀 <em>쉬기</em></div>
       <div class="opt-place">Vessel Hotel Campana · 10F (본관) / 11F (별관) 대욕장 · 12F 루프탑 풀</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         이동 피곤하면 바로 체크인하고 쉬기. **루프탑 풀(12F)은 5월 오픈** (3/20~10/31, 08:00~20:00). **대욕장**(본관 10F / 별관 11F) **투숙객 무료** — 06:00~10:00 (마지막 입장 09:30) + 15:00~01:00 (마지막 입장 00:30). 방에서 낮잠도 OK. 저녁 식사 전까지 페이스 조절.
       </div>
@@ -8682,6 +8747,7 @@
       <span class="opt-badge amber"><span class="dot"></span>Today's Pick ✦</span>
       <div class="opt-title">Kurasushi <em>Rycom</em></div>
       <div class="opt-place">Kurasushi · Aeon Mall Rycom 2F · Village A동</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         일본식 풀스택 자동화 초밥 체인. 기본 접시 **한 접시 117엔**. 터치패널로 주문하면 신칸센 모양 레일을 타고 초밥이 자리까지 배달. 빈 접시를 테이블 투입구에 넣으면 **5개마다 뽑기 게임** (빗쿠라폰/가챠폰) — 이겨야 캡슐 장난감 나옴. 대략 5번 중 1번 꼴로 당첨. 아이들이 가장 좋아하는 구간.
       </div>
@@ -8705,6 +8771,7 @@
       <span class="opt-badge"><span class="dot"></span>Option 2</span>
       <div class="opt-title">Sushiro <em>스시로</em></div>
       <div class="opt-place">차탄점 · 미하마 3-22-5 · 호텔 차로 5분</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         Kura 대기가 너무 길면 차선책. 일본 회전초밥 매출 1위 브랜드. 기본 접시 120엔부터. **차탄점**은 호텔(미하마 9)과 같은 미하마 동네지만 3블록 건너편이라 도보 15분 / 차로 5분. 나하 국제거리 지점·Tenku 지점도 있지만 차탄점이 제일 가깝고, Rycom몰 안에는 없음. Kura와 달리 가챠 게임은 없지만 초밥 메뉴 종류가 더 많음.
       </div>
@@ -8727,6 +8794,7 @@
       <span class="opt-badge amber"><span class="dot"></span>Option 3 · A5 와규 햄버그</span>
       <div class="opt-title">Masuo <em>Restaurant</em></div>
       <div class="opt-place">Masuo · ats chatan 1F · 美浜 9-17 · 호텔 도보 3분</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         American Village 안 **A5 흑모와규 햄버그 전문점** (스테이크 X, 햄버그). 11:30~22:00 매일 무휴. **A5 와규 햄버그 런치 ¥980** 가성비. 소고기 본연의 맛, 일본식 햄버그 (살짝 굽고 데미글라스 소스). 호텔 (Vessel) 같은 미하마 9 블록이라 도보로 OK.
       </div>
@@ -8748,6 +8816,7 @@
       <span class="opt-badge"><span class="dot"></span>Option 4 · 1960s 다이너 스테이크</span>
       <div class="opt-title">Steakhouse <em>88 차탄점</em></div>
       <div class="opt-place">ステーキハウス88 · ats chatan 2F · 美浜 9-17 · 호텔 도보 3분</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         오키나와 대표 스테이크 체인 88. **차탄 American Village 점**은 1960년대 미국 다이너 + 카바레 분위기. 11:00~23:00 매일 무휴. **20+ 스테이크 메뉴** + 이시가키 와규 고급 라인. Masuo 와 같은 빌딩 (1F·2F 분리). 가족 식사 + 늦은 저녁 OK.
       </div>
@@ -8795,6 +8864,7 @@
       <span class="opt-badge"><span class="dot"></span>Option 1 · 가족 액티비티</span>
       <div class="opt-title">Round1 <em>Stadium</em></div>
       <div class="opt-place">Aeon Mall Rycom 4F · 회전초밥 바로 위</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         Kurasushi 먹고 바로 위층으로 올라가면 되는 동선. 볼링·탁구·당구·다트·스포챠(실내 체육관, 농구·배드민턴 등) 다 있는 종합 오락실. 아이·어른 모두 액티브하게 놀 수 있고, 엄마는 간단한 볼링 참여 OK. 실내라 날씨 영향 없음. **흡연 가능 구역이 있을 수 있으니 예약 시 비흡연 구역 지정 권장**. 2~3시간 자유이용 스포챠 추천.
       </div>
@@ -8860,6 +8930,7 @@
       <span class="opt-badge"><span class="dot"></span>Option 4 · 마지막 목욕</span>
       <div class="opt-title">호텔 <em>대욕장</em></div>
       <div class="opt-place">Vessel Hotel Campana · 10F / 11F</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         내일 새벽 출발이라 일찍 자야 함. 마지막 밤 대욕장에서 짐 정리 전 몸 풀기. 체크아웃 전날이니 짐 다 싸고 나서 들어가면 편함. 사우나+전망욕으로 3박 피로 털기. **무료**.
       </div>
@@ -8880,6 +8951,7 @@
       <span class="opt-badge coral"><span class="dot"></span>Option 5 · 기념품 마지막</span>
       <div class="opt-title">Don Quijote <em>돈키호테</em></div>
       <div class="opt-place">Don Quijote Mihama · 호텔 도보 3분 · 24시간</div>
+      <div class="opt-rain-tag">비올 때 추천</div>
       <div class="opt-body">
         출국 전 마지막 기념품 쇼핑 기회. 오키나와 과자·아와모리(증류주)·블루씰 박스·오리온 맥주 관련 굿즈. 캐리어 용량 남았으면 여기서 마무리. 여권 지참 시 면세 적용. 내일 아침 일찍 나가야 하니 오늘 밤에 다 사두는 게 편함.
       </div>
@@ -9158,13 +9230,13 @@
 
 </div><!-- /page prep -->
 
-<!-- ========== TRIP TIP 페이지 (prep 다음, d1 앞) — 3 탭: ADVENTURE / OPERATIONS / LANGUAGE ========== -->
+<!-- ========== TRIP TIP 페이지 (prep 다음, d1 앞) — 4 탭: ADVENTURE / OPERATIONS / LANGUAGE / FOOD GUIDE ========== -->
 <div class="page" data-page="tip">
 <section style="padding: 28px 22px;">
 
   <h2 style="font-family: 'Archivo Black', sans-serif; font-size: 32px; color: var(--blue); margin: 0 0 6px; letter-spacing: -0.01em;">TRIP TIP</h2>
   <p style="font-family: 'Pretendard Variable', Pretendard, sans-serif; font-size: 14px; color: var(--blue-deep); margin: 0 0 var(--box-gap-md); opacity: 0.85; line-height: 1.55;">
-    오키나와 여행에서 알면 좋은 정보들. <strong>3 개 탭</strong>에서 골라 봐 — 너의 모험 가이드, 어른의 여행 운영, 일본어.
+    오키나와 여행에서 알면 좋은 정보들. <strong>4 개 탭</strong>에서 골라 봐 — 너의 모험 가이드, 어른의 여행 운영, 일본어, 맛집 카탈로그.
   </p>
 
   <!-- 탭 헤더 -->
@@ -9196,7 +9268,7 @@
         세계 3대 수족관. 꼭 봐야 할 5 가지:
         <ul>
           <li><strong>고래상어</strong> — 메인 수조의 거대한 친구. 길이 8m+</li>
-          <li><strong>매너티</strong> — 따로 온순한 바다 코끼리. 인기 만화 캐릭터</li>
+          <li><strong>매너티</strong> — 유난히 온순한 바다 코끼리. 인기 만화 캐릭터</li>
           <li><strong>산호 정원</strong> — 입구 근처 형형색색 산호초</li>
           <li><strong>가오리 터치풀</strong> — 만질 수 있는 곳! "사왓떼모 이이데스카?"</li>
           <li><strong>돌고래쇼 (오션블루)</strong> — 야외 무료 쇼, 시간표 확인</li>
@@ -9224,7 +9296,7 @@
         <ul>
           <li>음료수 자판기 — 따뜻한 커피 (빨간 라벨), 차가운 음료 (파란 라벨)</li>
           <li>아이스크림 자판기</li>
-          <li>라면 자판기 (있는 곳 가뭄)</li>
+          <li>라면 자판기 (찾기 드뭄)</li>
           <li>우산 자판기 (역 근처) — 비 올 때!</li>
           <li>오뎅·핫도그 자판기</li>
         </ul>
@@ -9257,7 +9329,7 @@
           <li><strong>일본 푸딩</strong> — 진한 커스터드 (무인양품 푸딩 추천)</li>
           <li><strong>모찌 아이스</strong> — 떡 안에 아이스크림</li>
           <li><strong>일본 카레빵</strong> — 겉 바삭, 속 카레</li>
-          <li><strong>포카리 자판기</strong> — 한국 포카리보다 살짝 다른 맛</li>
+          <li><strong>포카리스웨트</strong> — 한국 포카리스웨트와 살짝 다른 맛 (자판기에서 차게)</li>
         </ul>
       </p>
     </div>
@@ -9271,7 +9343,7 @@
           <li><strong>시콰사</strong> — 오키나와 라임, 새콤</li>
           <li><strong>솔트쿠키</strong> — 짭짤+달콤</li>
           <li><strong>우베</strong> — 얌 (보라색 뿌리)</li>
-          <li><strong>사탕수수</strong> — 오키나와 단맛</li>
+          <li><strong>사탕수수</strong> — 오키나와 특유의 자연 단맛</li>
         </ul>
         <strong>추천</strong>: 더블 콘 — 다른 맛 2 개 한 컵에!
       </p>
@@ -9450,7 +9522,7 @@
         <ul>
           <li>공항 SIM 자판기 / 카운터 — 비쌈 (4일 1.5~2만엔)</li>
           <li>한국 통신사 데이터 로밍 — 비쌈 (1일 1만원+)</li>
-          <li>공공 와이파이 (역·카페) — 보안 약함, 결제 X</li>
+          <li>공공 와이파이 (역·카페) — 보안 약함, 카드 결제·로그인은 X</li>
         </ul>
       </p>
     </div>
@@ -9508,20 +9580,20 @@
         <ul>
           <li><strong>기시모토 식당</strong> (Kishimoto, 본점) — 줄 1~2시간. 개점 30분 전 도착 또는 분점 (해양박공원 안)</li>
           <li><strong>Calif Kitchen</strong> 차탄 — 일몰 시간 예약 불가 (선착순). 17:00 입장</li>
-          <li>인기 식당 일반 — 호텔 컨시어지에 부탁 (일본어 OK)</li>
+          <li>그 외 인기 식당 — 호텔 컨시어지에 부탁 (일본어 OK)</li>
         </ul>
         <strong>🥢 대표 음식 추천</strong>:
         <ul>
           <li><strong>오키나와 소바</strong> — 면 굵음, 돼지뼈 국물, 라후테 (삼겹살 조림) 토핑</li>
           <li><strong>타코라이스</strong> — 멕시칸 + 일본 (밥 + 타코미트 + 야채)</li>
           <li><strong>아구 돼지</strong> — 흑돼지 종류, 차슈·삼겹살 어디든</li>
-          <li><strong>고야 챔플 (ゴーヤチャンプル)</strong> — 여주 볶음, 쓴 맛 있음</li>
-          <li><strong>시콰사 음료</strong> — 오키나와 라임, 사이다·맥주 가능</li>
+          <li><strong>고야 챔플 (ゴーヤチャンプル)</strong> — 여주 볶음, 쓴맛이 특징</li>
+          <li><strong>시콰사 음료</strong> — 오키나와 라임, 사이다·맥주에 섞기도 함</li>
           <li><strong>오리온 맥주</strong> — 오키나와 토종 맥주</li>
         </ul>
         <strong>⚠️ 알러지 / 식이 제한</strong>:
         <ul>
-          <li>일본은 <strong>매운 음식 거의 X</strong> (어린이 친화)</li>
+          <li>일본은 <strong>매운 음식이 거의 없음</strong> (어린이 친화)</li>
           <li>채식 / 비건 / 글루텐프리 — 영어 메뉴 카드 미리 준비. 호텔 컨시어지 도움</li>
           <li>견과 알러지 — 일부 디저트 위험. 영어 의사 표현 (No nuts, please) 필수</li>
           <li>해산물 알러지 — 오키나와 음식 70% 해산물 — 신중</li>
@@ -9535,7 +9607,7 @@
         <strong>🛒 식료품 (호텔 비축용)</strong>:
         <ul>
           <li>이온 (AEON) — 마트 + 음식점 + 의류 다 (가족 쇼핑 명소)</li>
-          <li>돈키호테 — 24시간, 이상한 일본 음식 다 있음</li>
+          <li>돈키호테 — 24시간, 별별 일본 식료품 다 있음</li>
           <li>편의점 (패밀리마트·로손·세븐) — 편리, 약간 비쌈</li>
         </ul>
       </p>
@@ -9554,19 +9626,19 @@
         <ul>
           <li><strong>에메랄드 비치</strong> (추라우미 옆) — 인공, 가족 친화, 무료, 라이프가드</li>
           <li><strong>선셋 비치</strong> (차탄 아메리칸 빌리지) — 일몰 명소, 무료</li>
-          <li><strong>비세 비치</strong> (Orion 호텔 앞) — 호텔 손님 전용 ish</li>
+          <li><strong>비세 비치</strong> (Orion 호텔 앞) — 사실상 호텔 손님 전용</li>
           <li><strong>코우리 비치</strong> (코우리 대교 근처) — 한적, 차로 접근</li>
         </ul>
         <strong>🚩 안전 깃발 색깔</strong>:
         <ul>
           <li>🟢 녹색 — 안전 (모든 활동 OK)</li>
-          <li>🟡 노랑 — 주의 (수영 가능, 신중)</li>
+          <li>🟡 노랑 — 주의 (수영 가능, 조심)</li>
           <li>🔴 빨강 — 위험 (수영 금지)</li>
           <li>⚫ 검정 — 폐쇄</li>
         </ul>
         <strong>🪼 해파리 / 위험 생물</strong>:
         <ul>
-          <li>5월 — <strong>해파리 거의 X</strong> (6~9월이 시즌)</li>
+          <li>5월 — <strong>해파리 거의 없음</strong> (6~9월이 시즌)</li>
           <li>성게·바다뱀 — 산호 근처 주의</li>
           <li>해초 미끄러움 — 비치 샌들 필수</li>
         </ul>
@@ -9594,7 +9666,7 @@
         <ul>
           <li>일본은 팁 없음 — <strong>오히려 무례</strong></li>
           <li>거스름돈 정확히 받아야 (반올림 X)</li>
-          <li>고급 료칸 — 「心付け (코코로즈케)」 봉투에 담아 주는 옛 풍습 가끔. 일반 X</li>
+          <li>고급 료칸 — 「心付け (코코로즈케)」 봉투에 담아 주는 옛 풍습 가끔. 일반 식당은 없음</li>
         </ul>
         <strong>🚶 줄 잘 서기</strong>:
         <ul>
@@ -9615,7 +9687,7 @@
           <li>사람 / 점원 — "스미마셍, 샤신 톳떼모 이이데스카?" 한 마디</li>
           <li>신사 본전 안 — 사진 X (神様)</li>
         </ul>
-        <strong>🚬 흡연 — 일본 식당 거의 비흡연 (별도 요청 X)</strong>:
+        <strong>🚬 흡연 — 일본 식당 대부분 금연 (흡연석 요청 거의 X)</strong>:
         <ul>
           <li>2020년 4월 개정 건강증진법 — <strong>100㎡ 이상 매장 원칙 비흡연</strong> (대부분 식당·카페)</li>
           <li>오키나와도 학교·병원·관공서 완전 금연 (2019)</li>
@@ -9724,7 +9796,7 @@
           <li><strong>나하 시립 병원</strong> — 영어 OK, 외국인 안내</li>
           <li><strong>오키나와 추라 가든 병원</strong> — 종합, 큰 응급 OK</li>
           <li><strong>약국</strong>: マツモトキヨシ (마츠모토 키요시) — 진통제·지사제·감기약 보유</li>
-          <li>처방전 약 — 원본 + 일본 의사 처방 필요</li>
+          <li>처방약 — 한국 처방전 원본 + 일본 의사 재처방 필요</li>
         </ul>
         <strong>🛂 여권 분실</strong>:
         <ul>
@@ -9837,7 +9909,7 @@
         <ul>
           <li>1만엔 권 → 큰 결제용 (호텔·식사)</li>
           <li>5천엔·1천엔 권 → 일상</li>
-          <li>500엔·100엔 동전 → 자판기·주차·자판기</li>
+          <li>500엔·100엔 동전 → 자판기·주차·코인로커</li>
           <li>가족 4명 분산 (한 사람 분실 시 백업)</li>
         </ul>
         <strong>🛡 안전 보관</strong>:
@@ -9927,6 +9999,53 @@
           <li>드론 — 일본 항공법, <strong>관광지 대부분 비행 금지</strong>. 사용 전 지도 확인 (drs.mlit.go.jp)</li>
           <li>액션캠 (GoPro 등) — 비치·풀 OK</li>
           <li>폴라로이드 / 후지 인스탁스 — 가족 사진 추천</li>
+        </ul>
+      </p>
+    </div>
+
+    <div class="tt-card">
+      <div class="tt-card-head"><span class="tt-card-icon">🎁</span><h3 class="tt-card-title">기념품 — 로손·돈키호테 추천 15</h3></div>
+      <p class="tt-card-body">
+        <strong>🍪 오키나와 한정 디저트·간식</strong>:
+        <ul>
+          <li><strong>① 베니이모 타르트 (紅いもタルト)</strong> — 자색고구마 타르트. 御菓子御殿 (오카시고텐) 가 원조, 돈키호테·공항 다 있음. <strong>가족·동료 선물 1순위</strong>. 6개입 ¥800~</li>
+          <li><strong>② 친스코 (ちんすこう)</strong> — 오키나와 전통 비스킷. 라드 + 밀가루 + 설탕 단순 조합, 부담 없는 단맛. 新垣 (아라가키) 본가 또는 雪塩 (유키시오) 솔트 친스코 추천. ¥600~</li>
+          <li><strong>③ 사타안다기 (サーターアンダギー)</strong> — 오키나와 도넛, 겉바삭 속촉촉. 편의점 미니 사이즈 (¥150) 또는 시장 큰 사이즈 (¥100/개)</li>
+          <li><strong>④ 베니이모 KitKat (오키나와 한정)</strong> — 자색고구마 KitKat. 공항·돈키호테에만 있는 지역 한정 맛. ¥800~/12개</li>
+          <li><strong>⑤ 흑당 (黒糖) 큐브·카린토</strong> — 오키나와 사탕수수 흑설탕. 가루·큐브·카린토 (黒糖かりんとう, 흑당 묻힌 튀김 과자) 다양. 작은 봉지 ¥300~</li>
+        </ul>
+        <strong>🥤 음료·주류</strong>:
+        <ul>
+          <li><strong>⑥ 오리온 맥주 미니캔 (135ml)</strong> — 오키나와 토종 맥주. 선물용 6캔 박스 ¥1,200. 돈키호테·로손 둘 다</li>
+          <li><strong>⑦ 시콰사 (シークヮーサー) 시럽·사이다</strong> — 오키나와 라임. 시럽 (¥600/병) 한국 와서 탄산수에 타먹기 좋음. 한정 사이다 음료도 추천</li>
+          <li><strong>⑧ 호로요이·-196°C 츄하이 한정 맛</strong> — 일본 한정 과일 츄하이 (3~7%). 한국에 없는 매실·시콰사·복숭아 맛. ¥150/캔</li>
+          <li><strong>⑨ 오키나와 산피차 (さんぴん茶)</strong> — 자스민 베이스 오키나와 차. 페트병 또는 티백. 따뜻하게·차게 둘 다 OK</li>
+        </ul>
+        <strong>💄 코스메·생활용품</strong>:
+        <ul>
+          <li><strong>⑩ 海洋深層水 코스메</strong> — 오키나와 심해수 화장품 (페이스 마스크·바디 로션). 돈키호테 化粧品 코너. 마스크 1장 ¥100~300</li>
+          <li><strong>⑪ 日焼け止め (히야케도메, 선크림)</strong> — 일본 한정 ANESSA·비오레 UV. 강한 자외선 차단 + 가벼운 텍스처. 한국보다 저렴. 돈키호테 면세 코너</li>
+          <li><strong>⑫ 사론파스 (サロンパス)·휴족시간 (休足時間)</strong> — 일본 명물 파스·다리 피로 패치. 가족 어른 선물 인기. ¥500~</li>
+        </ul>
+        <strong>🦁 류큐 굿즈·기념품</strong>:
+        <ul>
+          <li><strong>⑬ 시사 (シーサー) 굿즈</strong> — 도자기 미니어처·키링·티셔츠·자석. 돈키호테 + 공항 면세점 + 추라우미 기념품샵. 작은 도자기 페어 ¥1,000~3,000</li>
+          <li><strong>⑭ 류큐 글래스 (琉球ガラス)</strong> — 색유리 컵·액세서리. 거품·색감이 류큐 특유. 작은 컵 ¥500~1,500. 큰 잔 ¥3,000+</li>
+          <li><strong>⑮ 일본 한정 가챠뽀 (ガチャポン)</strong> — 캡슐 토이. 돈키호테·공항·이온몰. 1회 ¥300~500. 시사·동물·만화 캐릭터. 조카 선물 + 본인 컬렉션</li>
+        </ul>
+        <strong>💡 어디서 사는 게 좋을까</strong>:
+        <ul>
+          <li><strong>로손 (Lawson) — 호텔 옆</strong>: 음료·과자·KitKat 한정 (작은 사이즈, 출국 전 마지막 보충)</li>
+          <li><strong>돈키호테 (Don Quijote) — 차탄점, 호텔 도보 3분</strong>: 24시간 + 면세 가능 + 선택 폭 가장 큼. <strong>여권 지참 → 5,000엔 이상 면세</strong></li>
+          <li><strong>이온몰 라이코무 (Aeon Mall Rycom)</strong>: 차탄에서 차로 15분. 면세 + 화장품 + 주류 가장 큼. 가족 쇼핑 동선</li>
+          <li><strong>나하 공항 면세점</strong>: 출국 직전 비축. 가격은 살짝 비쌈 (5~10%)</li>
+        </ul>
+        <strong>🛂 면세 (Tax Free) 룰</strong>:
+        <ul>
+          <li>일반 물품 + 소모품 합산 <strong>5,000엔 이상</strong> 구매 시 8% 소비세 환급</li>
+          <li>여권 지참 필수 (사본 X), 본인 결제 카드</li>
+          <li>면세 상품은 <strong>일본 출국 전 개봉 X</strong> (밀봉 봉투 그대로)</li>
+          <li>위탁 수하물 가능, 단 액체 (술·코스메) 100ml 초과는 위탁만</li>
         </ul>
       </p>
     </div>
@@ -10072,7 +10191,7 @@
       <p class="tt-card-body">
         <ul>
           <li><strong>삿짱소바</strong> — 오키나와 소바 명물. 면 굵음, 돼지뼈 국물</li>
-          <li><strong>마키시 소바</strong> (国제거리) — 현지인 추천 소바집</li>
+          <li><strong>마키시 소바</strong> (国際거리) — 현지인 추천 소바집</li>
           <li><strong>스나가와 세이멘조</strong> — 면 직접 뽑는 곳, 라멘</li>
           <li><strong>마제멘 마호로바</strong> — 비빔라멘 (마제멘) 전문</li>
         </ul>
