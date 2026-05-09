@@ -1413,6 +1413,31 @@
   .opt.highlight .opt-title em { color: var(--amber); }
   .opt.highlight .opt-place { color: rgba(255,255,255,0.6); border-bottom-color: rgba(255,255,255,0.2); }
 
+  /* .opt.featured — 베스트 추천 강조 (앰버 톤 배경 + 두꺼운 테두리, 일반 카드와 차별)
+     모토부 목장 같은 사용자 명시 추천 식당에 사용. 다른 옵션과 시각 차별. */
+  .opt.featured {
+    background: linear-gradient(180deg, #fffbe8 0%, #fff 60%);
+    border: 2px solid var(--amber);
+    box-shadow: 0 6px 20px rgba(255, 196, 0, 0.18);
+    position: relative;
+  }
+  .opt.featured::before {
+    content: '⭐ BEST';
+    position: absolute;
+    top: -10px;
+    right: 16px;
+    padding: 3px 10px;
+    background: var(--amber);
+    color: var(--blue-ink);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    border-radius: 999px;
+    box-shadow: 0 2px 8px rgba(255, 196, 0, 0.3);
+    z-index: 2;
+  }
+
   /* opt-place 맵 핀 아이콘 (클릭 힌트) */
   .opt-place::before {
     content: "";
@@ -7201,12 +7226,12 @@
       </div>
     </div>
 
-    <div class="opt">
-      <span class="opt-badge"><span class="dot"></span>Option 4 · 모토부규</span>
+    <div class="opt featured">
+      <span class="opt-badge amber"><span class="dot"></span>Option 4 · ⭐ BEST 모토부규</span>
       <div class="opt-title">야키니쿠 <em>모토부 목장</em></div>
       <div class="opt-place">焼肉もとぶ牧場 もとぶ店 · 본부 오하마 881-1 · 차로 12~15분</div>
       <div class="opt-body">
-        **모토부규 직영 야키니쿠**. 지역 브랜드 소고기를 직접 키워 공급. 11:00~15:00 / 17:00~22:00. **예약 강력 권장** (전화 0980-51-6777 또는 TableCheck·구루나비 온라인). 호텔 차로 12~15분, 저녁 전용으로 외출할 가치 있음. 가족 식사 분위기.
+        ⭐ <strong>북부 야키니쿠 베스트</strong>. <strong>모토부규 직영</strong> — 지역 브랜드 소고기를 직접 키워 공급. 11:00~15:00 / 17:00~22:00. <strong>예약 강력 권장</strong> (전화 0980-51-6777 또는 TableCheck·구루나비 온라인). 호텔 차로 12~15분, 저녁 전용으로 외출할 가치 있음. 가족 식사 분위기.
       </div>
       <div class="opt-menu">
         <span class="pick">모토부규 로스</span>
@@ -7754,15 +7779,18 @@
     </div>
 
     <div class="opt">
-      <span class="opt-badge coral"><span class="dot"></span>Option 2</span>
+      <span class="opt-badge coral"><span class="dot"></span>Option 2 · 물놀이 + 🐠 스노클링</span>
       <div class="opt-title">Emerald <em>Beach</em></div>
-      <div class="opt-place">Ocean Expo Park · 수족관에서 도보 5분</div>
+      <div class="opt-place">エメラルドビーチ · Ocean Expo Park · 수족관 도보 5분 / 호텔 도보 2분</div>
       <div class="opt-body">
-        수족관과 같은 해양박공원(Ocean Expo Park) 안, 에메랄드빛 인공 만 안쪽이라 파도가 거의 없음. **산호사 백사장** 600m. 일본 환경부 선정 "수질 AA + 일본 100대 해수욕장". 수영(Play)·휴식(Rest)·전망(View) 3구역으로 나뉨. **4/1~10/31 수영 가능**, 샤워·탈의실·매점·라운지 대여(1,000엔~).
+        수족관과 같은 해양박공원(Ocean Expo Park) 안, 에메랄드빛 인공 만 안쪽이라 파도가 거의 없음. <strong>산호사 백사장 600m</strong>. 일본 환경부 선정 "수질 AA + 일본 100대 해수욕장". 수영(Play)·휴식(Rest)·전망(View) 3구역. <strong>4/1~10/31 수영 가능</strong>, 샤워·탈의실·매점·라운지 대여 (1,000엔~).<br/><br/>
+        🐠 <strong>가족 첫 스노클링 입문 OK</strong> — 수족관에서 본 열대어를 실제 바다에서 만나기. 잔잔한 안쪽 물 + 산호사 백사장으로 발 다칠 위험 적음. <strong>5월 수온 23~24°C</strong> 살짝 차가움 → <strong>래시가드 권장</strong>. 마스크·스노클은 한국 다이소 또는 호텔 / 일본 다이소 (1,500~3,000엔) 에서 준비. 라이프가드 + 안전 깃발 (녹색=안전, 빨강=위험) 확인.
       </div>
       <ul class="opt-features">
-        <li><strong>난이도</strong>쉬움 · 물놀이 장비 있음</li>
-        <li><strong>추천</strong>조개 · 산호 찾기</li>
+        <li><strong>난이도</strong>쉬움 · 가족 첫 입문</li>
+        <li><strong>요금</strong>비치 무료 · 장비 본인 준비</li>
+        <li><strong>준비</strong>래시가드 + 마스크 + 비치 샌들</li>
+        <li><strong>안전</strong>라이프가드 + 안전 깃발</li>
       </ul>
       <div class="opt-rating">
         <span class="r-lbl">How excited?</span>
@@ -7811,27 +7839,6 @@
       </div>
     </div>
 
-    <div class="opt">
-      <span class="opt-badge amber"><span class="dot"></span>Option 5 · 첫 스노클링 도전</span>
-      <div class="opt-title">Emerald Beach <em>Snorkeling</em></div>
-      <div class="opt-place">エメラルドビーチ · Ocean Expo Park · 수족관에서 도보 5분</div>
-      <div class="opt-body">
-        수족관에서 본 열대어를 <strong>실제 바다에서 직접 만나기</strong>. 에메랄드 비치 안쪽 잔잔한 물 — 가족 첫 스노클링 입문 장소로 안성맞춤. 산호 파편 백사장이라 발 다칠 위험 적음. <strong>5월 수온 23~24°C</strong>, 살짝 차가움 — <strong>래시가드 권장</strong>. 라이프가드 상주 + 안전 깃발 (녹색=안전, 빨강=위험) 확인. <strong>4/1~10/31 수영 시즌</strong>, 무료. 마스크·스노클은 호텔 또는 출국 전 다이소·스포츠매장 (1,500~3,000엔) 에서 준비.
-      </div>
-      <ul class="opt-features">
-        <li><strong>거리</strong>수족관 도보 5분 / 호텔 도보 2분</li>
-        <li><strong>요금</strong>비치 무료 · 장비 본인 준비</li>
-        <li><strong>준비</strong>래시가드 + 마스크 + 비치 샌들</li>
-        <li><strong>안전</strong>라이프가드 + 안전 깃발 확인</li>
-      </ul>
-      <div class="opt-rating">
-        <span class="r-lbl">How excited?</span>
-        <div class="opt-dots" data-key="d2-snorkeling">
-          <span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span><span class="d"></span>
-        </div>
-      </div>
-    </div>
-
       <div class="opt-write">
       <span class="opt-badge"><span class="dot"></span>+ My Option</span>
       <div class="wo-label">뭐 하고 싶어?</div>
@@ -7858,12 +7865,12 @@
     </div>
   </div>
   <div class="options">
-    <div class="opt">
-      <span class="opt-badge"><span class="dot"></span>Option 1 · 모토부규</span>
+    <div class="opt featured">
+      <span class="opt-badge amber"><span class="dot"></span>Option 1 · ⭐ BEST 모토부규</span>
       <div class="opt-title">야키니쿠 <em>모토부 목장</em></div>
       <div class="opt-place">焼肉もとぶ牧場 もとぶ店 · 본부 오하마 881-1 · 차로 12~15분</div>
       <div class="opt-body">
-        **모토부규 직영 야키니쿠**. 지역 브랜드 소고기를 직접 키워 공급. 11:00~15:00 / 17:00~22:00 연중무휴. **예약 강력 권장** (전화 0980-51-6777). 차로 12~15분. D1에 이미 다녀왔으면 다른 옵션, 안 갔으면 여기가 Day 2 하이라이트.
+        ⭐ <strong>북부 야키니쿠 베스트</strong>. <strong>모토부규 직영</strong> — 지역 브랜드 소고기를 직접 키워 공급. 11:00~15:00 / 17:00~22:00 연중무휴. <strong>예약 강력 권장</strong> (전화 0980-51-6777). 차로 12~15분. D1에 이미 다녀왔으면 다른 옵션, 안 갔으면 여기가 Day 2 하이라이트.
       </div>
       <div class="opt-menu">
         <span class="pick">모토부규 로스</span>
